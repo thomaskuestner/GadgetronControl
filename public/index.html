@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="css/libs/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <title>Gadgetron</title>
+    <meta charset="utf-8" />
+</head>
+
+<body>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">
+            <div id="status"></div></a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+                <ul class="nav navbar-nav">
+                    <li><a class="btn" href="#"><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> Dashboard</a></li>
+                    <li><a class="btn" href="#logfile"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Log-File</a></li>
+                    <li><a class="btn" href="#trash"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Trash</a></li>
+                </ul>
+                <ul id="navbar-right" class="nav navbar-nav navbar-right"></ul>
+            </div>
+        </div>
+    </nav>
+    <div id="tool-bar"></div>
+    <div class="container-fluid ">
+        <div id="main-region">
+        </div>
+    </div>
+
+    <div id="svg-region" class="hide">
+        <svg id="svg-config"></svg>
+        <svg id="svg-preview"></svg>
+    </div>
+
+    <div id="modal-region">
+    </div>
+
+    <script id="modal-template" type="text/template">
+        <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="gadgetsLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="gadgetsLabel"><%= title %></h4>
+                </div>
+                <div id="modal-template-body" class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="back" data-dismiss="modal">Close</button>
+                </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script id="io-view" type="text/template">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>slot</td>
+                <td contenteditable=true class='value' id="slot"><%= slot[0] %></td>
+            </tr>
+            <tr>
+                <td>dll</td>
+                <td contenteditable=true class='value' id="dll"><%= dll[0] %></td>
+            </tr>
+        </tbody>
+    </script>
+
+    <script id="tool-bar-config-entries" type="text/template">
+        <div class="container-fluid">
+            <div>
+                <ul class="nav navbar-nav">
+                    <li>
+                    <a class="dropdown-toggle" title="Add" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a id="save-button" class="toolbar-btn" title="Save"><i class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></i> Save</a></li>
+                            <li><a id="save-as-button" class="toolbar-btn" title="Save as"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i> Save as</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" title="Add" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a id="add-reader-button" class="toolbar-btn add-button"><i class="glyphicon glyphicon-share" aria-hidden="true"></i> Reader</a></li>
+                            <li><a id="add-gadget-button" class="toolbar-btn add-button"><i class="glyphicon glyphicon-cog" aria-hidden="true"></i> Gadget</a></li>
+                            <li><a id="add-writer-button" class="toolbar-btn add-button"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Writer</a></li>
+                        </ul>
+                    </li>
+                    <li><a id="reorder-button" class="toolbar-btn btn active-btn" title="Reorder gadgets"><span class="glyphicon glyphicon-transfer" aria-hidden="true"></span></a></li>
+                    <li><a id="remove-button" class="toolbar-btn btn active-btn" title="Delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></li>
+                    <li><a id="play-button" class="toolbar-btn btn" title="Start Configuration"><span class="glyphicon glyphicon-play" aria-hidden="true"></span></a></li>
+                </ul>
+            </div>
+        </div>
+    </script>
+
+    <script id="admin-area" type="text/template">
+    </script>
+    
+    <script id="dashboard" type="text/template">
+        <div class="row">
+            <div class="col-lg-6">
+                <div id="dashboard-configuration"></div>
+            </div>            
+            <div class="col-lg-6">
+                <div id="dashboard-logfiles"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <div id="dashboard-readers"></div>
+            </div>
+            <div class="col-lg-4">
+                <div id="dashboard-gadgets"></div>
+            </div>
+            <div class="col-lg-4">
+                <div id="dashboard-writers"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <div id="dashboard-dat"></div>
+            </div>            
+            <div class="col-lg-4">
+                <div id="dashboard-xsl"></div>
+            </div>             
+            <div class="col-lg-4">
+                <div id="dashboard-results"></div>
+            </div>
+        </div>
+    </script>
+
+    <script id="dashboard-template" type="text/template">
+        <div class="panel panel-default">
+            <div class="panel-heading"><%= title %>
+                <% for(i=0;i < buttons.length;i++){ %>
+                    <% if(buttons[i] === 'add'){ %>
+                        <a class="btn <%= className %>" id="add-button" type="button"><i class="glyphicon glyphicon-plus" aria-hidden="true"></i></a>
+                    <% } %>
+                    <% if(buttons[i] === 'upload'){ %>
+                        <a class="btn" id="upload-button" type="button" data-type="<%= className %>"><i class="glyphicon glyphicon-arrow-up" aria-hidden="true"></i></a>
+                    <% } %>
+                    <% if(buttons[i] === 'download'){ %>
+                        <a class="btn" id="download-button" type="button" data-type="<%= className %>"><i class="glyphicon glyphicon-arrow-down" aria-hidden="true"></i></a>
+                    <% } %>
+                    <% if(buttons[i] === 'fullscreen'){ %>
+                        <a class="btn" id="fullscreen-button" type="button" data-type="<%= className %>"><i class="glyphicon glyphicon-fullscreen" aria-hidden="true"></i></a>
+                    <% } %>
+                <% } %>
+            </div>
+            <div class="panel-body" style="height: <%= height %>;overflow-y: scroll;">
+                <%= content %>
+            </div>
+        </div>
+    </script>
+
+    <script id="table" type="text/template">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th><%= attribute %></th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="row"></tbody>
+        </table>
+    </script>
+
+    <script id="save-as-template" type="text/template">
+        <div class="input-group" id="filename-group">
+            <input type="text" class="form-control" placeholder="Filename..." id="filename">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" id="save-as"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i> Save</button>
+            </span>
+        </div>
+    </script>
+
+    <script id="upload-template" type="text/template">
+        <div class="form-group">
+            <label for="upload-file-button">Upload Data</label>
+            <div class="progress">
+                <div id="progress-file-bar" class="progress-bar" role="progressbar"></div>
+            </div>
+            <button class="btn btn-default" type="button" id="upload-file-button"><i class="glyphicon glyphicon-upload" aria-hidden="true"></i> Upload Data</button><br />
+            <input id="upload-file-input" type="file" name="uploads[]" class="hide" accept="<%= fileextension %>">
+        </div>
+        <hr />
+        <label for="symbolic-link">Create Symbolic Link on Server</label>
+        <div class="input-group" id="filename-group">
+            <input type="text" class="form-control" placeholder="Absolute Path on Server" id="filename">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" id="create-symbolic-link"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i> Set Symbolic Link</button>
+            </span>
+        </div>
+    </script>
+
+    <script id="login-template" type="text/template">
+        <div id="name-group" class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Name">
+        </div>
+        <div id="password-group" class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+        </div>
+        <button class="btn btn-default" type="button" id="login-button"><i class="glyphicon glyphicon-log-in" aria-hidden="true"></i> Login</button>
+    </script>
+
+    <script id="login-status-template" type="text/template">
+        <% if(isLoggedIn){ %>
+            <li><a class="btn" id="logout-button"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Logout</a></li>
+        <% } else { %>
+            <li><a class="btn" id="login-button"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Login</a></li>
+        <% } %>
+    </script>
+
+    <script id="play-template" type="text/template">
+        <div class="form-group">
+            <label for="upload-dat-button">DAT/H5-Data</label>
+            <select id="dat-selection" class="form-control">
+                <option></option>
+                <% datFolderCollection.each(function(model, index){ %>
+                    <option data-path='<%= model.get('path') %>'><%= model.get('name') %></option>
+                <% }) %>
+            </select>
+            <br />
+            <div class="progress">
+                <div id="progress-dat-bar" class="progress-bar" role="progressbar"></div>
+            </div>
+            <button class="btn btn-default" type="button" id="upload-dat-button"><i class="glyphicon glyphicon-upload" aria-hidden="true"></i> Upload Data</button>
+            <input id="upload-dat-input" type="file" name="uploads[]" class="hide" accept=".dat,.h5">
+        </div>
+        <div class="form-group">
+            <label for="upload-xsl-button">XSL-Stylesheet-Data (optional)</label>
+            <select id="xsl-selection" class="form-control">
+                <option></option>
+                <% xslFolderCollection.each(function(model, index){ %>
+                    <option data-path='<%= model.get('path') %>'><%= model.get('name') %></option>
+                <% }) %>
+            </select>
+            <br />
+            <div class="progress">
+                <div id="progress-xsl-bar" class="progress-bar" role="progressbar"></div>
+            </div>
+            <button class="btn btn-default" type="button" id="upload-xsl-button"><i class="glyphicon glyphicon-upload" aria-hidden="true"></i> Upload Data</button><br />
+            <input id="upload-xsl-input" type="file" name="uploads[]" class="hide" accept=".xsl">
+        </div>
+        <div class="form-group">            
+            <label for="result-name">Result file name (default: TIMESTAMP_dat/h5-filename.h5)</label>            
+            <input type="text" class="form-control" id="result-name" name="result-name" placeholder="filename for the result">
+        </div>
+        <button class="btn btn-default" type="button" id="start-button"><i class="glyphicon glyphicon-play" aria-hidden="true"></i> Start Configuration</button>
+    </script>
+
+    <script id="gadget-template" type="text/template">
+        <form id="gadget-form">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="Name" value="<%= name %>">
+            </div>
+            <div class="form-group">
+                <label for="dll">DLL</label>
+                <input type="text" class="form-control" id="dll" name="dll" placeholder="DLL" value="<%= dll %>">
+            </div>
+            <div class="form-group">
+                <label for="classname">Classname</label>
+                <input type="text" class="form-control" id="classname" name="classname" placeholder="Classname" value="<%= classname %>">
+            </div>
+            <div class="form-group">
+                <label for="properties">Properties</label>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if((typeof properties === 'undefinded') || (properties.length === 0)){ %>
+                            <tr id="row-0">
+                                <td contenteditable=true class='property' data-value="name" data-type='string' data-index='0'></td>
+                                <td contenteditable=true class='property' data-value="value" data-type='string' data-index='0'></td>
+                            </tr>
+                        <% } else{ %>
+                            <% for(i=0; i < properties.length; i++){ %>
+                                <% if(properties[i].type) {%>
+                                    <tr id="row-<%= i %>">
+                                        <td contenteditable=true class='property' data-value="name" data-index='<%= i %>'><%= properties[i].name[0] %></td>
+                                        <% if (properties[i].type === 'boolean') { %>
+                                            <td><input type="checkbox" class='property' data-value="value" data-type='boolean' data-index='<%= i %>'
+                                            <% if (properties[i].value[0] === 'true') { %>
+                                                checked
+                                            <% } %>
+                                            ></td>
+                                        <% } %>
+                                        <% if (properties[i].type === 'number') { %>
+                                            <td contenteditable=true class='property' data-value="value" data-type='number' data-index='<%= i %>'><%= properties[i].value[0] %></td>
+                                        <% } %>
+                                        <% if (properties[i].type === 'string') { %>
+                                            <td contenteditable=true class='property' data-value="value" data-type='string' data-index='<%= i %>'><%= properties[i].value[0] %></td>
+                                        <% } %>
+                                    </tr>
+                                <% } else { %>
+                                    <tr id="row-<%= i %>">
+                                        <td contenteditable=true class='property' data-value="name" data-type='string' data-index='<%= i %>'><%= properties[i].name[0] %></td>
+                                        <td contenteditable=true class='property' data-value="value" data-type='string' data-index='<%= i %>'><%= properties[i].value[0] %></td>
+                                    </tr>
+                                <% } %>
+                            <% } %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+            <button class="btn btn-default" type="button" id="save-button"><i class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></i> Save Gadget</button>
+        </form>
+    </script>
+
+    <script id="io-template" type="text/template">
+        <form id="gadget-form">
+            <div class="form-group">
+                <label for="Classname">Classname</label>
+                <input type="text" class="form-control" id="classname" name="classname" placeholder="Classname" value="<%= model.classname %>">
+            </div>
+            <div class="form-group">
+                <label for="dll">DLL</label>
+                <input type="text" class="form-control" id="dll" name="dll" placeholder="DLL" value="<%= model.dll %>">
+            </div>
+            <div class="form-group">
+                <label for="slot">Slot</label>
+                <input type="text" class="form-control" id="slot" name="slot" placeholder="Slot" value="<%= model.slot %>">
+            </div>
+            <button class="btn btn-default" type="button" id="save-button" data-type="<%= type %>"><i class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></i> Save Io</button>
+        </form>
+    </script>
+
+    <script id="gadget-row" type="text/template">
+        <td><%= name %></td>
+        <td><a class="btn" id="select-gadget"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></td>
+    </script>
+
+    <script id="io-row" type="text/template">
+        <td><%= classname %></td>
+        <td><a class="btn" id="select-io"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></td>
+    </script>
+
+    <script id="io-dashboard-row" type="text/template">
+        <td><%= model.classname %></td>
+        <td>
+            <a class="btn" id="edit-button" data-classname="<%= model.classname %>" data-action="update" data-type="<%= type %>"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+            <a class="btn" id="trash-button" data-classname="<%= model.classname %>" data-type="<%= type %>"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+        </td>
+    </script>
+
+    <script id="gadget-dashboard-row" type="text/template">
+        <td><%= name %></td>
+        <td>
+            <a class="btn" id="edit-button" data-name="<%= name %>" data-type="gadget"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+            <a class="btn" id="trash-button" data-name="<%= name %>" data-type="gadget"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+        </td>
+    </script>
+
+    <!-- FILE-ROWS -->
+    <script id="file-row" type="text/template">
+        <td><%= name %></td>
+        <td>
+            <% var h5 = new RegExp('h5', 'i'); if(name.match(h5) && window.location.hostname === 'localhost'){ %>
+                <a id="open-hdfview-button" class="btn"><span class="glyphicon glyphicon-asterisk" aria-hidden="true" title="open file in hdfview"></span>
+            <% } %>
+            <a id="file-trash-button" class="btn"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+        </td>
+    </script>
+
+    <script id="configuration-row" type="text/template">
+        <td><%= name %></td>
+        <td>
+            <a id="play-button" class="btn" title="Start Configuration">
+                <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+            </a>
+            <a href="#gadgetronStreamConfiguration/<%= name %>" class="btn" title="Edit Configuration">
+                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+            </a>
+            <a id="file-trash-button" class="btn"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+        </td>
+    </script>
+
+    <script id="result-row" type="text/template">
+        <td><%= name %></td>
+        <td>
+            <% if(window.location.hostname === 'localhost'){ %>
+                <a id="open-hdfview-button" class="btn"><span class="glyphicon glyphicon-asterisk" aria-hidden="true" title="open file in hdfview"></span>
+            <% } %>
+            <a href="/results/<%= name %>" title="Download File" download>
+                <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+            </a>
+            <a id="file-trash-button" class="btn"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+        </td>
+    </script>
+    <!-- FILE-ROWS -->
+
+    <!-- STATUS-Template -->
+    <script id="status-template" type="text/template">
+        <img src="img/Gadgetron_Warning.png" height="22px"/>
+    </script>
+    <!-- STATUS-Template -->
+
+    <script src="js/gadgetronBundleApp.js"></script>
+</body>
+
+</html>

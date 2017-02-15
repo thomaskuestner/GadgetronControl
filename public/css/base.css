@@ -1,0 +1,33 @@
+.edit{
+    cursor: pointer
+}
+
+.move{
+    cursor: move
+}
+
+.add-button{
+    cursor: pointer
+}
+
+.remove{
+    cursor: not-allowed
+}
+
+.hide{
+    display: none
+}
+
+[contenteditable="true"]:active,
+[contenteditable="true"]:focus{
+    border: black;
+    border-style: solid;
+}
+
+tr{
+    height: 22px;
+}
+
+a.btn{
+    padding: 0px 0px;
+}

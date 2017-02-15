@@ -1,0 +1,15 @@
+{
+    "port" : 3000,
+    "gadgetron_port": 9000,
+    "hostname" : "localhost",
+    "config_dir" : "/usr/local/share/gadgetron/config/",
+    "upload_dir" : "uploads",
+    "result_dir" : "public/results",
+    "trash_dir"  : "trash",
+    "gadgetron_log" : "/var/log/gadgetron.log",
+    "readers_db" : "db/readers.db",
+    "gadgets_db" : "db/gadgets.db",
+    "writers_db" : "db/writers.db",
+    "adminUser" : "admin",
+    "password": "admin"
+}

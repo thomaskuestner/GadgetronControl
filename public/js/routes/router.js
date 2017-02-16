@@ -25,8 +25,6 @@ import FolderView from './../views/folderView';
 import GadgetView from './../views/gadgetView';
 import IoView from './../views/ioView';
 import SaveDialog from './../views/saveDialog';
-import LoginDialog from './../views/loginDialog';
-import Login from './../views/login';
 
 // Extra
 import RegionManager from './../regionManager';
@@ -50,23 +48,7 @@ var Router = Backbone.Router.extend({
         this.readerGroup = data.readers;
         this.writerGroup = data.writers;
         gadgetronStreamConfigurationGroup = data.group;
-
-        // handle 403 Status-Code globally
-        $(document).ajaxError(function (error, xhr, options) {
-            if(xhr.status === 403){
-                var loginDialog = new LoginDialog({loggedInEvent: self.loggedInEvent});
-                loginDialog.render();
-            }
-        });
-
-        this.login = new Login();
-        this.login.render();
-
         Backbone.Router.prototype.constructor.call(this, gadgetronStreamConfigurationGroup);
-    },
-    // event when user logged in
-    loggedInEvent: function(){
-        self.login.show();
     },
     // all routes
     routes:{

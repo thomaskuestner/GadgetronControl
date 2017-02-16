@@ -15,6 +15,8 @@ import IoCollection from './collections/ioCollection';
 
 // Views
 import GadgetronStreamConfigurationCollectionView from './views/gadgetronStreamConfiguration/collectionView';
+import Login from './views/login';
+import LoginDialog from './views/loginDialog';
 
 // Extra
 import Router from './routes/router.js';
@@ -44,7 +46,26 @@ Backbone.ajax({
     }
 });
 
+
 function init(group, gadgets, readers, writers){
+    // handle 403 Status-Code globally
+    $(document).ajaxError(function (error, xhr, options) {
+        if(xhr.status === 403){
+            var loginDialog = new LoginDialog({loggedInEvent});
+            loginDialog.render();
+        }
+    });
+    
+    // load login in Navbar
+    var login = new Login();
+    login.render();
+
+
+    // event when user logged in
+    function loggedInEvent(){
+        login.show();
+    }
+
     // initalize
     var router = new Router({group, gadgets, readers, writers});
     Backbone.history.start();

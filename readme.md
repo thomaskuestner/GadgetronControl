@@ -1,17 +1,17 @@
-This a user interface for interacting with the Gadgetron-Framework. We hope it will help your daily work and your are welcome for improve the system.
+A user interface for interacting with the <a href="https://github.com/gadgetron/gadgetron">Gadgetron Framework</a>. We hope it assissts you in your daily work and you are welcome to further enhance the system.
 
-It's implemented with Node.js on the server-side and Backbone on the client.
+It is implemented with Node.js on the server-side and a Backbone on the client-side.
 
-Prerequesits are the following tools. Please set the PATH variables for them so this software can find theme.
+Prerequesits are the following tools. Please set the PATH variables so that the GadgetronControl can find them.
 
 1. [siemens_to_ismrmrd](https://github.com/ismrmrd/siemens_to_ismrmrd)
 2. [gadgetron_ismrmrd_client](https://github.com/gadgetron/gadgetron-python-ismrmrd-client)
 3. [gadgetron](https://github.com/gadgetron/gadgetron)
 4. [nodejs](https://nodejs.org/en/)
 5. [npm](https://www.npmjs.com/)
-6. [hdfview](https://support.hdfgroup.org/products/java/hdfview/) (than you can locally start hdfview from the UI)
+6. [hdfview](https://support.hdfgroup.org/products/java/hdfview/) (allows you a local preview of the images)
 
-For installation and startup you can use the following script. You can reach the UI then under http://localhost:3000:
+For installation and startup you can use the following script. The UI is then reached under http://localhost:3000:
 
 ```bash
 # start gadgetron in background and write pipeline
@@ -21,7 +21,7 @@ cd GadgetronControl
 npm install
 npm start
 ```
-We implemented a litte authentification which is very insecure. It's just to make sure that a user get's a message if he is aware of deleting stuff. Username and password are both _admin_ by default but you are free to change them in the config.json.
+We implemented a small (but insecure) authentification to ensure a user message notification if anything is deleted. Username and password are both _admin_ by default but you are free to change them in the config.json.
 
 The project is ordered in the following folders:
 ```
@@ -57,3 +57,11 @@ index.js (node.js server)
 package.json (npm packages)
 readme.md (this file ;))
 ```
+
+--------------------------------------------------------
+Please read LICENSE file for licensing details.
+
+Further information can be found at:
+
+https://sites.google.com/site/kspaceastronauts/gadgetron/gadgetroncontrol
+

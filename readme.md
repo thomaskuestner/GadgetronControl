@@ -4,20 +4,20 @@ It's implemented with Node.js on the server-side and Backbone on the client.
 
 Prerequesits are the following tools. Please set the PATH variables for them so this software can find theme.
 
-1. siemens_to_ismrmrd
-2. gadgetron_ismrmrd_client
-3. gadgetron
-4. nodejs
-5. npm
-6. hdfview (than you can locally start hdfview from the UI)
+1. [siemens_to_ismrmrd](https://github.com/ismrmrd/siemens_to_ismrmrd)
+2. [gadgetron_ismrmrd_client](https://github.com/gadgetron/gadgetron-python-ismrmrd-client)
+3. [gadgetron](https://github.com/gadgetron/gadgetron)
+4. [nodejs](https://nodejs.org/en/)
+5. [npm](https://www.npmjs.com/)
+6. [hdfview](https://support.hdfgroup.org/products/java/hdfview/) (than you can locally start hdfview from the UI)
 
-For installation and startup you can use the following script. You can reach the UI under http://localhost:3000:
+For installation and startup you can use the following script. You can reach the UI then under http://localhost:3000:
 
 ```bash
 # start gadgetron in background and write pipeline
 gadgetron > /var/log/gadgetron.log 2>&1 &
-git clone ...
-cd ...
+git clone https://github.com/thomaskuestner/GadgetronControl
+cd GadgetronControl
 npm install
 npm start
 ```
@@ -26,6 +26,7 @@ We implemented a litte authentification which is very insecure. It's just to mak
 The project is ordered in the following folders:
 ```
 db (place for the databases)
+api (APIs from the server side)
 node_modules
 public (backbone stuff)
 +--css

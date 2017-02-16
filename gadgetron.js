@@ -1,5 +1,6 @@
 var ps = require('ps-node');
 var tail = require('tail').Tail;
+var fs = require('fs');
 
 // handels all gadgetron stuff
 module.exports = function(app, config){
@@ -35,9 +36,14 @@ module.exports = function(app, config){
     sendGadgertonState();
 
     // watch gadgetron log file
-    tail = new tail(config.gadgetron_log);
+    // check if file exists
+    fs.exists(config.gadgetron_log, function(exists){
+        if(exists){
+            tail = new tail(config.gadgetron_log);
 
-    tail.on("line", function(data) {
-        app.broadcast(data);
-    });
+            tail.on("line", function(data) {
+                app.broadcast(data);
+            });
+        }
+    })
 }

@@ -1,7 +1,6 @@
 import Backbone from 'backbone';
 import $ from 'jquery';
 import _ from 'underscore';
-import Row from './row';
 
 Backbone.$ = $;
 var jQuery = $;

@@ -91,14 +91,13 @@ module.exports = function(app, config){
         try {
             // Query the entry
             stats = fs.lstatSync(value);
-
             // File exists
             if (stats.isFile()) {
                 var fileName = value.split('/').pop();
-                app.mkdir(upload_dir);
-                app.mkdir(path.join(upload_dir, extension));
-                var destinationPath = path.join(upload_dir + '/' + extension, fileName);
-                var destinationH5Path = path.join(upload_dir + '/h5', fileName.split('.').shift() + '.h5');
+                app.mkdir(config.upload_dir);
+                app.mkdir(path.join(config.upload_dir, extension));
+                var destinationPath = path.join(config.upload_dir + '/' + extension, fileName);
+                var destinationH5Path = path.join(config.upload_dir + '/h5', fileName.split('.').shift() + '.h5');
                 
                 // create symbolic link
                 var ln = spawn('ln', ['-s', value, destinationPath]);
@@ -108,38 +107,51 @@ module.exports = function(app, config){
                 ln.on('close', function(code){
                     app.broadcast('created symbolic link from ' + value + ' to ' + destinationPath, 'SUCCESS');
                     if(extension !== 'dat'){
-                        res.json({status: 'true'});
+                        if(!res.headersSent){
+                            res.json({status: 'true'});
+                        }
                     }
                     else{
                         // start convertion when is dat file
                         if(extension === 'dat'){
                             var siemensToIsmrmd = spawn('siemens_to_ismrmrd',['-f', destinationPath, '-o', destinationH5Path]);
-                            siemensToIsmrmd.stdout.on('data',function(data){
-                            app.broadcast(data.toString());
+                                siemensToIsmrmd.stdout.on('data',function(data){
+                                app.broadcast(data.toString());
                             });
                             siemensToIsmrmd.on('close', function(code){
-                            app.broadcast('converted ' + fileName + ' to h5-format', 'SUCCESS');
-                            res.json({status: 'true'});
+                                app.broadcast('converted ' + fileName + ' to h5-format', 'SUCCESS');
+                                if(!res.headersSent){
+                                    res.json({status: 'true'});
+                                }
                             });
                             siemensToIsmrmd.stderr.on('data', function(data){
-                            app.broadcast(data.toString(),'ERROR');
-                            res.json({status: 'false'});
+                                app.broadcast(data.toString(),'ERROR');
+                                if(!res.headersSent){
+                                    res.json({status: 'false'});
+                                }
                             });
                         }
                     }
                 });
                 ln.stderr.on('data', function(data){
                     app.broadcast(data.toString(),'ERROR');
-                    res.json({status: 'false'});
+                    if(!res.headersSent){
+                        res.json({status: 'false'});
+                    }
                 });
             }
             else{
                 app.broadcast('selected path: ' + value + ' is not a file', 'ERROR');
-                res.json({status: 'false'});
+                if(!res.headersSent){
+                    res.json({status: 'false'});
+                }
             }
         }
         catch (error) {
-            app.broadcast(JSON.stringify(error), 'ERROR');
+            app.broadcast(error.toString(), 'ERROR');
+            if(!res.headersSent){
+                res.json({status: 'false'});
+            }
         }
     });
 }

@@ -13,13 +13,11 @@ var app = express();
 app.server = http.createServer(app);
 
 app.use(bodyParser.urlencoded({
-  extended: true
+    extended: true
 }));
 
 // load parameter
 var config = require('./config.json');
-var config_dir = config.config_dir;
-var upload_dir = config.upload_dir;
 
 // initiate websockets
 require('./websocket')(app);
@@ -42,18 +40,18 @@ require('./api/gadgetronStreamConfigurationApi')(app, config);
 
 // route for getting content of a folder
 app.get('/api/getFolder', function(req, res){
-  var path = req.query.folderPath;
-  mkdirp(path, function(error){
-    if(error){
-      app.broadcast(error);
-      res.json(error);
-    }
-    else{
-      fs.readdir(path, function(error, files) {
-        res.json(files);
-      });
-    }
-  })
+    var path = req.query.folderPath;
+    mkdirp(path, function(error){
+        if(error){
+            app.broadcast(error);
+            res.json(error);
+        }
+        else{
+            fs.readdir(path, function(error, files) {
+                res.json(files);
+            });
+        }
+    })
 });
 
 // load fileToTrash API
@@ -74,27 +72,27 @@ app.get('/api/startHdfView', function(req, res) {
     var success = true;
     var hdfViewer = spawn('hdfview',[filePath]);
     hdfViewer.stdout.on('data', function(data){
-      if(data){
-        app.broadcast(data.toString());
-      }
+        if(data){
+            app.broadcast(data.toString());
+        }
     });
     hdfViewer.on('close', function(code){
-      if(success){
-        app.broadcast('hdfview opened ' + filePath, 'SUCCESS');
-      }
-      if(!res.headersSent){
-        res.json({status: 'true'});
-      }
+        if(success){
+            app.broadcast('hdfview opened ' + filePath, 'SUCCESS');
+        }
+        if(!res.headersSent){
+            res.json({status: 'true'});
+        }
     });
     hdfViewer.stderr.on('data', function(data){
-      success = false;
-      app.broadcast(data.toString(),'ERROR');
-      if(!res.headersSent){
-        res.json({status: 'false'});
-      }
+        success = false;
+        app.broadcast(data.toString(),'ERROR');
+        if(!res.headersSent){
+            res.json({status: 'false'});
+        }
     });
     hdfViewer.on('error', function(error){
-      app.broadcast('probabply hdfview is not installed', 'ERROR');
+        app.broadcast('probabply hdfview is not installed', 'ERROR');
     })
 });
 
@@ -103,18 +101,18 @@ app.server.listen(config.port);
 // methods
 // create folder
 app.mkdir = function mkdir(pathDir){
-  try{
+    try{
     pathDir.split('/').forEach(function(dir, index, splits){
-      const parent = splits.slice(0, index).join('/');
-      const dirPath = path.resolve(parent, dir);
-      if (!fs.existsSync(dirPath)) {
-        fs.mkdirSync(dirPath);
-      }
+        const parent = splits.slice(0, index).join('/');
+        const dirPath = path.resolve(parent, dir);
+        if (!fs.existsSync(dirPath)) {
+            fs.mkdirSync(dirPath);
+        }
     });
-  }
-  catch(exception){
-    if(exception.code != 'EEXIST'){
-      throw exception;
     }
-  }
+    catch(exception){
+        if(exception.code != 'EEXIST'){
+            throw exception;
+        }
+    }
 }

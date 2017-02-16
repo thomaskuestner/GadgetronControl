@@ -1,7 +1,6 @@
 var express = require('express');
 var http = require('http');
 var fs = require('fs');
-var formidable = require('formidable');
 var path = require('path');
 var browserify = require('browserify-middleware');
 var babelify = require('express-babelify-middleware');

@@ -5,11 +5,10 @@ It is implemented with Node.js on the server-side and a Backbone on the client-s
 Prerequesits are the following tools. Please set the PATH variables so that the GadgetronControl can find them.
 
 1. [siemens_to_ismrmrd](https://github.com/ismrmrd/siemens_to_ismrmrd)
-2. [gadgetron_ismrmrd_client](https://github.com/gadgetron/gadgetron-python-ismrmrd-client)
-3. [gadgetron](https://github.com/gadgetron/gadgetron)
-4. [nodejs](https://nodejs.org/en/)
-5. [npm](https://www.npmjs.com/)
-6. [hdfview](https://support.hdfgroup.org/products/java/hdfview/) (allows you a local preview of the images)
+2. [gadgetron](https://github.com/gadgetron/gadgetron)
+3. [nodejs](https://nodejs.org/en/)
+4. [npm](https://www.npmjs.com/)
+5. [hdfview](https://support.hdfgroup.org/products/java/hdfview/) (allows you a local preview of the images)
 
 For installation and startup you can use the following script. The UI is then reached under http://localhost:3000:
 

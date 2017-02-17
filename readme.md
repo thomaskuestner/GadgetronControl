@@ -2,7 +2,7 @@ A user interface for interacting with the <a href="https://github.com/gadgetron/
 
 It is implemented with Node.js on the server-side and a Backbone on the client-side.
 
-Prerequesits are the following tools. Please set the PATH variables so that the GadgetronControl can find them.
+Prerequesits are the following tools. 
 
 1. [siemens_to_ismrmrd](https://github.com/ismrmrd/siemens_to_ismrmrd)
 2. [gadgetron](https://github.com/gadgetron/gadgetron)
@@ -10,6 +10,14 @@ Prerequesits are the following tools. Please set the PATH variables so that the 
 4. [npm](https://www.npmjs.com/)
 5. [hdfview](https://support.hdfgroup.org/products/java/hdfview/) (allows you a local preview of the images)
 
+Please set the PATH variables so that the GadgetronControl can find them and install the required packages:
+```
+apt-get install npm
+export GADGETRON_HOME=/usr/local
+export ISMRMRD_HOME=/usr/local
+export PATH=$PATH:$GADGETRON_HOME/bin:$ISMRMRD_HOME/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GADGETRON_HOME/lib:$ISMRMRD_HOME/lib
+```
 For installation and startup you can use the following script. The UI is then reached under http://localhost:3000:
 
 ```bash

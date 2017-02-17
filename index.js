@@ -11,12 +11,15 @@ var mkdirp = require('mkdirp');
 var app = express();
 app.server = http.createServer(app);
 
+// load parameter
+var config = require('./config.json');
+
+// load error handling
+require('./errorHandling')(config);
+
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-
-// load parameter
-var config = require('./config.json');
 
 // initiate websockets
 require('./websocket')(app);
@@ -94,7 +97,6 @@ app.get('/api/startHdfView', function(req, res) {
         app.broadcast('probabply hdfview is not installed', 'ERROR');
     })
 });
-
 app.server.listen(config.port);
 
 // methods

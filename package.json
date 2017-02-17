@@ -30,7 +30,8 @@
     "express-session": "~1.15.0",
     "ws": "~1.1.1",
     "ps-node": "~0.1.4",
-    "tail": "~1.2.1"
+    "tail": "~1.2.1",
+    "method-override": "~2.3.7"
   },
   "devDependencies": {
     "grunt": "^1.0.1",

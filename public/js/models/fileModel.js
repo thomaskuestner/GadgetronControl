@@ -34,6 +34,22 @@ var File = Backbone.Model.extend({
                 }
             }
         });
+    },
+    // triggers to restore file on server
+    restore: function(){
+        var self = this;
+        Backbone.ajax({
+            type: 'POST',
+            url: "/api/restoreFileFromTrash",
+            data: {
+                fileName: this.get('path')
+            },
+            success: function(result){
+                if(result.status){
+                    self.set('status','restored');
+                }
+            }
+        });
     }
 });
 

@@ -8,6 +8,7 @@ var Row = Backbone.View.extend({
     initialize: function(attributes, options){
         this.parent = attributes.parent;
         this.clickEvent = attributes.clickEvent;
+        this.listenTo(this.model,'change:status', this.statusChanged);
         this.row = attributes.row || '#file-row';
     },
     events: {
@@ -15,6 +16,9 @@ var Row = Backbone.View.extend({
     },
     clicked: function(event){
         this.clickEvent(event, this.model, this.parent);
+    },
+    statusChanged: function(){
+        this.$el.hide();
     },
     render: function(){
         this.template = _.template($(this.row).html());

@@ -11,10 +11,8 @@ var FileCollection = Backbone.Collection.extend({
     },
     // event when FileModel changes his status
     changeStatus: function(model, value, options){
-        // when status is changed to trashed or deleted it fires event for rerendering
         if(value === 'trashed' || value === 'deleted'){
             this.remove(model);
-            this.trigger('rerender', model);
         }
     },
     // sorts the elements in the collection by name in lowercase

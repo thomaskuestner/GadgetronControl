@@ -62,15 +62,11 @@ var FolderView = Backbone.View.extend({
                     self.collection.add(data[i].toJSON());
                 }
                 self.collection.forEach(self.addRow, self);
-                self.listenTo(self.collection, 'rerender', self.rerender);
                 if(callback){
                     callback(self);
                 }
             });
         }
-    },
-    rerender: function(){
-        this.render();
     },
     events: {
         'click': "clickEvent"
@@ -102,6 +98,11 @@ var FolderView = Backbone.View.extend({
                         else{
                             model.toTrash();
                         }
+                    }
+                    break;
+                case 'file-restore-button':
+                    if(model){
+                        model.restore();
                     }
                     break;
                 case 'add-button':

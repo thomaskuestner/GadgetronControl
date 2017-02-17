@@ -49,7 +49,9 @@ var LogFilesView = Backbone.View.extend({
             default:
                 break;
         }
-        $('#log').prepend(`<p style="color:${color}"><span style="color:gray">${new Date().toISOString()}</span> ${data.data}</p>`);
+        $('#log').append(`<p style="color:${color}"><span style="color:gray">${new Date().toISOString()}</span> ${data.data}</p>`);
+        var logDiv = document.getElementById("log");
+        logDiv.parentNode.scrollTop = objDiv.parentNode.scrollHeight;
         // save content if view is rendered again
         if($('#log')[0]){
             this.content = $('#log')[0].innerHTML;
@@ -65,8 +67,7 @@ var LogFilesView = Backbone.View.extend({
         var logFile = new Array();
         for(var index in children){
             if(children[index].innerText){
-                // unshift to get log file in the right order
-                logFile.unshift(children[index].innerText);
+                logFile.push(children[index].innerText);
             }
         }
 

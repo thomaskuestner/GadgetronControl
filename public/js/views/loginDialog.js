@@ -43,6 +43,7 @@ var LoginDialog = Backbone.View.extend({
             data: serializedForm,
             success: function(res){
                 if(res.isLoggedIn === true){
+                    self.trigger('loggedin');
                     self.login.show();
                     self.$el.modal('hide');
                 }

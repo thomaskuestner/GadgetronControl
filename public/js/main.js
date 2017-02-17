@@ -48,17 +48,25 @@ Backbone.ajax({
 
 
 function init(group, gadgets, readers, writers){
+    var self = {} ;
     // load login in Navbar
     var login = new Login();
     login.render();
 
     // handle 403 Status-Code globally
-    $(document).ajaxError(function (error, xhr, options) {
-        if(xhr.status === 403){
-            if(typeof this.loginDialog == 'undefined'){
-                this.loginDialog = new LoginDialog({login});
+    $.ajaxSetup({
+        statusCode: {
+            403: function(){
+                var context = this;
+                if(typeof self.loginDialog == 'undefined'){
+                    self.loginDialog = new LoginDialog({login});
+                    self.loginDialog.on('loggedin', function(){
+                        // replay last unseccesuful request after login
+                        $.ajax(context);
+                    });
+                }
+                self.loginDialog.show();
             }
-            this.loginDialog.show();
         }
     });
 

@@ -32,19 +32,26 @@ function findIos(collection, models, index, callback){
     // if end of models isn't reached
     if(index < models.length){
         // get configuration from model
-        var configuration = models.at(index).get('configuration').gadgetronStreamConfiguration;
-        // if configuration is found
-        if(configuration){
-            // get either reader or writer depending on type variable
-            var ios = configuration[type];
-            // if reader/writer found
-            if(ios){
-                // search in configuration file for reader/writer
-                findIo(collection, ios, 0, function(){
+        if(models.at(index).get('configuration')){
+            var configuration = models.at(index).get('configuration').gadgetronStreamConfiguration;
+            // if configuration is found
+            if(configuration){
+                // get either reader or writer depending on type variable
+                var ios = configuration[type];
+                // if reader/writer found
+                if(ios){
+                    // search in configuration file for reader/writer
+                    findIo(collection, ios, 0, function(){
+                        // jumps to next reader/writer
+                        index++;
+                        findIos(collection, models, index, callback);
+                    });
+                }
+                else{
                     // jumps to next reader/writer
                     index++;
                     findIos(collection, models, index, callback);
-                });
+                }
             }
             else{
                 // jumps to next reader/writer
@@ -60,6 +67,7 @@ function findIos(collection, models, index, callback){
     }
     else{
         // calls callback function
+        console.log('ENDE');
         callback();
     }
 }

@@ -30,18 +30,25 @@ function findGadgets(collection, models, index, callback){
     // if end of models isn't reached
     if(index < models.length){
         // get configuration from model
-        var configuration = models.at(index).get('configuration').gadgetronStreamConfiguration;
-        // if configuration is found
-        if(configuration){
-            var gadgets = configuration.gadget;
-            // if configuration has gadget(s)
-            if(gadgets){
-                // search in configuration file for gadgets
-                findGadget(collection, gadgets, 0, function(){
-                    index++;
+        if(models.at(index).get('configuration')){
+            var configuration = models.at(index).get('configuration').gadgetronStreamConfiguration;
+            // if configuration is found
+            if(configuration){
+                var gadgets = configuration.gadget;
+                // if configuration has gadget(s)
+                if(gadgets){
+                    // search in configuration file for gadgets
+                    findGadget(collection, gadgets, 0, function(){
+                        index++;
+                        // jumps to next configuration file
+                        findGadgets(collection, models, index, callback);
+                    });
+                }
+                else{
                     // jumps to next configuration file
+                    index++;
                     findGadgets(collection, models, index, callback);
-                });
+                }
             }
             else{
                 // jumps to next configuration file

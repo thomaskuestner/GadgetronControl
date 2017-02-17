@@ -3,3 +3,4 @@ node_modules
 trash
 uploads
 public/results
+npm-debug.log

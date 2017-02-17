@@ -363,7 +363,7 @@ var Router = Backbone.Router.extend({
                 className: 'configuration-file',
                 dirs: [ config.trash_dir + '/' + config.upload_dir + '/dat/', config.trash_dir + '/' + config.upload_dir + '/h5/', config.trash_dir + '/' + config.upload_dir + '/xsl/', config.trash_dir + '/' + config.result_dir + '/'],
                 height: height,
-                buttons: [''],
+                buttons: ['trash'],
                 trash: true
             });
         }

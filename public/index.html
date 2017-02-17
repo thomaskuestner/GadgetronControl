@@ -158,8 +158,8 @@
                     <% if(buttons[i] === 'download'){ %>
                         <a class="btn" id="download-button" type="button" data-type="<%= className %>"><i class="glyphicon glyphicon-arrow-down" aria-hidden="true"></i></a>
                     <% } %>
-                    <% if(buttons[i] === 'fullscreen'){ %>
-                        <a class="btn" id="fullscreen-button" type="button" data-type="<%= className %>"><i class="glyphicon glyphicon-fullscreen" aria-hidden="true"></i></a>
+                    <% if(buttons[i] === 'trash'){ %>
+                        <a class="btn" id="trash-all-button" type="button"><i class="glyphicon glyphicon-trash" aria-hidden="true" title="Delete all"></i></a>
                     <% } %>
                 <% } %>
             </div>
@@ -209,16 +209,31 @@
         </div>
     </script>
 
-    <script id="login-template" type="text/template">
-        <div id="name-group" class="form-group">
-            <label for="name">Name</label>
-            <input type="text" class="form-control" id="name" name="name" placeholder="Name">
+    <script id="login-template" type="text/template">      
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="solve-modal-label">Loign</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="login-form">
+                        <div id="name-group" class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Name">
+                        </div>
+                        <div id="password-group" class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button class="btn btn-default" type="button" id="login-button"><i class="glyphicon glyphicon-log-in" aria-hidden="true"></i> Login</button>
+                </div>
+            </div>
         </div>
-        <div id="password-group" class="form-group">
-            <label for="password">Password</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Password">
-        </div>
-        <button class="btn btn-default" type="button" id="login-button"><i class="glyphicon glyphicon-log-in" aria-hidden="true"></i> Login</button>
     </script>
 
     <script id="login-status-template" type="text/template">

@@ -48,23 +48,19 @@ Backbone.ajax({
 
 
 function init(group, gadgets, readers, writers){
-    // handle 403 Status-Code globally
-    $(document).ajaxError(function (error, xhr, options) {
-        if(xhr.status === 403){
-            var loginDialog = new LoginDialog({loggedInEvent});
-            loginDialog.render();
-        }
-    });
-    
     // load login in Navbar
     var login = new Login();
     login.render();
 
-
-    // event when user logged in
-    function loggedInEvent(){
-        login.show();
-    }
+    // handle 403 Status-Code globally
+    $(document).ajaxError(function (error, xhr, options) {
+        if(xhr.status === 403){
+            if(typeof this.loginDialog == 'undefined'){
+                this.loginDialog = new LoginDialog({login});
+            }
+            this.loginDialog.show();
+        }
+    });
 
     // initalize
     var router = new Router({group, gadgets, readers, writers});

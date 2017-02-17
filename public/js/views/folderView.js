@@ -110,6 +110,11 @@ var FolderView = Backbone.View.extend({
                 case 'upload-button':
                     this.uploadButtonClickEvent(event);
                     break;
+                case 'trash-all-button':
+                    this.collection.forEach(function(file){
+                        file.delete();
+                    });
+                    break;
                 case 'open-hdfview-button':
                     if(model){
                         Backbone.ajax({

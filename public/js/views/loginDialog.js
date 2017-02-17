@@ -1,68 +1,61 @@
 import Backbone from 'backbone';
 import $ from 'jquery';
 import _ from 'underscore';
-import IoRow from './ioRow';
-
-Backbone.$ = $;
-var jQuery = $;
-window.$ = window.jQuery = jQuery;
-
-jQuery.noConflict(true);
 
 var LoginDialog = Backbone.View.extend({
-    el: '#modal-region',
+    id: 'login-modal',
+    className: 'modal fade',    
     template: _.template($("#login-template").html()),
-    initialize: function(attributes, options){
-        this.loggedInEvent = attributes.loggedInEvent;
+    events: {
+        'hidden': 'teardown',
+        'click #login-button': 'loginUser',
+        'submit #login-form': 'submit'
     },
-    events:{
-        'click #login-button': 'clickedLoginButton',
+    initialize: function(options) {
+        this.login = options.login;
+        _.bindAll(this, 'show', 'render');
+        this.render();
     },
-    clickedLoginButton: function(event){
-        var self = this;
-        var name = $('#name').val();
-        var password = $('#password').val();
-        if(!name){
-            $('#name-group').addClass('has-error');
-        }
-        else{
-            $('#name-group').removeClass('has-error');
-        }
-        if(!password){
-            $('#password-group').addClass('has-error');
-        }
-        else{
-            $('#password-group').removeClass('has-error');
-        }
-        if(name && password){
-            Backbone.ajax({
-                url: '/api/login',
-                type: 'POST',
-                data: {
-                    name,
-                    password
-                },
-                success: function(data){
-                    if(data.isLoggedIn){
-                        self.loggedInEvent();
-                        $('#modal').modal('hide');
-                    }
-                    else{
-                        $('#name-group').addClass('has-error');
-                        $('#password-group').addClass('has-error');
-                    }
-                }
-            });
-        }
+    show: function() {
+        $('#login-form').submit(function () {
+            e.preventDefault();
+        });
+        this.$el.modal('show');
+    },
+    hide: function() {
+        this.$el.data('modal', null);
+        this.remove();
     },
     render: function() {
-        var modalTemplate = _.template($("#modal-template").html());
-        modalTemplate = modalTemplate({title: 'Admin-Login'});
-        $('#modal-region').html(modalTemplate);
-        var modalBodyTemplate = this.template();
-        $('#modal-template-body').html(modalBodyTemplate);
-        $('#modal').modal('show');
+        this.$el.html(this.template);
+        this.$el.modal({show:true}); // dont show modal on instantiation
+        this.$el.on('hidden.bs.modal', _.bind(function() {
+            this.hide();
+        }, this));
         return this;
+    },
+    loginUser: function(event){
+        var serializedForm = $("#login-form").serialize();
+        var self = this;
+        Backbone.ajax({
+            url: '/api/login',
+            type: 'POST',
+            data: serializedForm,
+            success: function(res){
+                if(res.isLoggedIn === true){
+                    self.login.show();
+                    self.$el.modal('hide');
+                }
+                else{
+                    $('#name-group').addClass('has-error');
+                    $('#password-group').addClass('has-error');
+                }
+            }
+        });
+    },
+    submit: function(event){
+        event.preventDefault();
+        this.loginUser(event);
     }
 });
 

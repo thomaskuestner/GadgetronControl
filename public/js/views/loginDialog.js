@@ -23,8 +23,6 @@ var LoginDialog = Backbone.View.extend({
         this.$el.modal('show');
     },
     hide: function() {
-        this.$el.data('modal', null);
-        this.remove();
     },
     render: function() {
         this.$el.html(this.template);

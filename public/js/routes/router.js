@@ -356,18 +356,20 @@ var Router = Backbone.Router.extend({
         $('svg#svg-preview').empty();
         $('#tool-bar').hide();
         var height = window.innerHeight - 2 * $('nav').outerHeight() - 2;
-        if(typeof this.trashView === 'undefined'){
-            // Render trashView
-            this.trashView = new FolderView({ 
-                title: 'Trash-Data',  
-                className: 'configuration-file',
-                dirs: [ config.trash_dir + '/' + config.upload_dir + '/dat/', config.trash_dir + '/' + config.upload_dir + '/h5/', config.trash_dir + '/' + config.upload_dir + '/xsl/', config.trash_dir + '/' + config.result_dir + '/'],
-                height: height,
-                row: '#trash-row', 
-                buttons: ['trash'],
-                trash: true
-            });
+        if(typeof this.trashView != 'undefined'){
+            console.log('remove');
+            this.trashView.remove();
         }
+        // Render trashView
+        this.trashView = new FolderView({ 
+            title: 'Trash-Data',  
+            className: 'configuration-file',
+            dirs: [ config.trash_dir + '/' + config.upload_dir + '/dat/', config.trash_dir + '/' + config.upload_dir + '/h5/', config.trash_dir + '/' + config.upload_dir + '/xsl/', config.trash_dir + '/' + config.result_dir + '/'],
+            height: height,
+            row: '#trash-row', 
+            buttons: ['trash'],
+            trash: true
+        });
         this.trashView.render(function(view){
             $('#main-region').html(view.el);
         });

@@ -51,7 +51,9 @@ var LogFilesView = Backbone.View.extend({
         }
         $('#log').append(`<p style="color:${color}"><span style="color:gray">${new Date().toISOString()}</span> ${data.data}</p>`);
         var logDiv = document.getElementById("log");
-        logDiv.parentNode.scrollTop = logDiv.parentNode.scrollHeight;
+        if(logDiv){
+            logDiv.parentNode.scrollTop = logDiv.parentNode.scrollHeight;
+        }
         // save content if view is rendered again
         if($('#log')[0]){
             this.content = $('#log')[0].innerHTML;

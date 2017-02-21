@@ -58,13 +58,11 @@ function init(group, gadgets, readers, writers){
         statusCode: {
             403: function(){
                 var context = this;
-                if(typeof self.loginDialog == 'undefined'){
-                    self.loginDialog = new LoginDialog({login});
-                    self.loginDialog.on('loggedin', function(){
-                        // replay last unseccesuful request after login
-                        $.ajax(context);
-                    });
-                }
+                self.loginDialog = new LoginDialog({login});
+                self.loginDialog.on('loggedin', function(){
+                    // replay last unseccesuful request after login
+                    $.ajax(context);
+                });
                 self.loginDialog.show();
             }
         }

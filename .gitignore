@@ -1,6 +1,10 @@
+# folders
 db
 node_modules
 trash
 uploads
 public/results
+
+# files
 npm-debug.log
+config.json

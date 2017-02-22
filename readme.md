@@ -25,6 +25,9 @@ For installation and startup you can use the following script. The UI is then re
 gadgetron > /var/log/gadgetron.log 2>&1 &
 git clone https://github.com/thomaskuestner/GadgetronControl
 cd GadgetronControl
+# copy default settings
+cp config.json.sample config.json
+# start GadgetronControl
 npm install
 npm start
 ```

@@ -93,7 +93,7 @@ var LogFilesView = Backbone.View.extend({
         }
         else{
             content = `<div id="log"></div>`;
-        }
+        }     
         this.dashboardConfigurationTemplate = this.template({title: this.title, buttons: [], content, className: 'log-file', height: [this.height,'px'].join(''), buttons: ['download']});
         this.$el.html(this.dashboardConfigurationTemplate);
         return this;

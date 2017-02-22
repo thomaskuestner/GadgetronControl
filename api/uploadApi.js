@@ -25,42 +25,51 @@ module.exports = function(app, config){
             fileName = file.name.split('.').shift();
             app.mkdir(path.join(form.uploadDir, extension));;
             switch (extension) {
-            case 'dat':
-                // set wait on conversion
-                waitOnConverstion = true;
-                destinationPath = path.join(form.uploadDir + '/' + extension, file.name);
-                var destinationH5Path = path.join(form.uploadDir + '/h5', fileName + '.h5');
-                fs.rename(file.path, destinationPath);
-                // start convertion with siemens_to_ismrmrd
-                var siemensToIsmrmd = spawn('siemens_to_ismrmrd',['-f', destinationPath, '-o', destinationH5Path]);
-                siemensToIsmrmd.stdout.on('data',function(data){
-                    app.broadcast(data.toString());
-                });
-                siemensToIsmrmd.on('close', function(code){
-                    app.broadcast('converted ' + fileName + ' to h5-format', 'SUCCESS');
-                    app.broadcast('uploaded ' + fileName, 'SUCCESS');
-                    res.json({
-                        extension: extension, 
-                        filename: fileName + '.' + extension,
-                        path: destinationPath,
-                        status: true
+                case 'dat':
+                    // set wait on conversion
+                    waitOnConverstion = true;
+                    destinationPath = path.join(form.uploadDir + '/' + extension, file.name);
+                    var destinationH5Path = path.join(form.uploadDir + '/h5', fileName + '.h5');
+                    fs.rename(file.path, destinationPath);
+                    // start convertion with siemens_to_ismrmrd
+                    var siemensToIsmrmd = spawn('siemens_to_ismrmrd',['-f', destinationPath, '-o', destinationH5Path]);
+                    siemensToIsmrmd.stdout.on('data',function(data){
+                        app.broadcast(data.toString());
                     });
-                });
-                siemensToIsmrmd.stderr.on('data', function(data){
-                    app.broadcast(data.toString());
-                });
-                break;
-            case 'h5':
-            case 'xsl':
-                destinationPath = path.join(form.uploadDir + '/' + extension, file.name);
-                fs.rename(file.path, destinationPath);
-                break;
-            case 'xml':
-                destinationPath = path.join(form.uploadDir + '/' + extension, file.name);
-                fs.rename(file.path, destinationPath);
-                spawn('ln', ['-s', destinationPath, path.join(config.config_dir + file.name)]);
-            default:
-                break;
+                    siemensToIsmrmd.on('close', function(code){
+                        app.broadcast('converted ' + fileName + ' to h5-format', 'SUCCESS');
+                        app.broadcast('uploaded ' + fileName, 'SUCCESS');
+                        res.json({
+                            status: 'SUCCESS',
+                            data: {
+                                h5 :{
+                                    extension: extension, 
+                                    name: fileName + '.h5',
+                                    path: destinationH5Path
+                                },
+                                dat:{
+                                    extension: extension, 
+                                    name: fileName + '.' + extension,
+                                    path: destinationPath
+                                }
+                            }
+                        });
+                    });
+                    siemensToIsmrmd.stderr.on('data', function(data){
+                        app.broadcast(data.toString());
+                    });
+                    break;
+                case 'h5':
+                case 'xsl':
+                    destinationPath = path.join(form.uploadDir + '/' + extension, file.name);
+                    fs.rename(file.path, destinationPath);
+                    break;
+                case 'xml':
+                    destinationPath = path.join(form.uploadDir + '/' + extension, file.name);
+                    fs.rename(file.path, destinationPath);
+                    spawn('ln', ['-s', destinationPath, path.join(config.config_dir + file.name)]);
+                default:
+                    break;
             }
         });
         // log any errors that occur
@@ -70,12 +79,53 @@ module.exports = function(app, config){
         // once all the files have been uploaded, send a response to the client
         form.on('end', function() {
             if(!waitOnConverstion){
+                var data;
+                switch(extension){
+                    case 'dat':
+                        data = 
+                        {
+                            dat: {
+                                extension: extension, 
+                                name: fileName + '.' + extension,
+                                path: destinationPath
+                            }
+                        };
+                        break;
+                    case 'h5':
+                        data = 
+                        {
+                            h5: {
+                                extension: extension, 
+                                name: fileName + '.' + extension,
+                                path: destinationPath
+                            }
+                        };
+                        break;
+                    case 'xml':
+                        data = 
+                        {
+                            xml: {
+                                extension: extension, 
+                                name: fileName + '.' + extension,
+                                path: destinationPath
+                            }
+                        };
+                        break;
+                    case 'xsl':
+                        data = 
+                        {
+                            xsl: {
+                                extension: extension, 
+                                name: fileName + '.' + extension,
+                                path: destinationPath
+                            }
+                        };
+                        break;
+                }
                 app.broadcast('uploaded ' + fileName, 'SUCCESS');
                 res.json({
-                    extension: extension, 
-                    filename: fileName + '.' + extension,
-                    path: destinationPath,
-                    status: true
+                    status: 'SUCCESS',
+                    data: data
                 });
             }
         });
@@ -107,8 +157,43 @@ module.exports = function(app, config){
                 ln.on('close', function(code){
                     app.broadcast('created symbolic link from ' + value + ' to ' + destinationPath, 'SUCCESS');
                     if(extension !== 'dat'){
+                        switch(extension){
+                            case 'h5':
+                                data = 
+                                {
+                                    h5: {
+                                        extension: extension, 
+                                        name: fileName + '.' + extension,
+                                        path: destinationPath
+                                    }
+                                };
+                                break;
+                            case 'xml':
+                                data = 
+                                {
+                                    xml: {
+                                        extension: extension, 
+                                        name: fileName + '.' + extension,
+                                        path: destinationPath
+                                    }
+                                };
+                                break;
+                            case 'xsl':
+                                data = 
+                                {
+                                    xsl: {
+                                        extension: extension, 
+                                        name: fileName + '.' + extension,
+                                        path: destinationPath
+                                    }
+                                };
+                                break;
+                        }
                         if(!res.headersSent){
-                            res.json({status: 'true'});
+                            res.json({
+                                status: 'SUCCESS',
+                                data: data
+                            });
                         }
                     }
                     else{
@@ -121,13 +206,29 @@ module.exports = function(app, config){
                             siemensToIsmrmd.on('close', function(code){
                                 app.broadcast('converted ' + fileName + ' to h5-format', 'SUCCESS');
                                 if(!res.headersSent){
-                                    res.json({status: 'true'});
+                                    res.json({
+                                        status: 'SUCCESS',
+                                        data: {
+                                            h5 :{
+                                                extension: extension, 
+                                                name: fileName + '.h5',
+                                                path: destinationH5Path
+                                            },
+                                            dat:{
+                                                extension: extension, 
+                                                name: fileName + '.' + extension,
+                                                path: destinationPath
+                                            }
+                                        }
+                                    });
                                 }
                             });
                             siemensToIsmrmd.stderr.on('data', function(data){
                                 app.broadcast(data.toString(),'ERROR');
                                 if(!res.headersSent){
-                                    res.json({status: 'false'});
+                                    res.json({
+                                        status: 'ERROR'
+                                    });
                                 }
                             });
                         }
@@ -136,21 +237,27 @@ module.exports = function(app, config){
                 ln.stderr.on('data', function(data){
                     app.broadcast(data.toString(),'ERROR');
                     if(!res.headersSent){
-                        res.json({status: 'false'});
+                        res.json({
+                            status: 'ERROR'
+                        });
                     }
                 });
             }
             else{
                 app.broadcast('selected path: ' + value + ' is not a file', 'ERROR');
                 if(!res.headersSent){
-                    res.json({status: 'false'});
+                    res.json({
+                        status: 'ERROR'
+                    });
                 }
             }
         }
         catch (error) {
             app.broadcast(error.toString(), 'ERROR');
             if(!res.headersSent){
-                res.json({status: 'false'});
+                res.json({
+                    status: 'ERROR'
+                });
             }
         }
     });

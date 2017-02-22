@@ -17,7 +17,9 @@ var FileCollection = Backbone.Collection.extend({
     },
     // sorts the elements in the collection by name in lowercase
     comparator: function(item){
-        return item.get('name').toLowerCase();
+        if(item.get('name')){
+            return item.get('name').toLowerCase();
+        }
     }
 });
 

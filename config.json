@@ -11,5 +11,6 @@
     "gadgets_db" : "db/gadgets.db",
     "writers_db" : "db/writers.db",
     "adminUser" : "admin",
-    "password": "admin"
+    "password": "admin",
+    "UI_local": false
 }

@@ -191,21 +191,36 @@
     </script>
 
     <script id="upload-template" type="text/template">
-        <div class="form-group">
-            <label for="upload-file-button">Upload Data</label>
-            <div class="progress">
-                <div id="progress-file-bar" class="progress-bar" role="progressbar"></div>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="solve-modal-label">DAT/H5 Upload</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="login-form">
+                        <% if(!config.UI_local){ %>
+                            <div class="form-group">
+                                <label for="upload-file-button">Upload Data</label>
+                                <div class="progress">
+                                    <div id="progress-file-bar" class="progress-bar" role="progressbar"></div>
+                                </div>
+                                <button class="btn btn-default" type="button" id="upload-file-button"><i class="glyphicon glyphicon-upload" aria-hidden="true"></i> Upload Data</button><br />
+                                <input id="upload-file-input" type="file" name="uploads[]" class="hide" accept="<%= fileextension %>">
+                            </div>
+                        <hr />
+                        <% } %>
+                        <div class="form-group">
+                            <label for="symbolic-link">Data on Server</label>
+                            <input type="text" class="form-control" placeholder="Absolute Path on Server" id="filename"><br />
+                            <button class="btn btn-default" type="button" id="create-symbolic-link"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i> Locate data</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
             </div>
-            <button class="btn btn-default" type="button" id="upload-file-button"><i class="glyphicon glyphicon-upload" aria-hidden="true"></i> Upload Data</button><br />
-            <input id="upload-file-input" type="file" name="uploads[]" class="hide" accept="<%= fileextension %>">
-        </div>
-        <hr />
-        <label for="symbolic-link">Create Symbolic Link on Server</label>
-        <div class="input-group" id="filename-group">
-            <input type="text" class="form-control" placeholder="Absolute Path on Server" id="filename">
-            <span class="input-group-btn">
-                <button class="btn btn-default" type="button" id="create-symbolic-link"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i> Set Symbolic Link</button>
-            </span>
         </div>
     </script>
 
@@ -214,7 +229,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="solve-modal-label">Loign</h4>
+                    <h4 class="modal-title" id="solve-modal-label">Login</h4>
                 </div>
                 <div class="modal-body">
                     <form id="login-form">
@@ -394,7 +409,7 @@
         <td><%= name %></td>
         <td>
             <% var h5 = new RegExp('h5', 'i'); if(name.match(h5) && window.location.hostname === 'localhost'){ %>
-                <a id="open-hdfview-button" class="btn"><span class="glyphicon glyphicon-asterisk" aria-hidden="true" title="open file in hdfview"></span>
+                <a id="open-hdfview-button" class="btn"><span class="glyphicon glyphicon-eye-open" aria-hidden="true" title="open file in hdfview"></span>
             <% } %>
             <a id="file-trash-button" class="btn"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
         </td>
@@ -425,7 +440,7 @@
         <td><%= name %></td>
         <td>
             <% if(window.location.hostname === 'localhost'){ %>
-                <a id="open-hdfview-button" class="btn"><span class="glyphicon glyphicon-asterisk" aria-hidden="true" title="open file in hdfview"></span>
+                <a id="open-hdfview-button" class="btn"><span class="glyphicon glyphicon-eye-open" aria-hidden="true" title="open file in hdfview"></span>
             <% } %>
             <a href="/results/<%= name %>" title="Download File" download>
                 <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>

@@ -7,7 +7,6 @@ var LoginDialog = Backbone.View.extend({
     className: 'modal fade',    
     template: _.template($("#login-template").html()),
     events: {
-        'hidden': 'teardown',
         'click #login-button': 'loginUser',
         'submit #login-form': 'submit'
     },

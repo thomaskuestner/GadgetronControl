@@ -1,23 +1,17 @@
 import Backbone from 'backbone';
 import $ from 'jquery';
 import _ from 'underscore';
-import IoRow from './ioRow';
 
-Backbone.$ = $;
-var jQuery = $;
-window.$ = window.jQuery = jQuery;
-var self;
-jQuery.noConflict(true);
+// Model
+import File from './../models/fileModel';
+
+// Extra
+import config from './../../../config.json';
 
 var UploadDialog = Backbone.View.extend({
-    el: '#modal-region',
+    id: 'upload-modal',
+    className: 'modal fade',    
     template: _.template($("#upload-template").html()),
-    initialize: function(attributes, options){
-        self = this;
-        this.title = attributes.title;
-        this.fileextension = attributes.fileextension;
-        this.uploadEvent = attributes.uploadEvent;
-    },
     events:{
         'click #upload-file-button': 'clickedUploadFile',
         'click #create-symbolic-link': 'clickCreateSymbolicLink',
@@ -28,8 +22,71 @@ var UploadDialog = Backbone.View.extend({
         $('#progress-file-bar').text('0%');
         $('#progress-file-bar').width('0%');
     },
+    initialize: function(options) {
+        this.fileextension = options.fileextension;
+        _.bindAll(this, 'show', 'render');
+        this.render();
+    },
+    show: function() {
+        $('#login-form').submit(function () {
+            e.preventDefault();
+        });
+        this.$el.modal('show');
+    },
+    hide: function() {
+        this.$el.data('modal', null);
+        this.remove();
+    },
+    render: function() {
+        this.$el.html(this.template({fileextension: this.fileextension, config}));
+        this.$el.modal({show:true}); // dont show modal on instantiation
+        this.$el.on('hidden.bs.modal', _.bind(function() {
+            this.hide();
+        }, this));
+        return this;
+    },
+    clickCreateSymbolicLink: function(event){
+        var self = this;
+        var value = $('#filename').val();
+        if(!value){
+            $('#filename-group').addClass('has-error');
+        }
+        else{
+            Backbone.ajax({
+                url: '/api/createSymbolicLink',
+                type: 'POST',
+                data: {value},
+                success: function(res){
+                    if(res.status === 'SUCCESS'){
+                        if(res.data.h5){
+                            var file = new File(res.data.h5);
+                            self.collection.add(file);
+                        }                        
+                        if(res.data.dat){
+                            var file = new File(res.data.dat);
+                            self.collection.add(file);
+                        }                        
+                        if(res.data.xml){
+                            var file = new File(res.data.xml);
+                            self.collection.add(file);
+                        }                        
+                        if(res.data.xsl){
+                            var file = new File(res.data.xsl);
+                            self.collection.add(file);
+                        }
+                        self.$el.modal('hide');
+                    }
+                },
+                xhr: function() {
+                    var xhr = new XMLHttpRequest();
+                    return xhr;
+                }
+            });
+        }
+    },
     changedUploadFileEvent: function(event){
         var files = $(event.currentTarget).get(0).files;
+        var self = this;
         if (files.length > 0){
             var formData = new FormData();
             for (var i = 0; i < files.length; i++) {
@@ -42,9 +99,25 @@ var UploadDialog = Backbone.View.extend({
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function(data){
-                    if(data.status){
-                        self.uploadFinishedEvent(event);
+                success: function(res){
+                    if(res.status === 'SUCCESS'){
+                        if(res.data.h5){
+                            var file = new File(res.data.h5);
+                            self.collection.add(file);
+                        }                        
+                        if(res.data.dat){
+                            var file = new File(res.data.dat);
+                            self.collection.add(file);
+                        }                        
+                        if(res.data.xml){
+                            var file = new File(res.data.xml);
+                            self.collection.add(file);
+                        }                        
+                        if(res.data.xsl){
+                            var file = new File(res.data.xsl);
+                            self.collection.add(file);
+                        }
+                        self.$el.modal('hide');
                     }
                 },
                 xhr: function() {
@@ -65,47 +138,6 @@ var UploadDialog = Backbone.View.extend({
                 }
             });
         }
-    },
-    clickCreateSymbolicLink: function(event){
-        var self = this;
-        var value = $('#filename').val();
-        if(!value){
-            $('#filename-group').addClass('has-error');
-        }
-        else{
-            Backbone.ajax({
-                url: '/api/createSymbolicLink',
-                type: 'POST',
-                data: {value},
-                success: function(data){
-                    if(data.status){
-                        self.uploadEvent(event);
-                    }
-                },
-                xhr: function() {
-                    var xhr = new XMLHttpRequest();
-                    return xhr;
-                }
-            });
-        }
-    },
-    uploadFinishedEvent: function(event){
-        self.uploadEvent(event);
-        $('#modal').modal('hide');
-    },
-    cleanup: function(){
-        this.unbind();
-        this.undelegateEvents();
-        $(this.el).empty();
-    },
-    render: function() {
-        var modalTemplate = _.template($("#modal-template").html());
-        modalTemplate = modalTemplate({title: this.title});
-        $(this.el).html(modalTemplate);
-        var modalBodyTemplate = this.template({fileextension: this.fileextension});
-        $('#modal-template-body').html(modalBodyTemplate);
-        $('#modal').modal('show');
-        return this;
     }
 });
 

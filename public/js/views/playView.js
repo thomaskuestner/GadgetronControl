@@ -52,14 +52,17 @@ var PlayView = Backbone.View.extend({
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function(data){
-                    if(data.extension === 'dat' || data.extension === 'h5'){
-                        if(data.status){
-                            var datFile = new FileModel({
-                                name: data.filename,
-                                path: data.path
-                            });
-                            self.datFolderCollection.add(datFile);
+                success: function(res){
+                    if(res.extension === 'dat' || res.extension === 'h5'){
+                        if(res.status === 'SUCCESS'){
+                            if(res.data.dat){
+                                var datFile = new FileModel(res.data.dat);
+                                self.datFolderCollection.add(datFile);
+                            }
+                            if(res.data.h5){
+                                var datFile = new FileModel(res.data.h5);
+                                self.datFolderCollection.add(datFile);
+                            }
                             // event is only on dashboard needed
                             if(self.uploadEvent){
                                 self.uploadEvent();

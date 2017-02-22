@@ -70,11 +70,6 @@ var IoModel = Backbone.Model.extend({
                     callback(false);
                 }
                 callback(true);
-            },
-            statusCode:{
-                403: function(response){
-                    callback(false);
-                }
             }
         });
     }

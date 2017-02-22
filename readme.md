@@ -48,7 +48,6 @@ public (backbone stuff)
 |  +--... (place for new images)
 +--js
 |  +--collections (all backbone colections)
-|  +--libs (jquery, bootstrap, etc.)
 |  +--models (all backbone models)
 |  +--routes (all routes)
 |  +--views (all views)

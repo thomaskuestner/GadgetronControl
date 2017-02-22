@@ -60,6 +60,7 @@ var FolderView = Backbone.View.extend({
         return this;
     },
     renderFileRows: function(){
+        this.counter = 0;
         this.$el.find('tbody').empty();
         this.collection.forEach(this.addRow, this);
     },
@@ -67,9 +68,12 @@ var FolderView = Backbone.View.extend({
         'click': "clickEvent"
     },
     addRow: function(row){
-        if(this.$el){
-            var row = new Row({model: row, row: this.row, clickEvent: this.clickEvent, parent: this});
-            this.$el.find('tbody').append(row.render().el);
+        this.counter = this.counter + 1;
+        if(this.counter > 5){
+            if(this.$el){
+                var row = new Row({model: row, row: this.row, clickEvent: this.clickEvent, parent: this});
+                this.$el.find('tbody').append(row.render().el);
+            }
         }
     },
     clickEvent: function(event, model, parent){

@@ -12,7 +12,6 @@ var LogFilesView = Backbone.View.extend({
     template: _.template($("#dashboard-template").html()),
     initialize: function(attributes, options){
         var self = this;
-        this.redirectEvent = attributes.redirectEvent;
         this.title = attributes.title;
         this.height = attributes.height;
         this.content = attributes.content;

@@ -19,6 +19,7 @@ var PlayView = Backbone.View.extend({
         this.datFolderCollection = attributes.datFolderCollection;
         this.xslFolderCollection = attributes.xslFolderCollection;
         this.uploadEvent = attributes.uploadEvent;
+        this.redirectEvent = attributes.redirectEvent;
     },
     events:{
         'click #upload-dat-button': 'clickedUploadData',
@@ -152,6 +153,7 @@ var PlayView = Backbone.View.extend({
         var dataPath = $('#dat-selection').find(':selected').data('path');
         var xslPath = $('#xsl-selection').find(':selected').data('path');
         var resultFileName = $('#result-name').val();
+        $('#modal').modal('hide');
         Backbone.ajax({
             url: '/api/gadgetronIsmrmrdClient/start',
             type: 'GET',
@@ -166,7 +168,6 @@ var PlayView = Backbone.View.extend({
                 if(self.uploadEvent){
                     self.uploadEvent();
                 }
-                $('#modal').modal('hide');
             }
         });
     },

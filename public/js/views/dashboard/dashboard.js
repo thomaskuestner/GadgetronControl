@@ -149,13 +149,13 @@ var Dashboard = Backbone.View.extend({
         // show play dialog
         if(this.playView){
             this.playView.model = model;
-            this.playView.datFolderCollection = self.datFolderCollection;
-            this.playView.xslFolderCollection = self.xslFolderCollection;
+            this.playView.datFolderCollection = self.datFolderView.collection;
+            this.playView.xslFolderCollection = self.xslFolderView.collection;
         }
         else{
             this.playView = new PlayView({model,
-                datFolderCollection: self.datFolderCollection,
-                xslFolderCollection: self.xslFolderCollection
+                datFolderCollection: self.datFolderView.collection,
+                xslFolderCollection: self.xslFolderView.collection,
             });
         }
         this.playView.render();

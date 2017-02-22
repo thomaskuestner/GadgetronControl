@@ -105,8 +105,7 @@ var Router = Backbone.Router.extend({
         gadgets = new Gadgets({ 
             title: 'Gadgets', 
             className: 'gadgets', 
-            collection: this.gadgetGroup, 
-            redirectEvent: this.redirectEvent, 
+            collection: this.gadgetGroup,
             clickedEvent: this.clickedEvent,
             height: this.height/3
         });
@@ -131,8 +130,8 @@ var Router = Backbone.Router.extend({
     playButtonClickEvent: function(event){
         // get Information for PlayView
         if(self.dashBoard){
-            self.datFolderCollection = self.dashBoard.datFolderCollection;
-            self.xslFolderCollection = self.dashBoard.xslFolderCollection;
+            self.datFolderCollection = self.dashBoard.datFolderView.collection;
+            self.xslFolderCollection = self.dashBoard.xslFolderView.collection;
         }
         else{
             // if configuration file is loaded direct there are no information about the content of dat or xsl folderView
@@ -142,7 +141,8 @@ var Router = Backbone.Router.extend({
         var playView = new PlayView({
             model: self.gadgetronStreamConfiguration,
             datFolderCollection: self.datFolderCollection,
-            xslFolderCollection: self.xslFolderCollection
+            xslFolderCollection: self.xslFolderCollection,
+            redirectEvent: self.redirectEvent
         });
         playView.render();
     },

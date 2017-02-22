@@ -9,13 +9,12 @@ Backbone.$ = $;
 var Configurations = Backbone.View.extend({    
     template: _.template($("#dashboard-template").html()),
     initialize: function(attributes, options){
-        this.redirectEvent = attributes.redirectEvent;
         this.playButtonClickEvent = attributes.playButtonClickEvent;
         this.height = attributes.height + 'px';
     },
     render: function() {
         // insert GadgetronStreamCollectionView in dashboard
-        var gadgetronStreamCollectionView = new GadgetronStreamCollectionView({ collection: this.collection, redirectEvent: this.redirectEvent, playButtonClickEvent: this.playButtonClickEvent});
+        var gadgetronStreamCollectionView = new GadgetronStreamCollectionView({ collection: this.collection, playButtonClickEvent: this.playButtonClickEvent});
         var content = gadgetronStreamCollectionView.render().el;
         var dashboardConfigurationTemplate = this.template({title: 'Configurations', content: $(content).prop('outerHTML'), height: this.height, buttons: ['add', 'upload']});
         this.$el.html(dashboardConfigurationTemplate);

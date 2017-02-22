@@ -51,7 +51,6 @@ var FolderView = Backbone.View.extend({
             });
         }
         this.listenTo(this.collection,'add', this.renderFileRows);
-        this.listenTo(this.collection,'remove', this.renderFileRows);
     },
     render: function() {
         var table = this.table({attribute: 'Name'});
@@ -59,9 +58,8 @@ var FolderView = Backbone.View.extend({
         this.$el.html(dashboardTemplate);
         return this;
     },
-    renderFileRows: function(){
-        this.$el.find('tbody').empty();
-        this.collection.forEach(this.addRow, this);
+    renderFileRows: function(model){
+        this.addRow(model);
     },
     events: {
         'click': "clickEvent"

@@ -370,9 +370,7 @@ var Router = Backbone.Router.extend({
             buttons: ['trash'],
             trash: true
         });
-        this.trashView.render(function(view){
-            $('#main-region').html(view.el);
-        });
+        $('#main-region').html(this.trashView.render().el);
     },
     // route for log-file view
     logfile: function(){
@@ -400,7 +398,11 @@ var Router = Backbone.Router.extend({
                 content: this.logFilesView.content
             });
         }
-        $('#main-region').html(this.logFilesView.render().el);
+        $('#main-region').html(this.logFilesView.render().el);   
+        var logDiv = document.getElementById("log");
+        if(logDiv){
+            logDiv.parentNode.scrollTop = logDiv.parentNode.scrollHeight;
+        }
     }
 });
 

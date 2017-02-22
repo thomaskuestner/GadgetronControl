@@ -47,6 +47,7 @@ var Router = Backbone.Router.extend({
         this.gadgetGroup = data.gadgets;
         this.readerGroup = data.readers;
         this.writerGroup = data.writers;
+        this.logFilesView = data.logFilesView;
         gadgetronStreamConfigurationGroup = data.group;
         Backbone.Router.prototype.constructor.call(this, gadgetronStreamConfigurationGroup);
     },
@@ -79,16 +80,13 @@ var Router = Backbone.Router.extend({
             });
         }
         else{
-            this.logFilesView.unbind();
-            this.logFilesView.undelegateEvents();
-            this.logFilesView.socket.close();
-            this.logFilesView = new LogFilesView({ 
-                title: 'Log-File',
-                height: this.height/3,
-                content: this.logFilesView.content
-            });
+            this.logFilesView.height = this.height/3;
         }
         $('#dashboard-logfiles').html(this.logFilesView.render().el);
+        var logDiv = document.getElementById("log");
+        if(logDiv){
+            logDiv.parentNode.scrollTop = logDiv.parentNode.scrollHeight;
+        }
 
         // Render Readers
         readers = new Ios({ 
@@ -132,6 +130,7 @@ var Router = Backbone.Router.extend({
         if(self.dashBoard){
             self.datFolderCollection = self.dashBoard.datFolderView.collection;
             self.xslFolderCollection = self.dashBoard.xslFolderView.collection;
+            self.resultFolderCollection = self.dashBoard.resultFolderView.collection;
         }
         else{
             // if configuration file is loaded direct there are no information about the content of dat or xsl folderView
@@ -142,6 +141,7 @@ var Router = Backbone.Router.extend({
             model: self.gadgetronStreamConfiguration,
             datFolderCollection: self.datFolderCollection,
             xslFolderCollection: self.xslFolderCollection,
+            resultFolderCollection: self.resultFolderCollection,
             redirectEvent: self.redirectEvent
         });
         playView.render();
@@ -357,7 +357,6 @@ var Router = Backbone.Router.extend({
         $('#tool-bar').hide();
         var height = window.innerHeight - 2 * $('nav').outerHeight() - 2;
         if(typeof this.trashView != 'undefined'){
-            console.log('remove');
             this.trashView.remove();
         }
         // Render trashView

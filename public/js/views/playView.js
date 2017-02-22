@@ -18,7 +18,7 @@ var PlayView = Backbone.View.extend({
     initialize: function(attributes, options){
         this.datFolderCollection = attributes.datFolderCollection;
         this.xslFolderCollection = attributes.xslFolderCollection;
-        this.uploadEvent = attributes.uploadEvent;
+        this.resultFolderCollection = attributes.resultFolderCollection;
         this.redirectEvent = attributes.redirectEvent;
     },
     events:{
@@ -63,10 +63,6 @@ var PlayView = Backbone.View.extend({
                             if(res.data.h5){
                                 var datFile = new FileModel(res.data.h5);
                                 self.datFolderCollection.add(datFile);
-                            }
-                            // event is only on dashboard needed
-                            if(self.uploadEvent){
-                                self.uploadEvent();
                             }
                             $('#modal-template-body').html(self.template({
                                 xslFolderCollection: self.xslFolderCollection,
@@ -117,10 +113,6 @@ var PlayView = Backbone.View.extend({
                                 path: data.path
                             });
                             self.xslFolderCollection.add(datFile);
-                            // event is only on dashboard needed
-                            if(self.uploadEvent){
-                                self.uploadEvent();
-                            }
                             $('#modal-template-body').html(self.template({
                                 xslFolderCollection: self.xslFolderCollection,
                                 datFolderCollection: self.datFolderCollection
@@ -154,6 +146,9 @@ var PlayView = Backbone.View.extend({
         var xslPath = $('#xsl-selection').find(':selected').data('path');
         var resultFileName = $('#result-name').val();
         $('#modal').modal('hide');
+        if(this.redirectEvent){
+            this.redirectEvent('#');
+        }
         Backbone.ajax({
             url: '/api/gadgetronIsmrmrdClient/start',
             type: 'GET',
@@ -163,10 +158,13 @@ var PlayView = Backbone.View.extend({
                     xslPath,
                     resultFileName
                 },
-            success: function(data){
-                // event is only on dashboard needed
-                if(self.uploadEvent){
-                    self.uploadEvent();
+            success: function(res){
+                if(res.status === 'SUCCESS'){
+                    var datFile = new FileModel({
+                        name: res.data.filename,
+                        path: res.data.path
+                    });
+                    self.resultFolderCollection.add(datFile);
                 }
             }
         });

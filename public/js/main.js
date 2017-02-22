@@ -17,6 +17,7 @@ import IoCollection from './collections/ioCollection';
 import GadgetronStreamConfigurationCollectionView from './views/gadgetronStreamConfiguration/collectionView';
 import Login from './views/login';
 import LoginDialog from './views/loginDialog';
+import LogFilesView from './views/dashboard/logFilesView';
 
 // Extra
 import Router from './routes/router.js';
@@ -53,6 +54,11 @@ function init(group, gadgets, readers, writers){
     var login = new Login();
     login.render();
 
+    // load logView
+    self.logFilesView = new LogFilesView({ 
+        title: 'Log-File'
+    });
+
     // handle 403 Status-Code globally
     $.ajaxSetup({
         statusCode: {
@@ -71,7 +77,7 @@ function init(group, gadgets, readers, writers){
     });
 
     // initalize
-    var router = new Router({group, gadgets, readers, writers});
+    var router = new Router({group, gadgets, readers, writers, logFilesView: self.logFilesView});
     Backbone.history.start();
 }
 

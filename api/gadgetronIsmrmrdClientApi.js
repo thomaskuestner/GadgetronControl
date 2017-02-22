@@ -26,7 +26,6 @@ module.exports = function(app, config){
             var destinationH5Path = path.join(upload_dir + '/h5', fileName.split('.').shift() + '.h5');
             var siemensToIsmrmd;
             if(xslPath){
-                console.log('xslPath: ' + xslPath);
                 siemensToIsmrmd = spawn('siemens_to_ismrmrd',['-f', dataPath, '--user-stylesheet', xslPath, '-o', destinationH5Path]); 
             }
             else{
@@ -45,7 +44,14 @@ module.exports = function(app, config){
                 gadgetronIsmrmrdClient.on('close', function(code){
                     app.broadcast('data ' + dataPath + ' was proceeded with ' + configurationPath + ' to ' + resultPath, 'SUCCESS');
                     if(!res.headersSent){
-                        res.json({status: 'true'});
+                        res.json({
+                            data:{
+                                    extension: 'h5', 
+                                    filename: resultFileName,
+                                    path: resultPath
+                                },
+                            status: 'SUCCESS'
+                        });
                     }
                 });
                 gadgetronIsmrmrdClient.stderr.on('data', function(data){
@@ -67,7 +73,14 @@ module.exports = function(app, config){
             gadgetronIsmrmrdClient.on('close', function(code){
                 app.broadcast('data ' + dataPath + ' was proceeded with ' + configurationPath + ' to ' + resultPath, 'SUCCESS');
                 if(!res.headersSent){
-                    res.json({status: 'true'});
+                    res.json({
+                        data:{
+                                extension: 'h5', 
+                                filename: resultFileName,
+                                path: resultPath
+                            },
+                        status: 'SUCCESS'
+                    });
                 }
             });
             gadgetronIsmrmrdClient.stderr.on('data', function(data){

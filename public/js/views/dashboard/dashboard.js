@@ -151,11 +151,13 @@ var Dashboard = Backbone.View.extend({
             this.playView.model = model;
             this.playView.datFolderCollection = self.datFolderView.collection;
             this.playView.xslFolderCollection = self.xslFolderView.collection;
+            this.playView.resultFolderCollection = self.resultFolderView.collection;
         }
         else{
             this.playView = new PlayView({model,
                 datFolderCollection: self.datFolderView.collection,
                 xslFolderCollection: self.xslFolderView.collection,
+                resultFolderCollection: self.resultFolderView.collection
             });
         }
         this.playView.render();

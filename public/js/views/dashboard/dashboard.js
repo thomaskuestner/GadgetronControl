@@ -96,7 +96,7 @@ var Dashboard = Backbone.View.extend({
             case 'configuration-file':
                 title = `Configuration ${title}`;
                 fileextension = '.xml';
-                fileCollection = self.xmlFolderCollection;
+                fileCollection = self.configurationFolderView.collection;
                 break;
             case 'dat-file':
                 title = `DAT/H5 ${title}`;

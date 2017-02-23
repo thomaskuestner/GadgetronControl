@@ -65,7 +65,7 @@ module.exports = function(app, config){
                     fs.rename(file.path, destinationPath);
                     break;
                 case 'xml':
-                    destinationPath = path.join(form.uploadDir + '/' + extension, file.name);
+                    destinationPath = path.join(path.dirname(require.main.filename) + '/' + config.upload_dir + '/' + extension, file.name);
                     fs.rename(file.path, destinationPath);
                     spawn('ln', ['-s', destinationPath, path.join(config.config_dir + file.name)]);
                 default:

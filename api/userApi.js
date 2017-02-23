@@ -32,7 +32,7 @@ module.exports = function(app, config){
 
     // admin login
     app.post('/api/login', function(req, res){
-        if(req.body.name === config.adminUser && req.body.password === config.password){
+        if(req.body.name === config.admin_user && req.body.password === config.password){
             req.session.role = 'admin';
             req.session.isLoggedIn = true;
         }

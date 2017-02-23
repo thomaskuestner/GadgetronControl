@@ -10,7 +10,7 @@
     "readers_db" : "db/readers.db",
     "gadgets_db" : "db/gadgets.db",
     "writers_db" : "db/writers.db",
-    "adminUser" : "admin",
+    "admin_user" : "admin",
     "password": "admin",
     "UI_local": false
 }

@@ -15,6 +15,8 @@ var Gadgets = Backbone.View.extend({
         this.title = attributes.title;
         this.className = attributes.className;
         this.height = attributes.height + 'px';
+        this.listenTo(this.collection,'add', this.render);
+        this.listenTo(this.collection,'remove', this.render);
     },
     events: {
         'click': 'clickedEvent'

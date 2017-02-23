@@ -146,12 +146,6 @@ var Router = Backbone.Router.extend({
         });
         playView.render();
     },
-    // event save gadget button was clicked
-    savedGadgetEvent: function(event, model){
-        // add model to collection
-        self.gadgetGroup.add(model);
-        gadgets.render();
-    },
     // event save reader/writer button was clicked
     savedIoEvent: function(event, model, type){
         switch (type) {
@@ -189,10 +183,10 @@ var Router = Backbone.Router.extend({
                         var gadget = new GadgetModel();
                         // show gadget
                         this.gadgetView = new GadgetView({
-                            model: gadget, 
-                            savedEvent: self.savedGadgetEvent
+                            model: gadget,
+                            collection: self.gadgetGroup
                         });
-                        this.gadgetView.render();
+                        this.gadgetView.show();
                     }
                     else if(target.hasClass('readers')){
                         // create new reader
@@ -245,10 +239,9 @@ var Router = Backbone.Router.extend({
                             // show gadget
                             this.gadgetView = new GadgetView({
                                 model: gadget, 
-                                action: 'update', 
-                                savedEvent: self.savedGadgetEvent
+                                action: 'update'
                             });
-                            this.gadgetView.render();
+                            this.gadgetView.show();
                             break;
                         case 'reader':
                             // get classname from target and search it in collection
@@ -286,8 +279,6 @@ var Router = Backbone.Router.extend({
                                 if(status){
                                     // removing from gadget collection
                                     self.gadgetGroup.remove(gadget);
-                                    // render gadget view collection new
-                                    gadgets.render();
                                 }
                             });
                             break;

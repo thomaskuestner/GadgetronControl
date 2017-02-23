@@ -297,67 +297,80 @@
         <button class="btn btn-default" type="button" id="start-button"><i class="glyphicon glyphicon-play" aria-hidden="true"></i> Start Configuration</button>
     </script>
 
-    <script id="gadget-template" type="text/template">
-        <form id="gadget-form">
-            <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" class="form-control" id="name" name="name" placeholder="Name" value="<%= name %>">
-            </div>
-            <div class="form-group">
-                <label for="dll">DLL</label>
-                <input type="text" class="form-control" id="dll" name="dll" placeholder="DLL" value="<%= dll %>">
-            </div>
-            <div class="form-group">
-                <label for="classname">Classname</label>
-                <input type="text" class="form-control" id="classname" name="classname" placeholder="Classname" value="<%= classname %>">
-            </div>
-            <div class="form-group">
-                <label for="properties">Properties</label>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Value</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% if((typeof properties === 'undefinded') || (properties.length === 0)){ %>
-                            <tr id="row-0">
-                                <td contenteditable=true class='property' data-value="name" data-type='string' data-index='0'></td>
-                                <td contenteditable=true class='property' data-value="value" data-type='string' data-index='0'></td>
-                            </tr>
-                        <% } else{ %>
-                            <% for(i=0; i < properties.length; i++){ %>
-                                <% if(properties[i].type) {%>
-                                    <tr id="row-<%= i %>">
-                                        <td contenteditable=true class='property' data-value="name" data-index='<%= i %>'><%= properties[i].name[0] %></td>
-                                        <% if (properties[i].type === 'boolean') { %>
-                                            <td><input type="checkbox" class='property' data-value="value" data-type='boolean' data-index='<%= i %>'
-                                            <% if (properties[i].value[0] === 'true') { %>
-                                                checked
+    <script id="gadget-template" type="text/template">      
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="solve-modal-label">Gadget</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="gadget-form">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Name" value="<%= name %>">
+                        </div>
+                        <div class="form-group">
+                            <label for="dll">DLL</label>
+                            <input type="text" class="form-control" id="dll" name="dll" placeholder="DLL" value="<%= dll %>">
+                        </div>
+                        <div class="form-group">
+                            <label for="classname">Classname</label>
+                            <input type="text" class="form-control" id="classname" name="classname" placeholder="Classname" value="<%= classname %>">
+                        </div>
+                        <div class="form-group">
+                            <label for="properties">Properties</label>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if((typeof properties === 'undefinded') || (properties.length === 0)){ %>
+                                        <tr id="row-0">
+                                            <td contenteditable=true class='property' data-value="name" data-type='string' data-index='0'></td>
+                                            <td contenteditable=true class='property' data-value="value" data-type='string' data-index='0'></td>
+                                        </tr>
+                                    <% } else{ %>
+                                        <% for(i=0; i < properties.length; i++){ %>
+                                            <% if(properties[i].type) {%>
+                                                <tr id="row-<%= i %>">
+                                                    <td contenteditable=true class='property' data-value="name" data-index='<%= i %>'><%= properties[i].name[0] %></td>
+                                                    <% if (properties[i].type === 'boolean') { %>
+                                                        <td><input type="checkbox" class='property' data-value="value" data-type='boolean' data-index='<%= i %>'
+                                                        <% if (properties[i].value[0] === 'true') { %>
+                                                            checked
+                                                        <% } %>
+                                                        ></td>
+                                                    <% } %>
+                                                    <% if (properties[i].type === 'number') { %>
+                                                        <td contenteditable=true class='property' data-value="value" data-type='number' data-index='<%= i %>'><%= properties[i].value[0] %></td>
+                                                    <% } %>
+                                                    <% if (properties[i].type === 'string') { %>
+                                                        <td contenteditable=true class='property' data-value="value" data-type='string' data-index='<%= i %>'><%= properties[i].value[0] %></td>
+                                                    <% } %>
+                                                </tr>
+                                            <% } else { %>
+                                                <tr id="row-<%= i %>">
+                                                    <td contenteditable=true class='property' data-value="name" data-type='string' data-index='<%= i %>'><%= properties[i].name[0] %></td>
+                                                    <td contenteditable=true class='property' data-value="value" data-type='string' data-index='<%= i %>'><%= properties[i].value[0] %></td>
+                                                </tr>
                                             <% } %>
-                                            ></td>
                                         <% } %>
-                                        <% if (properties[i].type === 'number') { %>
-                                            <td contenteditable=true class='property' data-value="value" data-type='number' data-index='<%= i %>'><%= properties[i].value[0] %></td>
-                                        <% } %>
-                                        <% if (properties[i].type === 'string') { %>
-                                            <td contenteditable=true class='property' data-value="value" data-type='string' data-index='<%= i %>'><%= properties[i].value[0] %></td>
-                                        <% } %>
-                                    </tr>
-                                <% } else { %>
-                                    <tr id="row-<%= i %>">
-                                        <td contenteditable=true class='property' data-value="name" data-type='string' data-index='<%= i %>'><%= properties[i].name[0] %></td>
-                                        <td contenteditable=true class='property' data-value="value" data-type='string' data-index='<%= i %>'><%= properties[i].value[0] %></td>
-                                    </tr>
-                                <% } %>
-                            <% } %>
-                        <% } %>
-                    </tbody>
-                </table>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button class="btn btn-default" type="button" id="save-button"><i class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></i> Save Gadget</button>
+                </div>
             </div>
-            <button class="btn btn-default" type="button" id="save-button"><i class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></i> Save Gadget</button>
-        </form>
+        </div>
     </script>
 
     <script id="io-template" type="text/template">

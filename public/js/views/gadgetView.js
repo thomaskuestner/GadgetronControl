@@ -1,41 +1,61 @@
 import Backbone from 'backbone';
 import $ from 'jquery';
 import _ from 'underscore';
-import GadgetModel from './../models/gadgetModel';
-
-Backbone.$ = $;
-var jQuery = $;
-window.$ = window.jQuery = jQuery;
-
-require('bootstrap');
-
-jQuery.noConflict(true);
 
 var GadgetView = Backbone.View.extend({
-    model: 'GadgetModel',
-    el: '#modal-region',
+    id: 'gadget-modal',
+    className: 'modal fade',    
     template: _.template($("#gadget-template").html()),
-    initialize: function(attributes, options){
-        this.action = attributes.action || 'add';
-        this.renderPropertyTypes = attributes.renderPropertyTypes || false;
-        this.savedEvent = attributes.savedEvent;
-    },
-    events:{
+    events: {
         'input .property': 'inputPropertyEvent',
         'input #name': 'inputEvent',
         'input #dll': 'inputEvent',
         'input #classname': 'inputEvent',
         'click #save-button': 'clickedSaveButton',
-        'click #back': 'close',
-        'click .modal.fade': 'close'
+        'submit #gadget-form': 'submit'
     },
-    inputEvent: function(event){
-        var value = $(event.currentTarget).val();
-        var id = $(event.currentTarget)[0].id;
-        this.model.set(id, value);
+    initialize: function(options) {        
+        this.action = options.action || 'add';
+        this.renderPropertyTypes = options.renderPropertyTypes || false;
+        _.bindAll(this, 'show', 'render');
+        this.render();
+    },
+    show: function() {
+        $('#login-form').submit(function () {
+            e.preventDefault();
+        });
+        this.$el.modal('show');
+    },
+    hide: function() {
+        this.$el.data('modal', null);
+        this.remove();
+    },
+    render: function() {
+        if(this.renderPropertyTypes){
+            var properties = this.model.get('properties');
+            if(properties){
+                properties.forEach(function(property){
+                    var value = property.value[0];
+                    if(value === 'true' || value === 'false' || value === true || value === false){
+                        property.type = 'boolean';
+                    }
+                    else if(!isNaN(value)){
+                        property.type = 'number';
+                    }
+                    else{
+                        property.type = 'string';
+                    }
+                });
+            }
+        }
+        this.$el.html(this.template(this.model.toJSON()));
+        this.$el.modal({show:true}); // dont show modal on instantiation
+        this.$el.on('hidden.bs.modal', _.bind(function() {
+            this.hide();
+        }, this));
+        return this;
     },
     inputPropertyEvent: function(event){
-        console.log('inputPropertyEvent');
         var properties = this.model.get('properties');
         // initialize properties if empty
         if(properties === ""){
@@ -49,7 +69,7 @@ var GadgetView = Backbone.View.extend({
             };
         }
         // get property
-        var property = properties.filter((num, index) => index == index)[0];
+        var property = properties[index];
 
         // set properties
         var nameOrValue = $(event.target).data('value');
@@ -80,7 +100,6 @@ var GadgetView = Backbone.View.extend({
                 break;
         }
         properties[index] = property;
-        console.log(properties);
         // set properties of model
         this.model.set('properties', properties);
         
@@ -96,6 +115,11 @@ var GadgetView = Backbone.View.extend({
             // rerender
             this.render();
         }
+    },
+    inputEvent: function(event){
+        var value = $(event.currentTarget).val();
+        var id = $(event.currentTarget)[0].id;
+        this.model.set(id, value);
     },
     clickedSaveButton: function(event){
         var properties = new Array();
@@ -113,63 +137,22 @@ var GadgetView = Backbone.View.extend({
         }
         switch (this.action) {
             case 'add':
-                this.model.writeToDb(); 
-                this.savedEvent(event, this.model);               
+                this.model.writeToDb();              
                 break;
             case 'update':
                 this.model.updateDb();
-                this.savedEvent(event, this.model);
-                break;
-            case 'none':
-                this.savedEvent(event, this.model.convertModel());
                 break;
             default:
                 break;
         }
-        this.unbind();
-        this.undelegateEvents();
-        $('#modal').modal('hide');
+        if(this.collection){
+            this.collection.add(this.model);
+        }
+        this.$el.modal('hide');
     },
-    close: function(event){
-        if(($(event.target).hasClass('modal') && $(event.target).hasClass('fade')) || $(event.target).id === 'back'){
-            this.unbind();
-            this.undelegateEvents();
-        }
-    },
-    render: function() {
-        var modalTemplate = _.template($("#modal-template").html());
-        modalTemplate = modalTemplate({title: 'Gadget'});
-        // add property-types in configuration View
-        if(this.renderPropertyTypes){
-            var properties = this.model.get('properties');
-            if(properties){
-                properties.forEach(function(property, index){
-                    var value = property.value[0];
-                    if(value === 'true' || value === 'false'){
-                        property.type = 'boolean';
-                    }
-                    else if(!isNaN(value)){
-                        property.type = 'number';
-                    }
-                    else{
-                        property.type = 'string';
-                    }
-                });
-            }
-        }
-        // don't show it again, when is already visible
-        if($('#modal').hasClass('in')){
-            var gadgetTemplate = this.template(this.model.toJSON());
-            $('#modal-template-body').html(gadgetTemplate);
-        }
-        else{
-            $('#modal-region').html(modalTemplate);
-            var gadgetTemplate = this.template(this.model.toJSON());
-            $('#modal-template-body').html(gadgetTemplate);
-            $('#modal').modal('show');
-        }
-        
-        return this;
+    submit: function(event){
+        event.preventDefault();
+        this.loginUser(event);
     }
 });
 

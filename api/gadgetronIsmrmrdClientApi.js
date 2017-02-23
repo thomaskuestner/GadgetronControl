@@ -23,7 +23,7 @@ module.exports = function(app, config){
         console.log(resultPath);
         // convert to h5 if it is dat
         if(extension === 'dat'){
-            var destinationH5Path = path.join(upload_dir + '/h5', fileName.split('.').shift() + '.h5');
+            var destinationH5Path = path.join(config.upload_dir + '/h5', fileName.split('.').shift() + '.h5');
             var siemensToIsmrmd;
             if(xslPath){
                 siemensToIsmrmd = spawn('siemens_to_ismrmrd',['-f', dataPath, '--user-stylesheet', xslPath, '-o', destinationH5Path]); 

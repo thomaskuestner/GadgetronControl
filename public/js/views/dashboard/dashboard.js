@@ -1,15 +1,23 @@
 import Backbone from 'backbone';
 import $ from 'jquery';
 import _ from 'underscore';
+
+// Views
 import Configurations from './configurations';
 import SaveDialog from './../saveDialog';
 import FolderView from './../folderView';
 import PlayView from './../playView';
 import UploadDialog from './../uploadDialog';
 import Ios from './ios';
-import FileCollection from './../../collections/fileCollection';
-import File from './../../models/fileModel';
 
+// Collections
+import FileCollection from './../../collections/fileCollection';
+
+// Models
+import File from './../../models/fileModel';
+import GadgetronStreamConfiguration from './../../models/gadgetronStreamConfigurationModel'
+
+// Extra
 import config from './../../../../config.json';
 
 Backbone.$ = $;
@@ -127,14 +135,15 @@ var Dashboard = Backbone.View.extend({
                 value = value + ".xml";
             }
             // search for configuration
-            if(gadgetronStreamConfigurationGroup.where({name: value}).length > 0){
+            if(self.configurationFolderView.collection.where({name: value}).length > 0){
                 $('#filename-group').addClass('has-error');
             }
             else{
                 // create new configuration model
                 var newConfiguration = new GadgetronStreamConfiguration();
                 var fileName = newConfiguration.createModel(value)
-                gadgetronStreamConfigurationGroup.add(newConfiguration);
+                self.configurationFolderView.collection.add(newConfiguration);
+                self.collection.add(newConfiguration);
                 // redirect to new configuration
                 self.redirectEvent('#gadgetronStreamConfiguration/' + fileName);
                 $('#modal').modal('hide');

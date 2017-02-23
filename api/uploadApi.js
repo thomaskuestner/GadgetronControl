@@ -169,6 +169,9 @@ module.exports = function(app, config){
                                 };
                                 break;
                             case 'xml':
+                                // Symbolic Link into config dir
+                                destinationPath = path.join(path.dirname(require.main.filename) + '/' + config.upload_dir + '/' + extension, fileName);
+                                spawn('ln', ['-s', destinationPath, path.join(config.config_dir + fileName)]);
                                 data = 
                                 {
                                     xml: {

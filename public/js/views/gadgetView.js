@@ -142,18 +142,20 @@ var GadgetView = Backbone.View.extend({
         // add property-types in configuration View
         if(this.renderPropertyTypes){
             var properties = this.model.get('properties');
-            properties.forEach(function(property, index){
-                var value = property.value[0];
-                if(value === 'true' || value === 'false'){
-                    property.type = 'boolean';
-                }
-                else if(!isNaN(value)){
-                    property.type = 'number';
-                }
-                else{
-                    property.type = 'string';
-                }
-            });
+            if(properties){
+                properties.forEach(function(property, index){
+                    var value = property.value[0];
+                    if(value === 'true' || value === 'false'){
+                        property.type = 'boolean';
+                    }
+                    else if(!isNaN(value)){
+                        property.type = 'number';
+                    }
+                    else{
+                        property.type = 'string';
+                    }
+                });
+            }
         }
         // don't show it again, when is already visible
         if($('#modal').hasClass('in')){

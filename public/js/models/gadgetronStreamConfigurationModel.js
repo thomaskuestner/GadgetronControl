@@ -76,6 +76,10 @@ var GadgetronStreamConfiguration = Backbone.Model.extend({
         for(var gadget in configuration.gadgetronStreamConfiguration.gadget){
             for(var property in configuration.gadgetronStreamConfiguration.gadget[gadget].property){
                 delete configuration.gadgetronStreamConfiguration.gadget[gadget].property[property].type;
+                // delete empty property
+                if(configuration.gadgetronStreamConfiguration.gadget[gadget].property[property].name[0] === ''){
+                    configuration.gadgetronStreamConfiguration.gadget[gadget].property.splice(property,1);
+                }
             }
         }
         // convert model to xml

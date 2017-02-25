@@ -112,7 +112,7 @@ var Dashboard = Backbone.View.extend({
                 break;
         }
         // opens upload dialog    
-        self.uploadDialog = new UploadDialog({collection: fileCollection, fileextension});
+        self.uploadDialog = new UploadDialog({collection: fileCollection, fileextension, title});
         self.uploadDialog.show();
     },
     // handels add button click event

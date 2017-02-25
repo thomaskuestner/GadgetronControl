@@ -16,6 +16,7 @@ module.exports = function(app, config){
         var timeStamp = dateNow.getFullYear() + '_' + (dateNow.getMonth() + 1) + '_' + dateNow.getDate() + '_' + dateNow.getHours() + '_' + dateNow.getMinutes() + '_' + dateNow.getSeconds();
         mkdirp(config.result_dir);
         var resultFileName = req.query.resultFileName || timeStamp + '_' + fileName;
+        var errorFlag = false;
         if(resultFileName.split('.').pop() !== 'h5'){
             resultFileName = resultFileName +  '.h5';
         }
@@ -42,19 +43,22 @@ module.exports = function(app, config){
                     app.broadcast(data.toString());
                 });
                 gadgetronIsmrmrdClient.on('close', function(code){
-                    app.broadcast('data ' + dataPath + ' was proceeded with ' + configurationPath + ' to ' + resultPath, 'SUCCESS');
-                    if(!res.headersSent){
-                        res.json({
-                            data:{
-                                    extension: 'h5', 
-                                    filename: resultFileName,
-                                    path: resultPath
-                                },
-                            status: 'SUCCESS'
-                        });
+                    if(errorFlag){
+                        app.broadcast('data ' + dataPath + ' was proceeded with ' + configurationPath + ' to ' + resultPath, 'SUCCESS');
+                        if(!res.headersSent){
+                            res.json({
+                                data:{
+                                        extension: 'h5', 
+                                        filename: resultFileName,
+                                        path: resultPath
+                                    },
+                                status: 'SUCCESS'
+                            });
+                        }
                     }
                 });
                 gadgetronIsmrmrdClient.stderr.on('data', function(data){
+                    errorFlag = true;
                     app.broadcast(data.toString(),'ERROR');
                     if(!res.headersSent){
                         res.json({status: 'false'});
@@ -71,19 +75,22 @@ module.exports = function(app, config){
                 app.broadcast(data.toString());
             });
             gadgetronIsmrmrdClient.on('close', function(code){
-                app.broadcast('data ' + dataPath + ' was proceeded with ' + configurationPath + ' to ' + resultPath, 'SUCCESS');
-                if(!res.headersSent){
-                    res.json({
-                        data:{
-                                extension: 'h5', 
-                                filename: resultFileName,
-                                path: resultPath
-                            },
-                        status: 'SUCCESS'
-                    });
+                if(errorFlag){
+                    app.broadcast('data ' + dataPath + ' was proceeded with ' + configurationPath + ' to ' + resultPath, 'SUCCESS');
+                    if(!res.headersSent){
+                        res.json({
+                            data:{
+                                    extension: 'h5', 
+                                    filename: resultFileName,
+                                    path: resultPath
+                                },
+                            status: 'SUCCESS'
+                        });
+                    }
                 }
             });
             gadgetronIsmrmrdClient.stderr.on('data', function(data){
+                errorFlag = true;
                 app.broadcast(data.toString(),'ERROR');
                 if(!res.headersSent){
                     res.json({status: 'false'});

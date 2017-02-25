@@ -81,6 +81,10 @@ class GadgetronStreamConfigurationSvg {
             svg.call(d3.zoom()
                 .scaleExtent([this.minZoom, this.maxZoom])
                 .on("zoom", self.ZoomAndMove));
+            
+            svg.call(d3.zoom()
+                .scaleExtent([this.minZoom, this.maxZoom])
+                .on("zoom", self.ZoomAndMove));
         }
         
         if(this.readerLength){
@@ -132,7 +136,6 @@ class GadgetronStreamConfigurationSvg {
                     break;
                 case 'reorder-button':
                     self.lastClass = 'move';
-                    self.ToggleReorder(true);
                     if(this.gadgets){
                         this.gadgets.ToggleRectangleClass('edit', false);
                         this.gadgets.ToggleRectangleClass('move', true);
@@ -143,7 +146,6 @@ class GadgetronStreamConfigurationSvg {
             }
         }
         else{
-            self.ToggleReorder(false);
             self.ToggleAllRectangleClasses(self.lastClass,'edit');
         }
     }
@@ -206,19 +208,6 @@ class GadgetronStreamConfigurationSvg {
         if(this.writers){
             this.writers.ToggleRectangleClass(currentClass, false);
             this.writers.ToggleRectangleClass(newClass, true);
-        }
-    }
-
-    ToggleReorder(state){
-        if(state){
-            svg.call(d3.zoom()
-                .scaleExtent([this.minZoom, this.maxZoom])
-                .on("zoom", null));
-        }
-        else{
-            svg.call(d3.zoom()
-                .scaleExtent([this.minZoom, this.maxZoom])
-                .on("zoom", self.ZoomAndMove));
         }
     }
 }

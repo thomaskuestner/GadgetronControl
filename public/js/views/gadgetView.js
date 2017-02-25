@@ -83,7 +83,12 @@ var GadgetView = Backbone.View.extend({
                 var value;
                 switch (type) {
                     case 'number':
-                        value = $(event.target).text();
+                        if(!isNaN($(event.target).text())){
+                            value = $(event.target).text();
+                        }
+                        else{
+                            $(event.target).text(property.value[0]);
+                        }
                         break;
                     case 'boolean':
                         value = $(event.target)[0].checked;

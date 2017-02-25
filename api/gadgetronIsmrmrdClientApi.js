@@ -56,14 +56,14 @@ module.exports = function(app, config){
                             });
                         }
                     }
-                });
+                }, this);
                 gadgetronIsmrmrdClient.stderr.on('data', function(data){
                     errorFlag = true;
                     app.broadcast(data.toString(),'ERROR');
                     if(!res.headersSent){
                         res.json({status: 'false'});
                     }
-                });
+                }, this);
             });
             siemensToIsmrmd.stderr.on('data', function(data){
                 app.broadcast(data.toString(),'ERROR');
@@ -73,9 +73,15 @@ module.exports = function(app, config){
             var gadgetronIsmrmrdClient = spawn('gadgetron_ismrmrd_client',['-f', dataPath, '-c', configurationPath, '-o', resultPath, '-p', config.gadgetron_port]);
             gadgetronIsmrmrdClient.stdout.on('data', function(data){
                 app.broadcast(data.toString());
+                if(data.toString().toLowerCase().indexOf('error') === -1){
+                    errorFlag = true;
+                    if(!res.headersSent){
+                        res.json({status: 'false'});
+                    }
+                }
             });
             gadgetronIsmrmrdClient.on('close', function(code){
-                if(errorFlag){
+                if(!errorFlag){
                     app.broadcast('data ' + dataPath + ' was proceeded with ' + configurationPath + ' to ' + resultPath, 'SUCCESS');
                     if(!res.headersSent){
                         res.json({
@@ -88,14 +94,14 @@ module.exports = function(app, config){
                         });
                     }
                 }
-            });
+            }, this);
             gadgetronIsmrmrdClient.stderr.on('data', function(data){
                 errorFlag = true;
                 app.broadcast(data.toString(),'ERROR');
                 if(!res.headersSent){
                     res.json({status: 'false'});
                 }
-            });
+            }, this);
         }
     });
 }

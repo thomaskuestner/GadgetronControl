@@ -201,11 +201,11 @@
                     <form id="login-form">
                         <% if(!config.UI_local){ %>
                             <div class="form-group">
-                                <label for="upload-file-button">Upload Data</label>
+                                <label for="upload-file-button">Upload <%= typeTitle %></label>
                                 <div class="progress">
                                     <div id="progress-file-bar" class="progress-bar" role="progressbar"></div>
                                 </div>
-                                <button class="btn btn-default" type="button" id="upload-file-button"><i class="glyphicon glyphicon-upload" aria-hidden="true"></i> Upload Data</button><br />
+                                <button class="btn btn-default" type="button" id="upload-file-button"><i class="glyphicon glyphicon-upload" aria-hidden="true"></i> Upload <%= typeTitle %></button><br />
                                 <input id="upload-file-input" type="file" name="uploads[]" class="hide" accept="<%= fileextension %>">
                             </div>
                         <hr />
@@ -213,7 +213,7 @@
                         <div class="form-group">
                             <label for="symbolic-link">Data on Server</label>
                             <input type="text" class="form-control" placeholder="Absolute Path on Server" id="filename"><br />
-                            <button class="btn btn-default" type="button" id="create-symbolic-link"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i> Locate data</button>
+                            <button class="btn btn-default" type="button" id="create-symbolic-link"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i> Locate <%= typeTitle %></button>
                         </div>
                     </form>
                 </div>

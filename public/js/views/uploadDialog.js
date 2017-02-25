@@ -25,6 +25,7 @@ var UploadDialog = Backbone.View.extend({
     initialize: function(options) {
         this.title = options.title;
         this.fileextension = options.fileextension;
+        this.typeTitle = options.typeTitle || 'data';
         _.bindAll(this, 'show', 'render');
         this.render();
     },
@@ -39,7 +40,7 @@ var UploadDialog = Backbone.View.extend({
         this.remove();
     },
     render: function() {
-        this.$el.html(this.template({fileextension: this.fileextension, config, title: this.title}));
+        this.$el.html(this.template({fileextension: this.fileextension, config, title: this.title, typeTitle: this.typeTitle}));
         this.$el.modal({show:true}); // dont show modal on instantiation
         this.$el.on('hidden.bs.modal', _.bind(function() {
             this.hide();

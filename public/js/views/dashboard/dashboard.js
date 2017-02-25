@@ -89,12 +89,14 @@ var Dashboard = Backbone.View.extend({
     // handels upload button click event
     uploadButtonClickEvent: function(event){
         var type = $(event.target.parentNode).data('type');
+        var typeTitle;
         var title = 'Upload';
         var fileextension;
         var fileCollection;
         switch (type) {
             case 'configuration-file':
                 title = `Configuration ${title}`;
+                typeTitle = 'config';
                 fileextension = '.xml';
                 fileCollection = self.configurationFolderView.collection;
                 break;
@@ -112,7 +114,7 @@ var Dashboard = Backbone.View.extend({
                 break;
         }
         // opens upload dialog    
-        self.uploadDialog = new UploadDialog({collection: fileCollection, fileextension, title});
+        self.uploadDialog = new UploadDialog({collection: fileCollection, fileextension, title, typeTitle});
         self.uploadDialog.show();
     },
     // handels add button click event

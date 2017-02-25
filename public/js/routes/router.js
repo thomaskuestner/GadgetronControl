@@ -55,8 +55,7 @@ var Router = Backbone.Router.extend({
     routes:{
         "": "index",
         "admin": "admin",
-        "gadgetronStreamConfiguration/:name": "gadgetronStreamConfiguration",
-        "gadgetronStreamConfiguration/:name/:gadget": "gadgetronStreamConfiguration",
+        "gadgetronStreamConfiguration/*name": "gadgetronStreamConfiguration",
         "trash": "trash",
         "logfile": "logfile"
     },
@@ -356,7 +355,7 @@ var Router = Backbone.Router.extend({
         this.trashView = new FolderView({ 
             title: 'Trash-Data',  
             className: 'configuration-file',
-            dirs: [ config.trash_dir + '/' + config.upload_dir + '/dat/', config.trash_dir + '/' + config.upload_dir + '/h5/', config.trash_dir + '/' + config.upload_dir + '/xsl/', config.trash_dir + '/' + config.result_dir + '/'],
+            dirs: [ config.trash_dir ],
             height: height,
             row: '#trash-row', 
             buttons: ['trash'],

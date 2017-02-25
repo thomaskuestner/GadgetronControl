@@ -40,21 +40,8 @@ app.use(express.static('public'));
 // load gadgetronStreamConfiguration API
 require('./api/gadgetronStreamConfigurationApi')(app, config);
 
-// route for getting content of a folder
-app.get('/api/getFolder', function(req, res){
-    var path = req.query.folderPath;
-    mkdirp(path, function(error){
-        if(error){
-            app.broadcast(error);
-            res.json(error);
-        }
-        else{
-            fs.readdir(path, function(error, files) {
-                res.json(files);
-            });
-        }
-    })
-});
+// load getFolder API
+require('./api/getFolderApi')(app);
 
 // load fileToTrash API
 require('./api/fileToTrashApi')(app, config);

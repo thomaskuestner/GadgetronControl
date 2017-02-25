@@ -1,4 +1,5 @@
 var fs = require('fs');
+var recursive = require('recursive-readdir');
 var path = require('path');
 
 // API for gadgetronStreamConfiguration
@@ -27,7 +28,7 @@ module.exports = function(app, config){
 
     // iterate recursivly over all files in config_dir
     function readConfigurationDir(config_dir, configurationList, callback){
-        fs.readdir(config.config_dir, function(error, files) {
+        recursive(config.config_dir, function(error, files) {
             if (error) {
                 throw error;
             }
@@ -55,12 +56,12 @@ module.exports = function(app, config){
     }
 
     // read file content and save it in configurationList
-    function readConfigurationFileContent(file, configurationList, callback){
-        fs.readFile(config.config_dir + file, 'utf8', function(error, content){
+    function readConfigurationFileContent(fileName, configurationList, callback){
+        fs.readFile(fileName, 'utf8', function(error, content){
             if (error) {
                 throw error;
             }
-            configurationList.push({configurationName: file, content: content.trim()});
+            configurationList.push({path: fileName, configurationName: fileName.replace(config.config_dir,''), content: content.trim()});
             callback();
         });
     }

@@ -30,9 +30,6 @@ require('./gadgetron')(app, config);
 // load User API
 require('./api/userApi')(app, config);
 
-// browserify
-app.get('/js/gadgetronBundleApp.js', babelify('./public/js/main.js', {debug: true}));
-
 // defines routes
 // access to public folder
 app.use(express.static('public'));

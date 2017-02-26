@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js",
+    "build": "browserify public/js/main.js -t [ babelify --presets [ es2015 ] ] -o public/js/gadgetronBundleApp.js",
+    "dev-client": "npm run watch-js & npm run start",
+    "dev-server": "nodemon index.js",
+    "watch-js": "watchify public/js/main.js -t [ babelify --presets [ es2015 ] ] -o public/js/gadgetronBundleApp.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Christian Decker",
@@ -39,6 +42,7 @@
   "devDependencies": {
     "grunt": "^1.0.1",
     "grunt-contrib-clean": "^1.0.0",
-    "grunt-contrib-copy": "^1.0.0"
+    "grunt-contrib-copy": "^1.0.0",
+    "watchify": "^3.9.0"
   }
 }

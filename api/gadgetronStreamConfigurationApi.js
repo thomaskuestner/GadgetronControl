@@ -13,7 +13,7 @@ module.exports = function(app, config){
         }
         else{
             readConfigurationDir(config.config_dir, configurationList, function(){
-            res.json(configurationList);
+                res.json(configurationList);
             });
         }
     });
@@ -42,12 +42,12 @@ module.exports = function(app, config){
     function readConfigurationFile(index, files, configurationList, callback){
         if(index < files.length){
             if (path.extname(files[index]) === ".xml") {
-            readConfigurationFileContent(files[index], configurationList, function(){
-                readConfigurationFile(index + 1, files, configurationList, callback);
-            });
+                readConfigurationFileContent(files[index], configurationList, function(){
+                    readConfigurationFile(index + 1, files, configurationList, callback);
+                });
             }
             else {
-            readConfigurationFile(index + 1, files, configurationList, callback);
+                readConfigurationFile(index + 1, files, configurationList, callback);
             }
         }
         else {

@@ -5,16 +5,13 @@ module.exports = function(app, config){
     // Create and Load Database
     var gadgetsDb = new Datastore({ filename: config.gadgets_db, autoload: true });
     // Using a unique constraint with the index
-    gadgetsDb.ensureIndex({ fieldName: 'name', unique: true }, function (err) {
-    });
+    gadgetsDb.ensureIndex({ fieldName: 'name', unique: true });
     var readersDb = new Datastore({ filename: config.readers_db, autoload: true });
     // Using a unique constraint with the index
-    readersDb.ensureIndex({ fieldName: 'classname', unique: true }, function (err) {
-    });
+    readersDb.ensureIndex({ fieldName: 'classname', unique: true });
     var writersDb = new Datastore({ filename: config.writers_db, autoload: true });
     // Using a unique constraint with the index
-    writersDb.ensureIndex({ fieldName: 'classname', unique: true }, function (err) {
-    });
+    writersDb.ensureIndex({ fieldName: 'classname', unique: true });
 
     // route for writing something in the database
     app.post('/api/writeInDb', function(req, res){

@@ -79,6 +79,7 @@ app.get('/api/startHdfView', function(req, res) {
         app.broadcast('probabply hdfview is not installed', 'ERROR');
     })
 });
+
 app.server.listen(config.port);
 
 // methods

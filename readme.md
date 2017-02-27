@@ -11,7 +11,7 @@ Prerequesits are the following tools.
 5. [hdfview](https://support.hdfgroup.org/products/java/hdfview/) (allows you a local preview of the images)
 
 Please set the PATH variables so that the GadgetronControl can find them and install the required packages:
-```
+```bash
 apt-get install npm
 export GADGETRON_HOME=/usr/local
 export ISMRMRD_HOME=/usr/local

@@ -1,6 +1,8 @@
 import Backbone from 'backbone';
 import xml2js from 'xml2js';
-Backbone.$ = require('jquery');
+import $ from 'jquery';
+
+Backbone.$ = $;
 
 // Model for configuration(XML)-file
 var GadgetronStreamConfiguration = Backbone.Model.extend({
@@ -95,6 +97,12 @@ var GadgetronStreamConfiguration = Backbone.Model.extend({
         });
 
         return fileName;
+    },
+    // override clone
+    // because a deep clone is needed
+    clone: function(){
+        var clone = new GadgetronStreamConfiguration($.extend(true, {}, this.toJSON()));
+        return clone;
     }
 });
 

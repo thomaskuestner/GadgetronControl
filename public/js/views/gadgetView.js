@@ -11,12 +11,12 @@ var GadgetView = Backbone.View.extend({
         'input #name': 'inputEvent',
         'input #dll': 'inputEvent',
         'input #classname': 'inputEvent',
-        'click #save-button': 'clickedSaveButton',
-        'submit #gadget-form': 'submit'
+        'click #save-button': 'clickedSaveButton'
     },
     initialize: function(options) {        
         this.action = options.action || 'add';
         this.renderPropertyTypes = options.renderPropertyTypes || false;
+        this.savedEvent = options.savedEvent;
         _.bindAll(this, 'show', 'render');
         this.render();
     },
@@ -31,10 +31,11 @@ var GadgetView = Backbone.View.extend({
         this.remove();
     },
     render: function() {
+        this.properties = this.model.get('properties');
+        this.propertiesNew = this.model.get('properties').slice(0);
         if(this.renderPropertyTypes){
-            var properties = this.model.get('properties');
-            if(properties){
-                properties.forEach(function(property){
+            if(this.properties){
+                this.properties.forEach(function(property){
                     var value = property.value[0];
                     if(value === 'true' || value === 'false' || value === true || value === false){
                         property.type = 'boolean';
@@ -56,20 +57,19 @@ var GadgetView = Backbone.View.extend({
         return this;
     },
     inputPropertyEvent: function(event){
-        var properties = this.model.get('properties');
         // initialize properties if empty
-        if(properties === ""){
-            properties = new Array();
+        if(this.properties === ""){
+            this.properties = new Array();
         }
         var index = $(event.target).data('index');
-        if(!properties[index]){
-            properties[index] = {
+        if(!this.properties[index]){
+            this.properties[index] = {
                 name: new Array(""),
                 value: new Array("")
             };
         }
         // get property
-        var property = properties[index];
+        var property = $.extend(true, {}, this.properties[index]);
 
         // set properties
         var nameOrValue = $(event.target).data('value');
@@ -91,7 +91,7 @@ var GadgetView = Backbone.View.extend({
                         }
                         break;
                     case 'boolean':
-                        value = $(event.target)[0].checked;
+                        value = $(event.target)[0].checked.toString();
                         break;
                     case 'string':
                         value = $(event.target).text();                        
@@ -104,19 +104,16 @@ var GadgetView = Backbone.View.extend({
             default:
                 break;
         }
-        properties[index] = property;
-        // set properties of model
-        this.model.set('properties', properties);
+        this.propertiesNew[index] = property;
         
         // Check if next row has to be added
         var nextId = parseInt(index) + 1;
         if($('#row-' + nextId).length == 0){
             // add property
-            properties[nextId] = {
+            this.properties[nextId] = {
                 name: new Array(""),
                 value: new Array("")
             }
-            this.model.set('properties', properties);
             // rerender
             this.render();
         }
@@ -127,19 +124,16 @@ var GadgetView = Backbone.View.extend({
         this.model.set(id, value);
     },
     clickedSaveButton: function(event){
-        var properties = new Array();
-        var propertiesBuffer = this.model.get('properties');
-        if(propertiesBuffer !== ''){
-            propertiesBuffer.forEach(function(property, index){
+        if(this.propertiesNew !== ''){
+            var propertiesBuffer = new Array();
+            this.propertiesNew.forEach(function(property, index){
                 if(property.name[0] != ''){
-                    properties.push(property);
+                    propertiesBuffer.push(property);
                 }
             })
-            this.model.set('properties', properties);
         }
-        else{
-            this.model.set('properties', properties);
-        }
+        // set properties of model
+        this.model.set('properties', propertiesBuffer);
         switch (this.action) {
             case 'add':
                 this.model.writeToDb();              
@@ -147,6 +141,8 @@ var GadgetView = Backbone.View.extend({
             case 'update':
                 this.model.updateDb();
                 break;
+            case 'none':
+                this.savedEvent(event, this.model);
             default:
                 break;
         }
@@ -154,10 +150,6 @@ var GadgetView = Backbone.View.extend({
             this.collection.add(this.model);
         }
         this.$el.modal('hide');
-    },
-    submit: function(event){
-        event.preventDefault();
-        this.loginUser(event);
     }
 });
 

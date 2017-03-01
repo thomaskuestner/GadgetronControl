@@ -23,14 +23,15 @@ var GadgetronStreamConfigurationView = Backbone.View.extend({
         readerGroup = attributes.readerGroup;
         writerGroup = attributes.writerGroup;
         this.playButtonClickEvent = attributes.playButtonClickEvent;
+        this.clone = this.model;
     },
     render: function(){
         self = this;
         // create svg preview
-        var svgPreview = new GadgetronStreamConfigurationSvg(this.model, 'svg-preview', 4, null, null);
+        var svgPreview = new GadgetronStreamConfigurationSvg(this.clone, 'svg-preview', 4, null, null);
         svgPreview.Draw();
         // create svg
-        svgConfig = new GadgetronStreamConfigurationSvg(this.model, 'svg-config', 1, function(transform){
+        svgConfig = new GadgetronStreamConfigurationSvg(this.clone, 'svg-config', 1, function(transform){
             svgPreview.DrawVisibleRegion(transform);
         }, this.changedEvent, this.rerenderCallback);
         svgConfig.draggabel = true;
@@ -82,7 +83,7 @@ var GadgetronStreamConfigurationView = Backbone.View.extend({
                 break;
             // triggers save configuration
             case 'save-button':
-                event.data.saveModel();
+                self.clone.saveModel();
                 break;
             // open save-as dialog and asks for filename
             case 'save-as-button':
@@ -104,7 +105,7 @@ var GadgetronStreamConfigurationView = Backbone.View.extend({
     // handels save event
     saveEvent: function(event, value){
         if(value){
-            if(this.data.saveModel(value)){
+            if(this.clone.saveModel(value)){
                 $('#modal').modal('hide');
             }
             else{

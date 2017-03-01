@@ -323,19 +323,13 @@ var Router = Backbone.Router.extend({
         self.gadgetronStreamConfiguration = gadgetronStreamConfigurationGroup.where({name})[0];
         // only render view once
         if(typeof self.gadgetronStreamConfiguration !== 'undefined'){
-            if(typeof this.gadgetronStreamConfigurationView === 'undefined'){
-                this.gadgetronStreamConfigurationView = new GadgetronStreamConfigurationView({
-                    model: self.gadgetronStreamConfiguration, 
-                    gadgetGroup: self.gadgetGroup, 
-                    readerGroup: self.readerGroup, 
-                    writerGroup: self.writerGroup, 
-                    playButtonClickEvent: this.playButtonClickEvent
-                });
-            }
-            else{
-                this.gadgetronStreamConfigurationView.model = self.gadgetronStreamConfiguration;
-                // save current configuration model (e.g. for play view)
-            }
+            this.gadgetronStreamConfigurationView = new GadgetronStreamConfigurationView({
+                model: self.gadgetronStreamConfiguration.clone(), 
+                gadgetGroup: self.gadgetGroup, 
+                readerGroup: self.readerGroup, 
+                writerGroup: self.writerGroup, 
+                playButtonClickEvent: this.playButtonClickEvent
+            });
             // show configuration view
             RegionManager.show(this.gadgetronStreamConfigurationView);
         }

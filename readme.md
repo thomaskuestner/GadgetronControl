@@ -36,8 +36,8 @@ The UI is then started as a standalone GUI (locale = true):
 npm start
 ```
 or from within the webbrowser under http://localhost:3000 (locale = false):
-# start remote webserver
 ```bash
+# start remote webserver
 npm run remote
 ```
 

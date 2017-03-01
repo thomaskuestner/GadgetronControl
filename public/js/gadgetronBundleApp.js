@@ -42877,6 +42877,7 @@ var GadgetronStreamConfigurationView = _backbone2.default.View.extend({
                 break;
             // triggers save configuration
             case 'save-button':
+                (0, _jquery2.default)('#save-dropdown').removeClass('red');
                 self.clone.saveModel();
                 break;
             // open save-as dialog and asks for filename
@@ -42900,6 +42901,7 @@ var GadgetronStreamConfigurationView = _backbone2.default.View.extend({
     saveEvent: function saveEvent(event, value) {
         if (value) {
             if (this.clone.saveModel(value)) {
+                (0, _jquery2.default)('#save-dropdown').removeClass('red');
                 (0, _jquery2.default)('#modal').modal('hide');
             } else {
                 (0, _jquery2.default)('#filename-group').addClass('has-error');

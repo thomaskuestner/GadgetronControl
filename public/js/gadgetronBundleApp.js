@@ -45642,7 +45642,6 @@ function findIos(collection, models, index, callback) {
         }
     } else {
         // calls callback function
-        console.log('ENDE');
         callback();
     }
 }
@@ -46111,9 +46110,13 @@ var _xml2js = require('xml2js');
 
 var _xml2js2 = _interopRequireDefault(_xml2js);
 
+var _jquery = require('jquery');
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_backbone2.default.$ = require('jquery');
+_backbone2.default.$ = _jquery2.default;
 
 // Model for configuration(XML)-file
 var GadgetronStreamConfiguration = _backbone2.default.Model.extend({
@@ -46206,6 +46209,12 @@ var GadgetronStreamConfiguration = _backbone2.default.Model.extend({
         });
 
         return fileName;
+    },
+    // override clone
+    // because a deep clone is needed
+    clone: function clone() {
+        var clone = new GadgetronStreamConfiguration(_jquery2.default.extend(true, {}, this.toJSON()));
+        return clone;
     }
 });
 
@@ -46268,6 +46277,7 @@ var IoModel = _backbone2.default.Model.extend({
     },
     // triggers updating reader/writer in database on server
     updateDb: function updateDb(type) {
+        var self = this;
         _backbone2.default.ajax({
             type: 'PUT',
             url: "/api/updateDb",
@@ -46276,12 +46286,16 @@ var IoModel = _backbone2.default.Model.extend({
                 content: this.toJSON()
             },
             success: function success(result) {
-                if (!result.status) {}
+                if (result.status === true) {
+                    self.collection.remove(self.origin);
+                    self.collection.add(self);
+                }
             }
         });
     },
     // triggers removing reader/writer from database on server
     removeFromDb: function removeFromDb(type, callback) {
+        var self = this;
         _backbone2.default.ajax({
             type: 'DELETE',
             url: "/api/removeFromDb",
@@ -46290,12 +46304,17 @@ var IoModel = _backbone2.default.Model.extend({
                 content: this.toJSON()
             },
             success: function success(result) {
-                if (!result.status) {
-                    callback(false);
-                }
-                callback(true);
+                self.collection.remove(self);
             }
         });
+    },
+    // override clone
+    // because a deep clone is needed
+    clone: function clone() {
+        var clone = new IoModel(_jquery2.default.extend(true, {}, this.toJSON()));
+        clone.origin = this;
+        clone.collection = this.collection;
+        return clone;
     }
 });
 
@@ -46579,13 +46598,11 @@ var Router = _backbone2.default.Router.extend({
         switch (type) {
             case 'reader':
                 // add model to collection
-                self.readerGroup.add(model);
-                readers.render();
+                self.readerGroup.add(model.toJSON());
                 break;
             case 'writer':
                 // add model to collection
-                self.writerGroup.add(model);
-                writers.render();
+                self.writerGroup.add(model.toJSON());
                 break;
             default:
                 break;
@@ -46618,20 +46635,24 @@ var Router = _backbone2.default.Router.extend({
                         // create new reader
                         var reader = new _ioModel2.default();
                         // show reader
-                        ioView = new _ioView2.default({ savedEvent: self.savedIoEvent });
-                        ioView.type = 'reader';
-                        ioView.action = 'add';
-                        ioView.model = reader;
-                        ioView.render();
+                        ioView = new _ioView2.default({
+                            savedEvent: self.savedIoEvent,
+                            type: 'reader',
+                            action: 'add',
+                            model: reader
+                        });
+                        ioView.show();
                     } else if (target.hasClass('writers')) {
                         // create new writer
                         var writer = new _ioModel2.default();
                         // show writer
-                        ioView = new _ioView2.default({ savedEvent: self.savedIoEvent });
-                        ioView.type = 'writer';
-                        ioView.action = 'add';
-                        ioView.model = writer;
-                        ioView.render();
+                        ioView = new _ioView2.default({
+                            savedEvent: self.savedIoEvent,
+                            type: 'writer',
+                            action: 'add',
+                            model: writer
+                        });
+                        ioView.show();
                     }
                     break;
                 case 'edit-button':
@@ -46668,26 +46689,6 @@ var Router = _backbone2.default.Router.extend({
                             });
                             this.gadgetView.show();
                             break;
-                        case 'reader':
-                            // get classname from target and search it in collection
-                            var io = self.readerGroup.where({ classname: target.data('classname') })[0];
-                            // show reader
-                            ioView = new _ioView2.default({ savedEvent: self.savedIoEvent });
-                            ioView.type = 'reader';
-                            ioView.model = io;
-                            ioView.action = target.data('action');
-                            ioView.render();
-                            break;
-                        case 'writer':
-                            // get classname from target and search it in collection
-                            var io = self.writerGroup.where({ classname: target.data('classname') })[0];
-                            // show writer
-                            ioView = new _ioView2.default({ savedEvent: self.savedIoEvent });
-                            ioView.type = 'writer';
-                            ioView.model = io;
-                            ioView.action = target.data('action');
-                            ioView.render();
-                            break;
                         default:
                             break;
                     }
@@ -46707,32 +46708,6 @@ var Router = _backbone2.default.Router.extend({
                                 }
                             });
                             break;
-                        case 'reader':
-                            // get classname from target and search it in collection
-                            var reader = self.readerGroup.where({ classname: target.data('classname') })[0];
-                            // trigger removing from database
-                            reader.removeFromDb('reader', function (status) {
-                                if (status) {
-                                    // removing from reader collection
-                                    self.readerGroup.remove(reader);
-                                    // render reader view collection new
-                                    readers.render();
-                                }
-                            });
-                            break;
-                        case 'writer':
-                            // get classname from target and search it in collection
-                            var writer = self.writerGroup.where({ classname: target.data('classname') })[0];
-                            // trigger removing from database
-                            writer.removeFromDb('writer', function (status) {
-                                if (status) {
-                                    // removing from writer collection
-                                    self.writerGroup.remove(writer);
-                                    // render writer view collection new
-                                    writers.render();
-                                }
-                            });
-                            break;
                         default:
                             break;
                     }
@@ -46749,18 +46724,13 @@ var Router = _backbone2.default.Router.extend({
         self.gadgetronStreamConfiguration = gadgetronStreamConfigurationGroup.where({ name: name })[0];
         // only render view once
         if (typeof self.gadgetronStreamConfiguration !== 'undefined') {
-            if (typeof this.gadgetronStreamConfigurationView === 'undefined') {
-                this.gadgetronStreamConfigurationView = new _view2.default({
-                    model: self.gadgetronStreamConfiguration,
-                    gadgetGroup: self.gadgetGroup,
-                    readerGroup: self.readerGroup,
-                    writerGroup: self.writerGroup,
-                    playButtonClickEvent: this.playButtonClickEvent
-                });
-            } else {
-                this.gadgetronStreamConfigurationView.model = self.gadgetronStreamConfiguration;
-                // save current configuration model (e.g. for play view)
-            }
+            this.gadgetronStreamConfigurationView = new _view2.default({
+                model: self.gadgetronStreamConfiguration.clone(),
+                gadgetGroup: self.gadgetGroup,
+                readerGroup: self.readerGroup,
+                writerGroup: self.writerGroup,
+                playButtonClickEvent: this.playButtonClickEvent
+            });
             // show configuration view
             _regionManager2.default.show(this.gadgetronStreamConfigurationView);
         }
@@ -47113,7 +47083,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _backbone2.default.$ = _jquery2.default;
 
 // view of a gadget table row
-var IoRow = _backbone2.default.View.extend({
+var GadgetRow = _backbone2.default.View.extend({
     tagName: 'tr',
     template: _underscore2.default.template((0, _jquery2.default)("#gadget-dashboard-row").html()),
     initialize: function initialize(attributes, options) {
@@ -47126,7 +47096,7 @@ var IoRow = _backbone2.default.View.extend({
     }
 });
 
-module.exports = IoRow;
+module.exports = GadgetRow;
 
 },{"backbone":2,"jquery":28,"underscore":45}],222:[function(require,module,exports){
 'use strict';
@@ -47207,9 +47177,16 @@ var _underscore = require('underscore');
 
 var _underscore2 = _interopRequireDefault(_underscore);
 
+var _ioView = require('./../ioView');
+
+var _ioView2 = _interopRequireDefault(_ioView);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _backbone2.default.$ = _jquery2.default;
+
+// Views
+
 
 // view of a reader/writer table row
 var IoRow = _backbone2.default.View.extend({
@@ -47218,6 +47195,21 @@ var IoRow = _backbone2.default.View.extend({
     initialize: function initialize(attributes, options) {
         this.type = attributes.type;
         this.selectEvent = attributes.selectEvent;
+    },
+    events: {
+        'click #trash-button': 'clickTrashButtonEvent',
+        'click #edit-button': 'clickEditButtonEvent'
+    },
+    clickTrashButtonEvent: function clickTrashButtonEvent(event) {
+        this.model.removeFromDb(this.type);
+    },
+    clickEditButtonEvent: function clickEditButtonEvent(event) {
+        var ioView = new _ioView2.default({
+            type: this.type,
+            action: 'update',
+            model: this.model.clone()
+        });
+        ioView.show();
     },
     render: function render() {
         var rowTemplate = this.template({ model: this.model.toJSON(), type: this.type });
@@ -47228,7 +47220,7 @@ var IoRow = _backbone2.default.View.extend({
 
 module.exports = IoRow;
 
-},{"backbone":2,"jquery":28,"underscore":45}],224:[function(require,module,exports){
+},{"./../ioView":234,"backbone":2,"jquery":28,"underscore":45}],224:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -47265,6 +47257,8 @@ var Ios = _backbone2.default.View.extend({
         this.className = attributes.className;
         this.height = attributes.height + 'px';
         this.type = attributes.type;
+        this.listenTo(this.collection, 'add', this.render);
+        this.listenTo(this.collection, 'remove', this.render);
     },
     events: {
         'click': 'clickedEvent'
@@ -47284,7 +47278,7 @@ var Ios = _backbone2.default.View.extend({
     },
     addIo: function addIo(io) {
         // append reader/writer row
-        var ioRow = new _ioRow2.default({ model: io, selectEvent: this.selectEvent, type: this.type });
+        var ioRow = new _ioRow2.default({ model: io, collection: this.collection, selectEvent: this.selectEvent, type: this.type });
         this.$el.find('#row').append(ioRow.render().el);
     }
 });
@@ -47627,19 +47621,16 @@ var GadgetView = _backbone2.default.View.extend({
         'input #name': 'inputEvent',
         'input #dll': 'inputEvent',
         'input #classname': 'inputEvent',
-        'click #save-button': 'clickedSaveButton',
-        'submit #gadget-form': 'submit'
+        'click #save-button': 'clickedSaveButton'
     },
     initialize: function initialize(options) {
         this.action = options.action || 'add';
         this.renderPropertyTypes = options.renderPropertyTypes || false;
+        this.savedEvent = options.savedEvent;
         _underscore2.default.bindAll(this, 'show', 'render');
         this.render();
     },
     show: function show() {
-        (0, _jquery2.default)('#login-form').submit(function () {
-            e.preventDefault();
-        });
         this.$el.modal('show');
     },
     hide: function hide() {
@@ -47647,10 +47638,11 @@ var GadgetView = _backbone2.default.View.extend({
         this.remove();
     },
     render: function render() {
+        this.properties = this.model.get('properties');
+        this.propertiesNew = this.model.get('properties').slice(0);
         if (this.renderPropertyTypes) {
-            var properties = this.model.get('properties');
-            if (properties) {
-                properties.forEach(function (property) {
+            if (this.properties) {
+                this.properties.forEach(function (property) {
                     var value = property.value[0];
                     if (value === 'true' || value === 'false' || value === true || value === false) {
                         property.type = 'boolean';
@@ -47670,20 +47662,19 @@ var GadgetView = _backbone2.default.View.extend({
         return this;
     },
     inputPropertyEvent: function inputPropertyEvent(event) {
-        var properties = this.model.get('properties');
         // initialize properties if empty
-        if (properties === "") {
-            properties = new Array();
+        if (this.properties === "") {
+            this.properties = new Array();
         }
         var index = (0, _jquery2.default)(event.target).data('index');
-        if (!properties[index]) {
-            properties[index] = {
+        if (!this.properties[index]) {
+            this.properties[index] = {
                 name: new Array(""),
                 value: new Array("")
             };
         }
         // get property
-        var property = properties[index];
+        var property = _jquery2.default.extend(true, {}, this.properties[index]);
 
         // set properties
         var nameOrValue = (0, _jquery2.default)(event.target).data('value');
@@ -47704,7 +47695,7 @@ var GadgetView = _backbone2.default.View.extend({
                         }
                         break;
                     case 'boolean':
-                        value = (0, _jquery2.default)(event.target)[0].checked;
+                        value = (0, _jquery2.default)(event.target)[0].checked.toString();
                         break;
                     case 'string':
                         value = (0, _jquery2.default)(event.target).text();
@@ -47717,19 +47708,16 @@ var GadgetView = _backbone2.default.View.extend({
             default:
                 break;
         }
-        properties[index] = property;
-        // set properties of model
-        this.model.set('properties', properties);
+        this.propertiesNew[index] = property;
 
         // Check if next row has to be added
         var nextId = parseInt(index) + 1;
         if ((0, _jquery2.default)('#row-' + nextId).length == 0) {
             // add property
-            properties[nextId] = {
+            this.properties[nextId] = {
                 name: new Array(""),
                 value: new Array("")
             };
-            this.model.set('properties', properties);
             // rerender
             this.render();
         }
@@ -47740,18 +47728,16 @@ var GadgetView = _backbone2.default.View.extend({
         this.model.set(id, value);
     },
     clickedSaveButton: function clickedSaveButton(event) {
-        var properties = new Array();
-        var propertiesBuffer = this.model.get('properties');
-        if (propertiesBuffer !== '') {
-            propertiesBuffer.forEach(function (property, index) {
+        if (this.propertiesNew !== '') {
+            var propertiesBuffer = new Array();
+            this.propertiesNew.forEach(function (property, index) {
                 if (property.name[0] != '') {
-                    properties.push(property);
+                    propertiesBuffer.push(property);
                 }
             });
-            this.model.set('properties', properties);
-        } else {
-            this.model.set('properties', properties);
         }
+        // set properties of model
+        this.model.set('properties', propertiesBuffer);
         switch (this.action) {
             case 'add':
                 this.model.writeToDb();
@@ -47759,6 +47745,8 @@ var GadgetView = _backbone2.default.View.extend({
             case 'update':
                 this.model.updateDb();
                 break;
+            case 'none':
+                this.savedEvent(event, this.model);
             default:
                 break;
         }
@@ -47766,10 +47754,6 @@ var GadgetView = _backbone2.default.View.extend({
             this.collection.add(this.model);
         }
         this.$el.modal('hide');
-    },
-    submit: function submit(event) {
-        event.preventDefault();
-        this.loginUser(event);
     }
 });
 
@@ -47903,14 +47887,15 @@ var GadgetronStreamConfigurationView = _backbone2.default.View.extend({
         readerGroup = attributes.readerGroup;
         writerGroup = attributes.writerGroup;
         this.playButtonClickEvent = attributes.playButtonClickEvent;
+        this.clone = this.model;
     },
     render: function render() {
         self = this;
         // create svg preview
-        var svgPreview = new _svg2.default(this.model, 'svg-preview', 4, null, null);
+        var svgPreview = new _svg2.default(this.clone, 'svg-preview', 4, null, null);
         svgPreview.Draw();
         // create svg
-        svgConfig = new _svg2.default(this.model, 'svg-config', 1, function (transform) {
+        svgConfig = new _svg2.default(this.clone, 'svg-config', 1, function (transform) {
             svgPreview.DrawVisibleRegion(transform);
         }, this.changedEvent, this.rerenderCallback);
         svgConfig.draggabel = true;
@@ -47962,7 +47947,7 @@ var GadgetronStreamConfigurationView = _backbone2.default.View.extend({
                 break;
             // triggers save configuration
             case 'save-button':
-                event.data.saveModel();
+                self.clone.saveModel();
                 break;
             // open save-as dialog and asks for filename
             case 'save-as-button':
@@ -47984,7 +47969,7 @@ var GadgetronStreamConfigurationView = _backbone2.default.View.extend({
     // handels save event
     saveEvent: function saveEvent(event, value) {
         if (value) {
-            if (this.data.saveModel(value)) {
+            if (this.clone.saveModel(value)) {
                 (0, _jquery2.default)('#modal').modal('hide');
             } else {
                 (0, _jquery2.default)('#filename-group').addClass('has-error');
@@ -48087,14 +48072,107 @@ var IoRow = _backbone2.default.View.extend({
     template: _underscore2.default.template((0, _jquery2.default)("#io-row").html()),
     initialize: function initialize(attributes, options) {
         this.type = attributes.type;
-        this.selectEvent = attributes.selectEvent;
     },
     events: {
         "click #select-io": "selectEvent"
     },
     selectEvent: function selectEvent(event) {
-        this.selectEvent(event, this.model);
-        (0, _jquery2.default)('#modal').modal('hide');
+        // get target from click event
+        var target;
+        if ((0, _jquery2.default)(event.target).hasClass('btn')) {
+            target = (0, _jquery2.default)(event.target);
+        } else if ((0, _jquery2.default)(event.target.parentNode).hasClass('btn')) {
+            target = (0, _jquery2.default)(event.target.parentNode);
+        }
+
+        if (target) {
+            // switch case for different button types
+            switch (target[0].id) {
+                case 'edit-button':
+                    var type = target.data('type');
+                    // switch case for different type editing
+                    switch (type) {
+                        case 'reader':
+                            // get classname from target and search it in collection
+                            var io = self.readerGroup.where({ classname: target.data('classname') })[0];
+                            // show reader
+                            ioView = new IoView({
+                                savedEvent: self.savedIoEvent,
+                                type: 'reader',
+                                action: target.data('action'),
+                                model: io.clone()
+                            });
+                            ioView.show();
+                            break;
+                        case 'writer':
+                            // get classname from target and search it in collection
+                            var io = self.writerGroup.where({ classname: target.data('classname') })[0];
+                            // show writer
+                            ioView = new IoView({
+                                savedEvent: self.savedIoEvent,
+                                type: 'writer',
+                                action: target.data('action'),
+                                model: io.clone()
+                            });
+                            ioView.show();
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 'trash-button':
+                    var type = target.data('type');
+                    // switch case for trashing differnt types
+                    switch (type) {
+                        case 'reader':
+                            // get classname from target and search it in collection
+                            var reader = self.readerGroup.where({ classname: target.data('classname') })[0];
+                            // trigger removing from database
+                            reader.removeFromDb('reader', function (status) {
+                                if (status) {
+                                    // removing from reader collection
+                                    self.readerGroup.remove(reader);
+                                    // render reader view collection new
+                                    readers.render();
+                                }
+                            });
+                            break;
+                        case 'writer':
+                            // get classname from target and search it in collection
+                            var writer = self.writerGroup.where({ classname: target.data('classname') })[0];
+                            // trigger removing from database
+                            writer.removeFromDb('writer', function (status) {
+                                if (status) {
+                                    // removing from writer collection
+                                    self.writerGroup.remove(writer);
+                                    // render writer view collection new
+                                    writers.render();
+                                }
+                            });
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    },
+    // event save reader/writer button was clicked
+    savedIoEvent: function savedIoEvent(event, model, type) {
+        switch (type) {
+            case 'reader':
+                // add model to collection
+                self.readerGroup.add(model.toJSON());
+                break;
+            case 'writer':
+                // add model to collection
+                self.writerGroup.add(model.toJSON());
+                break;
+            default:
+                break;
+        }
     },
     render: function render() {
         var rowTemplate = this.template(this.model.toJSON());
@@ -48120,36 +48198,41 @@ var _underscore = require('underscore');
 
 var _underscore2 = _interopRequireDefault(_underscore);
 
-var _ioModel = require('./../models/ioModel');
-
-var _ioModel2 = _interopRequireDefault(_ioModel);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_backbone2.default.$ = _jquery2.default;
-var jQuery = _jquery2.default;
-window.$ = window.jQuery = jQuery;
-
-require('bootstrap');
-
-jQuery.noConflict(true);
+module.exports = IoView;
 
 var IoView = _backbone2.default.View.extend({
-    model: 'IoModel',
-    el: '#modal-region',
+    id: 'io-modal',
+    className: 'modal fade',
     template: _underscore2.default.template((0, _jquery2.default)("#io-template").html()),
-    initialize: function initialize(attributes, options) {
-        this.action = attributes.action || 'add';
-        this.savedEvent = attributes.savedEvent;
-        this.type = attributes.type;
-    },
     events: {
         'input #slot': 'inputEvent',
         'input #dll': 'inputEvent',
         'input #classname': 'inputEvent',
-        'click #save-button': 'clickedSaveButton',
-        'click #back': 'close',
-        'click .fade.modal': 'close'
+        'click #save-button': 'clickedSaveButton'
+    },
+    initialize: function initialize(options) {
+        this.action = options.action || 'add';
+        this.type = options.type;
+        this.savedEvent = options.savedEvent;
+        _underscore2.default.bindAll(this, 'show', 'render');
+        this.render();
+    },
+    show: function show() {
+        this.$el.modal('show');
+    },
+    hide: function hide() {
+        this.$el.data('modal', null);
+        this.remove();
+    },
+    render: function render() {
+        this.$el.html(this.template({ model: this.model.toJSON(), type: this.type }));
+        this.$el.modal({ show: true }); // dont show modal on instantiation
+        this.$el.on('hidden.bs.modal', _underscore2.default.bind(function () {
+            this.hide();
+        }, this));
+        return this;
     },
     inputEvent: function inputEvent(event) {
         var value = (0, _jquery2.default)(event.currentTarget).val();
@@ -48164,7 +48247,6 @@ var IoView = _backbone2.default.View.extend({
                 break;
             case 'update':
                 this.model.updateDb(this.type);
-                this.savedEvent(event, this.model, this.type);
                 break;
             case 'none':
                 this.savedEvent(event, this.model.convertModel(), this.type);
@@ -48172,36 +48254,13 @@ var IoView = _backbone2.default.View.extend({
             default:
                 break;
         }
-        this.unbind();
-        this.undelegateEvents();
-        (0, _jquery2.default)('#modal').modal('hide');
-    },
-    close: function close(event) {
-        // .fade.model fires close event, so check target
-        if ((0, _jquery2.default)(event.target)[0].localName !== 'input') {
-            this.unbind();
-            this.undelegateEvents();
-        }
-    },
-    render: function render() {
-        var modalTemplate = _underscore2.default.template((0, _jquery2.default)("#modal-template").html());
-        modalTemplate = modalTemplate({ title: 'Io' });
-        var ioTemplate = this.template({ model: this.model.toJSON(), type: this.type });
-        if ((0, _jquery2.default)('#modal').hasClass('in')) {
-            (0, _jquery2.default)('#modal-template-body').html(ioTemplate);
-        } else {
-            (0, _jquery2.default)('#modal-region').html(modalTemplate);
-            (0, _jquery2.default)('#modal-template-body').html(ioTemplate);
-            (0, _jquery2.default)('#modal').modal('show');
-        }
-
-        return this;
+        this.$el.modal('hide');
     }
 });
 
 module.exports = IoView;
 
-},{"./../models/ioModel":216,"backbone":2,"bootstrap":5,"jquery":28,"underscore":45}],235:[function(require,module,exports){
+},{"backbone":2,"jquery":28,"underscore":45}],235:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -48223,40 +48282,32 @@ var _ioRow2 = _interopRequireDefault(_ioRow);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _backbone2.default.$ = _jquery2.default;
-var jQuery = _jquery2.default;
-window.$ = window.jQuery = jQuery;
-
-require('bootstrap');
-
-jQuery.noConflict(true);
 
 var Ios = _backbone2.default.View.extend({
-    template: '\n    <table class="table table-striped data-editable-spy">\n        <thead>\n            <tr>\n                <th>Classname</th>\n                <th>Action</th>\n            </tr>\n        </thead>\n        <tbody id="row"></tbody>\n    </table>',
+    template: _underscore2.default.template((0, _jquery2.default)("#dashboard-template").html()),
     initialize: function initialize(attributes, options) {
         this.title = attributes.title;
         this.type = attributes.type;
-        this.selectEvent = attributes.selectEvent;
+        this.listenTo(this.collection, 'add', this.render);
     },
     render: function render() {
-        var modalTemplate = _underscore2.default.template((0, _jquery2.default)("#modal-template").html());
-        modalTemplate = modalTemplate({ title: this.title });
-        (0, _jquery2.default)('#modal-region').html(modalTemplate);
-        (0, _jquery2.default)('#modal-template-body').html(this.template);
+        var table = this.table({ attribute: 'Name' });
+        var dashboardTemplate = this.template({ title: this.title, className: this.className, content: (0, _jquery2.default)(table).prop('outerHTML'), height: this.height, buttons: this.buttons });
+        this.$el.html(dashboardTemplate);
         if (typeof this.collection != 'undefined') {
             this.collection.forEach(this.addIo, this);
         }
-        (0, _jquery2.default)('#modal').modal('show');
         return this;
     },
     addIo: function addIo(io) {
-        var ioRow = new _ioRow2.default({ model: io, selectEvent: this.selectEvent, type: this.type });
-        (0, _jquery2.default)('#row').append(ioRow.render().el);
+        var ioRow = new _ioRow2.default({ model: io, type: this.type });
+        this.$el.find('tbody').append(ioRow.render().el);
     }
 });
 
 module.exports = Ios;
 
-},{"./ioRow":233,"backbone":2,"bootstrap":5,"jquery":28,"underscore":45}],236:[function(require,module,exports){
+},{"./ioRow":233,"backbone":2,"jquery":28,"underscore":45}],236:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -48354,9 +48405,6 @@ var LoginDialog = _backbone2.default.View.extend({
         this.render();
     },
     show: function show() {
-        (0, _jquery2.default)('#login-form').submit(function () {
-            e.preventDefault();
-        });
         this.$el.modal('show');
     },
     hide: function hide() {},
@@ -49039,10 +49087,10 @@ var SvgGroupGadget = function (_SvgGroup) {
                         action: 'none',
                         renderPropertyTypes: true,
                         savedEvent: function savedEvent(event, model) {
-                            data.name[0] = model.name[0];
-                            data.classname[0] = model.classname[0];
-                            data.dll[0] = model.dll[0];
-                            data.property = model.property;
+                            data.name[0] = model.get('name');
+                            data.classname[0] = model.get('classname');
+                            data.dll[0] = model.get('dll');
+                            data.property = model.get('properties');
                         }
                     });
                     this.gadgetView.render();
@@ -49269,27 +49317,18 @@ var SvgGroupReader = function (_SvgGroup) {
                         slot: data.slot[0]
                     });
 
-                    if (typeof self.ioView === 'undefined') {
-                        self.ioView = new _ioView2.default({
-                            type: 'reader',
-                            action: 'none',
-                            model: io,
-                            savedEvent: function savedEvent(event, model, type) {
-                                data.classname[0] = model.classname[0];
-                                data.dll[0] = model.dll[0];
-                                data.slot[0] = model.slot[0];
-                            }
-                        });
-                        self.ioView.render();
-                    } else {
-                        self.ioView.model = io;
-                        self.ioView.savedEvent = function (event, model, type) {
+                    self.ioView = new _ioView2.default({
+                        type: 'reader',
+                        action: 'none',
+                        model: io,
+                        savedEvent: function savedEvent(event, model, type) {
+                            console.log(model);
                             data.classname[0] = model.classname[0];
                             data.dll[0] = model.dll[0];
                             data.slot[0] = model.slot[0];
-                        };
-                        self.ioView.render();
-                    }
+                        }
+                    });
+                    self.ioView.show();
                     break;
                 case 'move':
                     break;
@@ -49427,28 +49466,17 @@ var SvgGroupWriter = function (_SvgGroup) {
                         slot: data.slot[0]
                     });
 
-                    if (typeof self.ioView === 'undefined') {
-                        self.ioView = new _ioView2.default({
-                            type: 'writer',
-                            action: 'none',
-                            model: io,
-                            savedEvent: function savedEvent(event, model, type) {
-                                data.classname[0] = model.classname[0];
-                                data.dll[0] = model.dll[0];
-                                data.slot[0] = model.slot[0];
-                            }
-                        });
-                        self.ioView.render();
-                    } else {
-                        self.ioView.model = io;
-                        self.ioView.savedEvent = function (event, model, type) {
+                    self.ioView = new _ioView2.default({
+                        type: 'writer',
+                        action: 'none',
+                        model: io,
+                        savedEvent: function savedEvent(event, model, type) {
                             data.classname[0] = model.classname[0];
                             data.dll[0] = model.dll[0];
                             data.slot[0] = model.slot[0];
-                        };
-                        self.ioView.render();
-                    }
-                    break;
+                        }
+                    });
+                    self.ioView.show();
                     break;
                 case 'move':
                     break;

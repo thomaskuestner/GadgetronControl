@@ -374,21 +374,34 @@
     </script>
 
     <script id="io-template" type="text/template">
-        <form id="gadget-form">
-            <div class="form-group">
-                <label for="Classname">Classname</label>
-                <input type="text" class="form-control" id="classname" name="classname" placeholder="Classname" value="<%= model.classname %>">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="solve-modal-label">Io</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="io-form">
+                        <div class="form-group">
+                            <label for="Classname">Classname</label>
+                            <input type="text" class="form-control" id="classname" name="classname" placeholder="Classname" value="<%= model.classname %>">
+                        </div>
+                        <div class="form-group">
+                            <label for="dll">DLL</label>
+                            <input type="text" class="form-control" id="dll" name="dll" placeholder="DLL" value="<%= model.dll %>">
+                        </div>
+                        <div class="form-group">
+                            <label for="slot">Slot</label>
+                            <input type="text" class="form-control" id="slot" name="slot" placeholder="Slot" value="<%= model.slot %>">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button class="btn btn-default" type="button" id="save-button" data-type="<%= type %>"><i class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></i> Save Io</button>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="dll">DLL</label>
-                <input type="text" class="form-control" id="dll" name="dll" placeholder="DLL" value="<%= model.dll %>">
-            </div>
-            <div class="form-group">
-                <label for="slot">Slot</label>
-                <input type="text" class="form-control" id="slot" name="slot" placeholder="Slot" value="<%= model.slot %>">
-            </div>
-            <button class="btn btn-default" type="button" id="save-button" data-type="<%= type %>"><i class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></i> Save Io</button>
-        </form>
+        </div>
     </script>
 
     <script id="gadget-row" type="text/template">

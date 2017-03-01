@@ -150,13 +150,11 @@ var Router = Backbone.Router.extend({
         switch (type) {
             case 'reader':
                 // add model to collection
-                self.readerGroup.add(model);
-                readers.render();      
+                self.readerGroup.add(model.toJSON()); 
                 break;
             case 'writer':
                 // add model to collection
-                self.writerGroup.add(model);
-                writers.render();
+                self.writerGroup.add(model.toJSON());
                 break;
             default:
                 break;
@@ -191,21 +189,25 @@ var Router = Backbone.Router.extend({
                         // create new reader
                         var reader = new IoModel();
                         // show reader
-                        ioView = new IoView({savedEvent: self.savedIoEvent});
-                        ioView.type = 'reader';
-                        ioView.action = 'add';
-                        ioView.model = reader;     
-                        ioView.render();
+                        ioView = new IoView({
+                            savedEvent: self.savedIoEvent,
+                            type: 'reader',
+                            action: 'add',
+                            model: reader
+                        });  
+                        ioView.show();
                     }
                     else if(target.hasClass('writers')){
                         // create new writer
                         var writer = new IoModel();
                         // show writer
-                        ioView = new IoView({savedEvent: self.savedIoEvent});
-                        ioView.type = 'writer';
-                        ioView.action = 'add';
-                        ioView.model = writer;
-                        ioView.render();
+                        ioView = new IoView({
+                            savedEvent: self.savedIoEvent,
+                            type: 'writer',
+                            action: 'add',
+                            model: writer
+                        });  
+                        ioView.show();
                     }
                     break;
                 case 'edit-button':
@@ -242,26 +244,6 @@ var Router = Backbone.Router.extend({
                             });
                             this.gadgetView.show();
                             break;
-                        case 'reader':
-                            // get classname from target and search it in collection
-                            var io = self.readerGroup.where({classname: target.data('classname')})[0];
-                            // show reader
-                            ioView = new IoView({savedEvent: self.savedIoEvent});
-                            ioView.type = 'reader';
-                            ioView.model = io;
-                            ioView.action = target.data('action');
-                            ioView.render();
-                            break;
-                        case 'writer':
-                            // get classname from target and search it in collection
-                            var io = self.writerGroup.where({classname: target.data('classname')})[0];
-                            // show writer
-                            ioView = new IoView({savedEvent: self.savedIoEvent});      
-                            ioView.type = 'writer';
-                            ioView.model = io;
-                            ioView.action = target.data('action');
-                            ioView.render();  
-                            break;
                         default:
                             break;
                     }
@@ -278,32 +260,6 @@ var Router = Backbone.Router.extend({
                                 if(status){
                                     // removing from gadget collection
                                     self.gadgetGroup.remove(gadget);
-                                }
-                            });
-                            break;
-                        case 'reader':
-                            // get classname from target and search it in collection
-                            var reader = self.readerGroup.where({classname: target.data('classname')})[0];
-                            // trigger removing from database
-                            reader.removeFromDb('reader', function(status){
-                                if(status){
-                                    // removing from reader collection
-                                    self.readerGroup.remove(reader);
-                                    // render reader view collection new
-                                    readers.render();
-                                }
-                            });
-                            break;
-                        case 'writer':
-                            // get classname from target and search it in collection
-                            var writer = self.writerGroup.where({classname: target.data('classname')})[0];
-                            // trigger removing from database
-                            writer.removeFromDb('writer', function(status){
-                                if(status){
-                                    // removing from writer collection
-                                    self.writerGroup.remove(writer);
-                                    // render writer view collection new
-                                    writers.render(); 
                                 }
                             });
                             break;

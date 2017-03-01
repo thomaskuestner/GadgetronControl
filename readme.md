@@ -18,7 +18,7 @@ export ISMRMRD_HOME=/usr/local
 export PATH=$PATH:$GADGETRON_HOME/bin:$ISMRMRD_HOME/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GADGETRON_HOME/lib:$ISMRMRD_HOME/lib
 ```
-For installation and startup you can use the following script. The UI is then reached under http://localhost:3000:
+For installation and startup you can use the following script. 
 
 ```bash
 # start gadgetron in background and write pipeline
@@ -29,8 +29,18 @@ cd GadgetronControl
 cp config.json.sample config.json
 # start GadgetronControl
 npm install
+```
+The UI is then started as a standalone GUI (locale = true):
+```bash
+# start electron GUI
 npm start
 ```
+or from within the webbrowser under http://localhost:3000 (locale = false):
+# start remote webserver
+```bash
+npm run remote
+```
+
 We implemented a small (but insecure) authentification to ensure a user message notification if anything is deleted. Username and password are both _admin_ by default but you are free to change them in the config.json.
 
 The project is ordered in the following folders:
@@ -54,12 +64,13 @@ public (backbone stuff)
 |  main.js (jump in from backbone)
 |  regionManager.js (handels multiple views)
 +--results (results of gadgetron for direct download)
++--index.html (main page)
++--load.html (loading page)
 trash (storage for the garbage)
 uploads (storage for your data)
 +--dat
 +--h5
 +--xsl
-index.html (main page)
 config.json (configuration variables)
 Gruntfile.js (grunt script)
 index.js (node.js server)

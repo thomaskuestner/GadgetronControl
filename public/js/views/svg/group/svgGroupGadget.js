@@ -92,6 +92,7 @@ class SvgGroupGadget extends SvgGroup {
                     action: 'none',
                     renderPropertyTypes: true,
                     savedEvent: function(event, model){
+                        self.changedEvent();
                         data.name[0] = model.get('name');
                         data.classname[0] = model.get('classname');
                         data.dll[0] = model.get('dll');
@@ -101,6 +102,7 @@ class SvgGroupGadget extends SvgGroup {
                 this.gadgetView.render();
                 break;
             case 'remove':
+                self.changedEvent();
                 var splitId = id.split('_');
                 var group = splitId[0];
                 var id = splitId[1];

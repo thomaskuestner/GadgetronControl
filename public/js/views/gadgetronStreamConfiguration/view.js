@@ -39,19 +39,22 @@ var GadgetronStreamConfigurationView = Backbone.View.extend({
         svgConfig.Draw();
         return this;
     },
-    changedEvent: function(event){
-        // some action
+    changedEvent: function(){
+        $('#save-dropdown').addClass('red');
     },
     // handels reader selection event
     selectReaderEvent: function(event, reader){
+        self.changedEvent();
         svgConfig.AppendReader(reader);
     },
     // handels gadget selection event
     selectGadgetEvent: function(event, gadget){
+        self.changedEvent();
         svgConfig.AppendGadget(gadget);
     },
     // handels writer selection event
     selectWriterEvent: function(event, writer){
+        self.changedEvent();
         svgConfig.AppendWriter(writer);
     },
     // rerender Callback function

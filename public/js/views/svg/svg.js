@@ -182,6 +182,7 @@ class GadgetronStreamConfigurationSvg {
     }
 
     RerenderGroupCallback(groupGadget){
+        self.changedEvent();
         groupGadget.group.remove();
         groupGadget.containerRect.remove();
         groupGadget.containerRectText.remove();

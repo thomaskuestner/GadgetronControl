@@ -89,6 +89,7 @@ class SvgGroupWriter extends SvgGroup {
                     action: 'none',
                     model: io,
                     savedEvent: function(event, model, type){
+                        self.changedEvent();
                         data.classname[0] = model.classname[0];
                         data.dll[0] = model.dll[0];
                         data.slot[0] = model.slot[0];
@@ -99,6 +100,7 @@ class SvgGroupWriter extends SvgGroup {
             case 'move':
                 break;
             case 'remove':
+                self.changedEvent();
                 var splitId = id.split('_');
                 var group = splitId[0];
                 var id = splitId[1];

@@ -42830,19 +42830,22 @@ var GadgetronStreamConfigurationView = _backbone2.default.View.extend({
         svgConfig.Draw();
         return this;
     },
-    changedEvent: function changedEvent(event) {
-        // some action
+    changedEvent: function changedEvent() {
+        (0, _jquery2.default)('#save-dropdown').addClass('red');
     },
     // handels reader selection event
     selectReaderEvent: function selectReaderEvent(event, reader) {
+        self.changedEvent();
         svgConfig.AppendReader(reader);
     },
     // handels gadget selection event
     selectGadgetEvent: function selectGadgetEvent(event, gadget) {
+        self.changedEvent();
         svgConfig.AppendGadget(gadget);
     },
     // handels writer selection event
     selectWriterEvent: function selectWriterEvent(event, writer) {
+        self.changedEvent();
         svgConfig.AppendWriter(writer);
     },
     // rerender Callback function
@@ -43929,6 +43932,7 @@ var SvgGroupGadget = function (_SvgGroup) {
                         action: 'none',
                         renderPropertyTypes: true,
                         savedEvent: function savedEvent(event, model) {
+                            self.changedEvent();
                             data.name[0] = model.get('name');
                             data.classname[0] = model.get('classname');
                             data.dll[0] = model.get('dll');
@@ -43938,6 +43942,7 @@ var SvgGroupGadget = function (_SvgGroup) {
                     this.gadgetView.render();
                     break;
                 case 'remove':
+                    self.changedEvent();
                     var splitId = id.split('_');
                     var group = splitId[0];
                     var id = splitId[1];
@@ -44164,7 +44169,7 @@ var SvgGroupReader = function (_SvgGroup) {
                         action: 'none',
                         model: io,
                         savedEvent: function savedEvent(event, model, type) {
-                            console.log(model);
+                            self.changedEvent();
                             data.classname[0] = model.classname[0];
                             data.dll[0] = model.dll[0];
                             data.slot[0] = model.slot[0];
@@ -44175,6 +44180,7 @@ var SvgGroupReader = function (_SvgGroup) {
                 case 'move':
                     break;
                 case 'remove':
+                    self.changedEvent();
                     var splitId = id.split('_');
                     var group = splitId[0];
                     var id = splitId[1];
@@ -44313,6 +44319,7 @@ var SvgGroupWriter = function (_SvgGroup) {
                         action: 'none',
                         model: io,
                         savedEvent: function savedEvent(event, model, type) {
+                            self.changedEvent();
                             data.classname[0] = model.classname[0];
                             data.dll[0] = model.dll[0];
                             data.slot[0] = model.slot[0];
@@ -44323,6 +44330,7 @@ var SvgGroupWriter = function (_SvgGroup) {
                 case 'move':
                     break;
                 case 'remove':
+                    self.changedEvent();
                     var splitId = id.split('_');
                     var group = splitId[0];
                     var id = splitId[1];
@@ -44535,6 +44543,7 @@ var GadgetronStreamConfigurationSvg = function () {
     }, {
         key: 'RerenderGroupCallback',
         value: function RerenderGroupCallback(groupGadget) {
+            self.changedEvent();
             groupGadget.group.remove();
             groupGadget.containerRect.remove();
             groupGadget.containerRectText.remove();

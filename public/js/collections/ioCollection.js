@@ -67,7 +67,6 @@ function findIos(collection, models, index, callback){
     }
     else{
         // calls callback function
-        console.log('ENDE');
         callback();
     }
 }

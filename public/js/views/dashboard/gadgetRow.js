@@ -4,7 +4,7 @@ import _ from 'underscore';
 Backbone.$ = $;
 
 // view of a gadget table row
-var IoRow = Backbone.View.extend({
+var GadgetRow = Backbone.View.extend({
     tagName: 'tr',
     template: _.template($("#gadget-dashboard-row").html()),
     initialize: function(attributes, options){
@@ -17,4 +17,4 @@ var IoRow = Backbone.View.extend({
     }
 });
 
-module.exports = IoRow;
+module.exports = GadgetRow;

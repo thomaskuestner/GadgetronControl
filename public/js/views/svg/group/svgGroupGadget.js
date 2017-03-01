@@ -92,10 +92,10 @@ class SvgGroupGadget extends SvgGroup {
                     action: 'none',
                     renderPropertyTypes: true,
                     savedEvent: function(event, model){
-                        data.name[0] = model.name[0];
-                        data.classname[0] = model.classname[0];
-                        data.dll[0] = model.dll[0];
-                        data.property = model.property;
+                        data.name[0] = model.get('name');
+                        data.classname[0] = model.get('classname');
+                        data.dll[0] = model.get('dll');
+                        data.property = model.get('properties');
                     }
                 });
                 this.gadgetView.render();

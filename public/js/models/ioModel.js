@@ -42,6 +42,7 @@ var IoModel = Backbone.Model.extend({
     },
     // triggers updating reader/writer in database on server
     updateDb: function(type){
+        var self = this;
         Backbone.ajax({
             type: 'PUT',
             url: "/api/updateDb",
@@ -50,14 +51,16 @@ var IoModel = Backbone.Model.extend({
                 content: this.toJSON()
             },
             success: function(result){
-                if(!result.status){
-
+                if(result.status === true){
+                    self.collection.remove(self.origin);
+                    self.collection.add(self);
                 }
             }
         });
     },
     // triggers removing reader/writer from database on server
     removeFromDb: function(type, callback){
+        var self = this;
         Backbone.ajax({
             type: 'DELETE',
             url: "/api/removeFromDb",
@@ -66,12 +69,17 @@ var IoModel = Backbone.Model.extend({
                 content: this.toJSON()
             },
             success: function(result){
-                if(!result.status){
-                    callback(false);
-                }
-                callback(true);
+                self.collection.remove(self);
             }
         });
+    },
+    // override clone
+    // because a deep clone is needed
+    clone: function(){
+        var clone = new IoModel($.extend(true, {}, this.toJSON()));
+        clone.origin = this;
+        clone.collection = this.collection;
+        return clone;
     }
 });
 

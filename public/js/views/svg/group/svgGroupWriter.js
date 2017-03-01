@@ -84,29 +84,17 @@ class SvgGroupWriter extends SvgGroup {
                     slot : data.slot[0],
                 });
 
-                if(typeof self.ioView === 'undefined'){
-                    self.ioView = new IoView({
-                        type: 'writer',
-                        action: 'none',
-                        model: io,
-                        savedEvent: function(event, model, type){
-                            data.classname[0] = model.classname[0];
-                            data.dll[0] = model.dll[0];
-                            data.slot[0] = model.slot[0];
-                        }
-                    });
-                    self.ioView.render();
-                }
-                else{
-                    self.ioView.model = io;
-                    self.ioView.savedEvent = function(event, model, type){
+                self.ioView = new IoView({
+                    type: 'writer',
+                    action: 'none',
+                    model: io,
+                    savedEvent: function(event, model, type){
                         data.classname[0] = model.classname[0];
                         data.dll[0] = model.dll[0];
                         data.slot[0] = model.slot[0];
-                    };
-                    self.ioView.render();
-                }
-                break;
+                    }
+                });
+                self.ioView.show();
                 break;
             case 'move':
                 break;

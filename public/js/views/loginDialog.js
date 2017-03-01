@@ -16,9 +16,6 @@ var LoginDialog = Backbone.View.extend({
         this.render();
     },
     show: function() {
-        $('#login-form').submit(function () {
-            e.preventDefault();
-        });
         this.$el.modal('show');
     },
     hide: function() {

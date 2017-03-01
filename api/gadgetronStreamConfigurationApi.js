@@ -4,16 +4,16 @@ var path = require('path');
 
 // API for gadgetronStreamConfiguration
 module.exports = function(app, config){
-    var configurationList = new Array;
+    app.configurationList = new Array;
     // route for getting StreamConfiguration-Files
     // only read directory at first access and if filewatcher detacted changes
     app.get('/api/gadgetronStreamConfiguration', function(req, res) {
-        if(configurationList.length > 0){
-            res.json(configurationList);
+        if(app.configurationList.length > 0){
+            res.json(app.configurationList);
         }
         else{
-            readConfigurationDir(config.config_dir, configurationList, function(){
-                res.json(configurationList);
+            readConfigurationDir(config.config_dir, app.configurationList, function(){
+                res.json(app.configurationList);
             });
         }
     });

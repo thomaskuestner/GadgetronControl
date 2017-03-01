@@ -17,6 +17,8 @@ var Ios = Backbone.View.extend({
         this.className = attributes.className;
         this.height = attributes.height + 'px';
         this.type = attributes.type;
+        this.listenTo(this.collection,'add', this.render);
+        this.listenTo(this.collection,'remove', this.render);
     },    
     events: {
         'click': 'clickedEvent'
@@ -36,7 +38,7 @@ var Ios = Backbone.View.extend({
     },    
     addIo: function(io){
         // append reader/writer row
-        var ioRow = new IoRow({model: io, selectEvent: this.selectEvent, type: this.type});
+        var ioRow = new IoRow({model: io, collection: this.collection, selectEvent: this.selectEvent, type: this.type});
         this.$el.find('#row').append(ioRow.render().el);
     }
 });

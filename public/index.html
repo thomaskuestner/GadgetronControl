@@ -4,7 +4,7 @@
 <head>
     <link rel="stylesheet" href="css/libs/bootstrap.min.css" />
     <link rel="stylesheet" href="css/base.css" />
-    <title>GadgetronControl</title>
+    <title>Gadgetron</title>
     <meta charset="utf-8" />
 </head>
 
@@ -111,12 +111,12 @@
 
     <script id="admin-area" type="text/template">
     </script>
-
+    
     <script id="dashboard" type="text/template">
         <div class="row">
             <div class="col-lg-6">
                 <div id="dashboard-configuration"></div>
-            </div>
+            </div>            
             <div class="col-lg-6">
                 <div id="dashboard-logfiles"></div>
             </div>
@@ -135,10 +135,10 @@
         <div class="row">
             <div class="col-lg-4">
                 <div id="dashboard-dat"></div>
-            </div>
+            </div>            
             <div class="col-lg-4">
                 <div id="dashboard-xsl"></div>
-            </div>
+            </div>             
             <div class="col-lg-4">
                 <div id="dashboard-results"></div>
             </div>
@@ -224,7 +224,7 @@
         </div>
     </script>
 
-    <script id="login-template" type="text/template">
+    <script id="login-template" type="text/template">      
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -290,14 +290,14 @@
             <button class="btn btn-default" type="button" id="upload-xsl-button"><i class="glyphicon glyphicon-upload" aria-hidden="true"></i> Upload Data</button><br />
             <input id="upload-xsl-input" type="file" name="uploads[]" class="hide" accept=".xsl">
         </div>
-        <div class="form-group">
-            <label for="result-name">Result file name (default: TIMESTAMP_dat/h5-filename.h5)</label>
+        <div class="form-group">            
+            <label for="result-name">Result file name (default: TIMESTAMP_dat/h5-filename.h5)</label>            
             <input type="text" class="form-control" id="result-name" name="result-name" placeholder="filename for the result">
         </div>
         <button class="btn btn-default" type="button" id="start-button"><i class="glyphicon glyphicon-play" aria-hidden="true"></i> Start Configuration</button>
     </script>
 
-    <script id="gadget-template" type="text/template">
+    <script id="gadget-template" type="text/template">      
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -483,16 +483,6 @@
     <!-- STATUS-Template -->
 
     <script src="js/gadgetronBundleApp.js"></script>
-    <script type="text/javascript">
-      var remote = require('electron').remote;
-      document.addEventListener('keydown', function (e) {
-        if(e.which === 123) {
-          remote.getCurrentWindow().webContents.openDevTools();
-        } else if(e.which === 126) {
-          location.reload();
-        }
-      });
-      </script>
 </body>
 
 </html>

@@ -5,10 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "electron main.js",
-    "remote": "node main_remote.js",
-    "browser": "node index.js",
+    "remote": "node index.js",
     "build": "browserify public/js/main.js -t [ babelify --presets [ es2015 ] ] -o public/js/gadgetronBundleApp.js",
-    "dev-client": "npm run watch-js & npm run browser",
+    "dev-client": "npm run watch-js & npm run remote",
     "dev-server": "nodemon index.js",
     "watch-js": "watchify public/js/main.js -t [ babelify --presets [ es2015 ] ] -o public/js/gadgetronBundleApp.js",
     "test": "echo \"Error: no test specified\" && exit 1"

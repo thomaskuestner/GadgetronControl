@@ -501,16 +501,6 @@
     <!-- STATUS-Template -->
 
     <script src="js/gadgetronBundleApp.js"></script>
-    <script type="text/javascript">
-      var remote = require('electron').remote;
-      document.addEventListener('keydown', function (e) {
-        if(e.which === 123) {
-          remote.getCurrentWindow().webContents.openDevTools();
-        } else if(e.which === 126) {
-          location.reload();
-        }
-      });
-      </script>
 </body>
 
 </html>

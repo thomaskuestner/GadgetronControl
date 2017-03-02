@@ -30,12 +30,12 @@ var GadgetronStreamConfigurationView = Backbone.View.extend({
     render: function(){
         self = this;
         // create svg preview
-        var svgPreview = new GadgetronStreamConfigurationSvg(this.clone, 'svg-preview', 4, null, null);
+        var svgPreview = new GadgetronStreamConfigurationSvg(this.clone, 'svg-preview', 4, null, null, null);
         svgPreview.Draw();
         // create svg
         svgConfig = new GadgetronStreamConfigurationSvg(this.clone, 'svg-config', 1, function(transform){
             svgPreview.DrawVisibleRegion(transform);
-        }, this.changedEvent, this.rerenderCallback);
+        }, this.changedEvent, this.rerenderCallback, this.clickContextMenu);
         svgConfig.draggabel = true;
         svgConfig.margin = false;
         svgConfig.Draw();
@@ -65,6 +65,14 @@ var GadgetronStreamConfigurationView = Backbone.View.extend({
         $('svg#svg-config').empty();
         $('svg#svg-preview').empty();
         self.render();
+    },
+    clickContextMenu: function(d3event){
+        var event = {
+            currentTarget:{
+                id: d3event.id
+            }
+        }
+        self.toolBarClickedEvent(event);
     },
     // handels toolbar click events
     toolBarClickedEvent: function(event){

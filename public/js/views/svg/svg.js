@@ -9,10 +9,11 @@ var self;
 var svg;
 
 class GadgetronStreamConfigurationSvg {
-    constructor(model, id, svgScalingFactor, zoomCallback, changedEvent, rerenderCallback){
+    constructor(model, id, svgScalingFactor, zoomCallback, changedEvent, rerenderCallback, clickContextMenu){
         this.id = id;
         this.model = model;
         this.changedEvent = changedEvent;
+        this.clickContextMenu = clickContextMenu;
         this.rerenderCallback = rerenderCallback;
         this.svgScalingFactor = svgScalingFactor;
         this.zoomCallback = zoomCallback;
@@ -76,6 +77,34 @@ class GadgetronStreamConfigurationSvg {
             .style('stroke-width', 1);
         this.container = svg.append('g');
         this.containerSelectAll = this.container.selectAll('g');
+
+        svg.on("contextmenu", function(){
+            var contextMenu = [
+                {"title": "Add Reader", "icon": "import", "id": "add-reader-button"}, 
+                {"title": "Add Gadget", "icon": "cog", "id": "add-gadget-button"}, 
+                {"title": "Add Writer", "icon": "export", "id": "add-writer-button"}];
+
+            d3.event.preventDefault();
+            var position = d3.mouse(this);
+            var menu = d3.select('#context-menu')
+                .style('left', position[0] + "px")
+                .style('top', position[1] + "px")
+                .style('display', 'inline-block')
+                .on('mouseleave', function() {
+                    d3.select('#context-menu').style('display', 'none');
+                });
+            menu.selectAll('li')
+                .data(contextMenu)
+                .enter()
+                .append('li')
+                .html(function(data, index){
+                    return `<a id="${data.id}"><i class="glyphicon glyphicon-${data.icon}" aria-hidden="true"></i> ${data.title}</a>`;
+                })
+                .on('click', function(data) {
+                    self.clickContextMenu(data);
+                    d3.select('#context-menu').style('display', 'none');
+                });
+        });
 
         if(this.draggabel){
             svg.call(d3.zoom()

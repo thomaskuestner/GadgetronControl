@@ -40,7 +40,7 @@ module.exports = function(app, config){
             req.session.role = 'user';
             req.session.isLoggedIn = false;
         }
-        app.broadcast('admin is logged','SUCCESS');
+        app.broadcast('admin is logged','SUCCESS', 'GadgetronControl');
         res.json({role: req.session.role, isLoggedIn: req.session.isLoggedIn});
     });
 
@@ -48,7 +48,7 @@ module.exports = function(app, config){
     app.post('/api/logout', function(req, res){
         req.session.role = 'user';
         req.session.isLoggedIn = false;  
-        app.broadcast('admin is logged out','SUCCESS');
+        app.broadcast('admin is logged out','SUCCESS', 'GadgetronControl');
         res.json({role: req.session.role, isLoggedIn: req.session.isLoggedIn});
     });
 }

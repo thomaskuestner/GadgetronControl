@@ -42,7 +42,7 @@ module.exports = function(app, config){
             tail = new tail(config.gadgetron_log);
 
             tail.on("line", function(data) {
-                app.broadcast(data);
+                app.broadcast(data, null, 'GadgetronControl');
             });
         }
     })

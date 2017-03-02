@@ -42271,7 +42271,9 @@ var LogFilesView = _backbone2.default.View.extend({
         };
     },
     events: {
-        'click #download-button': 'clickedDownloadButtonEvent'
+        'click #download-button': 'clickedDownloadButtonEvent',
+        'click': 'clickEvent',
+        'contextmenu': 'contextmenuEvent'
     },
     // handels on message event
     onMessageEvent: function onMessageEvent(msg) {
@@ -42297,7 +42299,8 @@ var LogFilesView = _backbone2.default.View.extend({
             default:
                 break;
         }
-        (0, _jquery2.default)('#log').append('<p style="color:' + color + '"><span style="color:gray">' + new Date().toISOString() + '</span> ' + data.data + '</p>');
+
+        (0, _jquery2.default)('#log').append('<p style="color:' + color + ';" data-sender="' + data.sender + '"><span style="color:gray">' + new Date().toISOString() + '</span> ' + data.data + '</p>');
         var logDiv = document.getElementById("log");
         if (logDiv) {
             logDiv.parentNode.scrollTop = logDiv.parentNode.scrollHeight;
@@ -42306,7 +42309,7 @@ var LogFilesView = _backbone2.default.View.extend({
         if ((0, _jquery2.default)('#log')[0]) {
             this.content = (0, _jquery2.default)('#log')[0].innerHTML;
         } else {
-            this.content = ['<p style="color:' + color + '"><span style="color:gray">' + new Date().toISOString() + '</span> ' + data.data + '</p>', this.content].join('');
+            this.content = ['<p style="color:' + color + ';" data-sender="' + data.sender + '"><span style="color:gray">' + new Date().toISOString() + '</span> ' + data.data + '</p>', this.content].join('');
         }
     },
     // handels download button click event
@@ -42333,6 +42336,27 @@ var LogFilesView = _backbone2.default.View.extend({
 
         document.body.removeChild(element);
     },
+    clickEvent: function clickEvent(event) {
+        (0, _jquery2.default)("#filter-menu").hide();
+    },
+    contextmenuEvent: function contextmenuEvent(event) {
+        event.preventDefault();
+        if ((0, _jquery2.default)("#filter-menu:visible").length === 0) {
+            var wrapper = (0, _jquery2.default)('body').parent();
+            var parentOffset = wrapper.offset();
+            var relX = event.pageX - parentOffset.left + wrapper.scrollLeft();
+            var relY = event.pageY - parentOffset.top + wrapper.scrollTop();
+
+            (0, _jquery2.default)(this).append((0, _jquery2.default)('#filter-menu').css({
+                position: 'absolute',
+                display: 'block',
+                left: relX,
+                top: relY
+            }));
+        } else {
+            (0, _jquery2.default)("#filter-menu:visible").hide();
+        }
+    },
     render: function render() {
         var content;
         if (this.content) {
@@ -42342,6 +42366,19 @@ var LogFilesView = _backbone2.default.View.extend({
         }
         this.dashboardConfigurationTemplate = this.template(_defineProperty({ title: this.title, buttons: [], content: content, className: 'log-file', height: [this.height, 'px'].join('') }, 'buttons', ['download']));
         this.$el.html(this.dashboardConfigurationTemplate);
+        (0, _jquery2.default)('.log-control-check').change(function (event) {
+            var checked = (0, _jquery2.default)(event.currentTarget).is(":checked");
+            var id = event.currentTarget.id;
+            (0, _jquery2.default)('*').filter(function () {
+                if ((0, _jquery2.default)(this).data('sender') === id) {
+                    if (checked) {
+                        (0, _jquery2.default)(this).show();
+                    } else {
+                        (0, _jquery2.default)(this).hide();
+                    }
+                }
+            });
+        });
         return this;
     }
 });

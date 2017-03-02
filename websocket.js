@@ -4,7 +4,7 @@ var WebSocketServer = require('ws').Server;
 module.exports = function(app){
     // WebSocket for logging
     var wss = new WebSocketServer({ server: app.server , path: '/logbroadcast'});
-        app.broadcast = function broadcast(data, loglevel) {
+        app.broadcast = function broadcast(data, loglevel, sender) {
         // parse message for loglevel case insensative (-i) when loglevel isn't set
         if(typeof loglevel === 'undefined'){
             var debug = new RegExp('DEBUG', 'i');
@@ -20,8 +20,7 @@ module.exports = function(app){
             }
         }
         wss.clients.forEach(function each(client) {
-            var msg = JSON.stringify({data: data, loglevel: loglevel});
-            client.send(JSON.stringify({data: data, loglevel: loglevel}));
+            client.send(JSON.stringify({data: data, loglevel: loglevel, sender: sender}));
         });
     };
 

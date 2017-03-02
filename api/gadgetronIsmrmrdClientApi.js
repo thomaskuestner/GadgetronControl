@@ -33,18 +33,18 @@ module.exports = function(app, config){
                 siemensToIsmrmd = spawn('siemens_to_ismrmrd',['-f', dataPath, '-o', destinationH5Path]); 
             }
             siemensToIsmrmd.stdout.on('data',function(data){
-                app.broadcast(data.toString());
+                app.broadcast(data.toString(),null, 'siemens_to_ismrmrd');
             });
             siemensToIsmrmd.on('close', function(code){
-                app.broadcast('converted ' + fileName + ' to h5-format', 'SUCCESS');
+                app.broadcast('converted ' + fileName + ' to h5-format', 'SUCCESS', 'siemens_to_ismrmrd');
                 dataPath = destinationH5Path;
                 var gadgetronIsmrmrdClient = spawn('gadgetron_ismrmrd_client',['-f', dataPath, '-c', configurationPath, '-o', resultPath, '-p', config.gadgetron_port]);
                 gadgetronIsmrmrdClient.stdout.on('data', function(data){
-                    app.broadcast(data.toString());
+                    app.broadcast(data.toString(), null, 'gadgetron_ismrmrd_client');
                 });
                 gadgetronIsmrmrdClient.on('close', function(code){
                     if(errorFlag){
-                        app.broadcast('data ' + dataPath + ' was proceeded with ' + configurationPath + ' to ' + resultPath, 'SUCCESS');
+                        app.broadcast('data ' + dataPath + ' was proceeded with ' + configurationPath + ' to ' + resultPath, 'SUCCESS', 'gadgetron_ismrmrd_client');
                         if(!res.headersSent){
                             res.json({
                                 data:{
@@ -59,20 +59,20 @@ module.exports = function(app, config){
                 }, this);
                 gadgetronIsmrmrdClient.stderr.on('data', function(data){
                     errorFlag = true;
-                    app.broadcast(data.toString(),'ERROR');
+                    app.broadcast(data.toString(),'ERROR', 'gadgetron_ismrmrd_client');
                     if(!res.headersSent){
                         res.json({status: 'false'});
                     }
                 }, this);
             });
             siemensToIsmrmd.stderr.on('data', function(data){
-                app.broadcast(data.toString(),'ERROR');
+                app.broadcast(data.toString(),'ERROR', 'gadgetron_ismrmrd_client');
             });
         }
         else{
             var gadgetronIsmrmrdClient = spawn('gadgetron_ismrmrd_client',['-f', dataPath, '-c', configurationPath, '-o', resultPath, '-p', config.gadgetron_port]);
             gadgetronIsmrmrdClient.stdout.on('data', function(data){
-                app.broadcast(data.toString());
+                app.broadcast(data.toString(), null, 'gadgetron_ismrmrd_client');
                 if(data.toString().toLowerCase().indexOf('error') === -1){
                     errorFlag = true;
                     if(!res.headersSent){
@@ -82,7 +82,7 @@ module.exports = function(app, config){
             });
             gadgetronIsmrmrdClient.on('close', function(code){
                 if(!errorFlag){
-                    app.broadcast('data ' + dataPath + ' was proceeded with ' + configurationPath + ' to ' + resultPath, 'SUCCESS');
+                    app.broadcast('data ' + dataPath + ' was proceeded with ' + configurationPath + ' to ' + resultPath, 'SUCCESS', 'gadgetron_ismrmrd_client');
                     if(!res.headersSent){
                         res.json({
                             data:{
@@ -97,7 +97,7 @@ module.exports = function(app, config){
             }, this);
             gadgetronIsmrmrdClient.stderr.on('data', function(data){
                 errorFlag = true;
-                app.broadcast(data.toString(),'ERROR');
+                app.broadcast(data.toString(),'ERROR', 'gadgetron_ismrmrd_client');
                 if(!res.headersSent){
                     res.json({status: 'false'});
                 }

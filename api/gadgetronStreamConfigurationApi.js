@@ -22,7 +22,7 @@ module.exports = function(app, config){
     app.post('/api/gadgetronStreamConfiguration', function(req, res) {
         var savePath = config.config_dir + req.body.fileName;
         fs.writeFileSync(savePath, req.body.content);
-        app.broadcast('saved ' + savePath, 'SUCCESS');
+        app.broadcast('saved ' + savePath, 'SUCCESS', 'GadgetronControl');
         res.json({status: 'saved'});
     });
 

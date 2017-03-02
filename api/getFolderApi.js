@@ -9,13 +9,13 @@ module.exports = function(app){
         var path = req.query.folderPath;
         mkdirp(path, function(error){
             if(error){
-                app.broadcast(error);
+                app.broadcast(error, 'ERROR', 'GadgetronControl');
                 res.json(error);
             }
             else{
                 recursive(path, function(error, files) {
                     if(error){
-                        app.broadcast(error);
+                        app.broadcast(error, 'ERROR', 'GadgetronControl');
                         res.json(error);
                     }
                     else{

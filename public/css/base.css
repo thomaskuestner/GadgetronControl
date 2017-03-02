@@ -59,6 +59,17 @@ a.btn{
     text-decoration: none;
 }
 
+.menu > div > label{
+    color: #333;
+    font-weight: 400;
+    line-height: 1.42857143;
+    display: block;
+    clear: both;
+    padding: 3px 20px;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
 .menu > li > a:hover{
     text-decoration: none;
     color: #262626;

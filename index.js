@@ -57,12 +57,12 @@ app.get('/api/startHdfView', function(req, res) {
     var hdfViewer = spawn('hdfview',[filePath]);
     hdfViewer.stdout.on('data', function(data){
         if(data){
-            app.broadcast(data.toString());
+            app.broadcast(data.toString(), null, 'hdfview');
         }
     });
     hdfViewer.on('close', function(code){
         if(success){
-            app.broadcast('hdfview opened ' + filePath, 'SUCCESS');
+            app.broadcast('hdfview opened ' + filePath, 'SUCCESS', 'hdfview');
         }
         if(!res.headersSent){
             res.json({status: 'true'});
@@ -70,13 +70,13 @@ app.get('/api/startHdfView', function(req, res) {
     });
     hdfViewer.stderr.on('data', function(data){
         success = false;
-        app.broadcast(data.toString(),'ERROR');
+        app.broadcast(data.toString(),'ERROR', 'hdfview');
         if(!res.headersSent){
             res.json({status: 'false'});
         }
     });
     hdfViewer.on('error', function(error){
-        app.broadcast('probabply hdfview is not installed', 'ERROR');
+        app.broadcast('probabply hdfview is not installed', 'ERROR', 'hdfview');
     })
 });
 

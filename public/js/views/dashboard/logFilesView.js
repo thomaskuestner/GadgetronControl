@@ -23,6 +23,8 @@ var LogFilesView = Backbone.View.extend({
     },
     events: {
         'click #download-button': 'clickedDownloadButtonEvent',
+        'click': 'clickEvent',
+        'contextmenu': 'contextmenuEvent'
     },
     // handels on message event
     onMessageEvent: function(msg){
@@ -48,7 +50,8 @@ var LogFilesView = Backbone.View.extend({
             default:
                 break;
         }
-        $('#log').append(`<p style="color:${color}"><span style="color:gray">${new Date().toISOString()}</span> ${data.data}</p>`);
+
+        $('#log').append(`<p style="color:${color};" data-sender="${data.sender}"><span style="color:gray">${new Date().toISOString()}</span> ${data.data}</p>`);
         var logDiv = document.getElementById("log");
         if(logDiv){
             logDiv.parentNode.scrollTop = logDiv.parentNode.scrollHeight;
@@ -58,7 +61,7 @@ var LogFilesView = Backbone.View.extend({
             this.content = $('#log')[0].innerHTML;
         }
         else{
-            this.content = [`<p style="color:${color}"><span style="color:gray">${new Date().toISOString()}</span> ${data.data}</p>`, this.content].join('');
+            this.content = [`<p style="color:${color};" data-sender="${data.sender}"><span style="color:gray">${new Date().toISOString()}</span> ${data.data}</p>`, this.content].join('');
         }
     },
     // handels download button click event
@@ -85,6 +88,28 @@ var LogFilesView = Backbone.View.extend({
 
         document.body.removeChild(element);
     },
+    clickEvent: function(event){
+        $("#filter-menu").hide();
+    },
+    contextmenuEvent: function(event){
+        event.preventDefault();
+        if($("#filter-menu:visible").length === 0){
+            var wrapper = $('body').parent();
+            var parentOffset = wrapper.offset();
+            var relX = event.pageX - parentOffset.left + wrapper.scrollLeft();
+            var relY = event.pageY - parentOffset.top + wrapper.scrollTop();
+
+            $(this).append($('#filter-menu').css({
+                position: 'absolute',
+                display: 'block',
+                left: relX,
+                top: relY
+            }));
+        }
+        else{
+            $("#filter-menu:visible").hide();
+        }
+    },
     render: function() {
         var content;
         if(this.content){
@@ -95,6 +120,20 @@ var LogFilesView = Backbone.View.extend({
         }     
         this.dashboardConfigurationTemplate = this.template({title: this.title, buttons: [], content, className: 'log-file', height: [this.height,'px'].join(''), buttons: ['download']});
         this.$el.html(this.dashboardConfigurationTemplate);
+        $('.log-control-check').change(function(event){
+            var checked = $(event.currentTarget).is(":checked");
+            var id = event.currentTarget.id;
+            $('*').filter(function() {
+                if($(this).data('sender') === id){
+                    if(checked){
+                        $(this).show();
+                    }
+                    else{
+                        $(this).hide();
+                    }
+                }
+            });
+        });
         return this;
     }
 });

@@ -35,11 +35,11 @@ module.exports = function(app, config){
         if(database){
             database.insert(content, function(error, entry){
             if(error){
-                app.broadcast(JSON.stringify(error), 'ERROR');
+                app.broadcast(JSON.stringify(error), 'ERROR', 'GadgetronControl');
                 res.json({status: false});
             }
             else{
-                app.broadcast('write ' + type + ' in Database','SUCCESS');
+                app.broadcast('write ' + type + ' in Database','SUCCESS', 'GadgetronControl');
                 res.json({status: true, _id: type._id});
             }
             });
@@ -68,11 +68,11 @@ module.exports = function(app, config){
         if(database){
             database.update({ _id: content._id}, content, function(error){
             if(error){
-                app.broadcast(JSON.stringify(error), 'ERROR');
+                app.broadcast(JSON.stringify(error), 'ERROR', 'GadgetronControl');
                 res.json({status: false});
             }
             else{
-                app.broadcast('updated ' + type + ' in Database','SUCCESS');
+                app.broadcast('updated ' + type + ' in Database','SUCCESS', 'GadgetronControl');
                 res.json({status: true});
             }
             });
@@ -101,11 +101,11 @@ module.exports = function(app, config){
         if(database){
             database.remove({ _id: content._id}, {}, function(error){
             if(error){
-                app.broadcast(JSON.stringify(error), 'ERROR');
+                app.broadcast(JSON.stringify(error), 'ERROR', 'GadgetronControl');
                 res.json({status: false});
             }
             else{
-                app.broadcast('remove ' + type + ' in Database','SUCCESS');
+                app.broadcast('remove ' + type + ' in Database','SUCCESS', 'GadgetronControl');
                 res.json({status: true});
             }
             });

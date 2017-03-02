@@ -34,11 +34,11 @@ module.exports = function(app, config){
                     // start convertion with siemens_to_ismrmrd
                     var siemensToIsmrmd = spawn('siemens_to_ismrmrd',['-f', destinationPath, '-o', destinationH5Path]);
                     siemensToIsmrmd.stdout.on('data',function(data){
-                        app.broadcast(data.toString());
+                        app.broadcast(data.toString(), null, 'siemens_to_ismrmrd');
                     });
                     siemensToIsmrmd.on('close', function(code){
-                        app.broadcast('converted ' + fileName + ' to h5-format', 'SUCCESS');
-                        app.broadcast('uploaded ' + fileName, 'SUCCESS');
+                        app.broadcast('converted ' + fileName + ' to h5-format', 'SUCCESS', 'siemens_to_ismrmrd');
+                        app.broadcast('uploaded ' + fileName, 'SUCCESS', 'siemens_to_ismrmrd');
                         res.json({
                             status: 'SUCCESS',
                             data: {
@@ -56,7 +56,7 @@ module.exports = function(app, config){
                         });
                     });
                     siemensToIsmrmd.stderr.on('data', function(data){
-                        app.broadcast(data.toString());
+                        app.broadcast(data.toString(), null, 'siemens_to_ismrmrd');
                     });
                     break;
                 case 'h5':
@@ -74,7 +74,7 @@ module.exports = function(app, config){
         });
         // log any errors that occur
         form.on('error', function(err) {
-            app.broadcast('An error has occured: \n' + err, 'ERROR');
+            app.broadcast('An error has occured: \n' + err, 'ERROR', 'GadgetronControl');
         });
         // once all the files have been uploaded, send a response to the client
         form.on('end', function() {
@@ -122,7 +122,7 @@ module.exports = function(app, config){
                         };
                         break;
                 }
-                app.broadcast('uploaded ' + fileName, 'SUCCESS');
+                app.broadcast('uploaded ' + fileName, 'SUCCESS', 'GadgetronControl');
                 res.json({
                     status: 'SUCCESS',
                     data: data
@@ -152,10 +152,10 @@ module.exports = function(app, config){
                 // create symbolic link
                 var ln = spawn('ln', ['-s', value, destinationPath]);
                 ln.stdout.on('data',function(data){
-                    app.broadcast(data.toString());
+                    app.broadcast(data.toString(), null, 'GadgetronControl');
                 });
                 ln.on('close', function(code){
-                    app.broadcast('created symbolic link from ' + value + ' to ' + destinationPath, 'SUCCESS');
+                    app.broadcast('created symbolic link from ' + value + ' to ' + destinationPath, 'SUCCESS', 'GadgetronControl');
                     if(extension !== 'dat'){
                         switch(extension){
                             case 'h5':
@@ -204,10 +204,10 @@ module.exports = function(app, config){
                         if(extension === 'dat'){
                             var siemensToIsmrmd = spawn('siemens_to_ismrmrd',['-f', destinationPath, '-o', destinationH5Path]);
                                 siemensToIsmrmd.stdout.on('data',function(data){
-                                app.broadcast(data.toString());
+                                app.broadcast(data.toString(), null, 'siemens_to_ismrmrd');
                             });
                             siemensToIsmrmd.on('close', function(code){
-                                app.broadcast('converted ' + fileName + ' to h5-format', 'SUCCESS');
+                                app.broadcast('converted ' + fileName + ' to h5-format', 'SUCCESS', 'siemens_to_ismrmrd');
                                 if(!res.headersSent){
                                     res.json({
                                         status: 'SUCCESS',
@@ -227,7 +227,7 @@ module.exports = function(app, config){
                                 }
                             });
                             siemensToIsmrmd.stderr.on('data', function(data){
-                                app.broadcast(data.toString(),'ERROR');
+                                app.broadcast(data.toString(),'ERROR', 'siemens_to_ismrmrd');
                                 if(!res.headersSent){
                                     res.json({
                                         status: 'ERROR'
@@ -238,7 +238,7 @@ module.exports = function(app, config){
                     }
                 });
                 ln.stderr.on('data', function(data){
-                    app.broadcast(data.toString(),'ERROR');
+                    app.broadcast(data.toString(),'ERROR', 'GadgetronControl');
                     if(!res.headersSent){
                         res.json({
                             status: 'ERROR'
@@ -247,7 +247,7 @@ module.exports = function(app, config){
                 });
             }
             else{
-                app.broadcast('selected path: ' + value + ' is not a file', 'ERROR');
+                app.broadcast('selected path: ' + value + ' is not a file', 'ERROR', 'GadgetronControl');
                 if(!res.headersSent){
                     res.json({
                         status: 'ERROR'
@@ -256,7 +256,7 @@ module.exports = function(app, config){
             }
         }
         catch (error) {
-            app.broadcast(error.toString(), 'ERROR');
+            app.broadcast(error.toString(), 'ERROR', 'GadgetronControl');
             if(!res.headersSent){
                 res.json({
                     status: 'ERROR'

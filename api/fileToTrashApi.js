@@ -10,11 +10,11 @@ module.exports = function(app, config){
         var trashFileName = path.join(config.trash_dir, fileName);
         mv(fileName, trashFileName, {mkdirp: true}, function(error){
             if(error){
-                app.broadcast(JSON.stringify(error), 'ERROR');
+                app.broadcast(JSON.stringify(error), 'ERROR', 'GadgetronControl');
                 res.json({status: false});
             }
             else{
-                app.broadcast('moved ' + fileName + ' to trash', 'SUCCESS');
+                app.broadcast('moved ' + fileName + ' to trash', 'SUCCESS', 'GadgetronControl');
                 res.json({status: true});
             }
         });
@@ -25,11 +25,11 @@ module.exports = function(app, config){
         var fileName = req.body.fileName;
         fs.unlink(fileName, function(error, stats){
             if(error){
-                app.broadcast(JSON.stringify(error),'ERROR');
+                app.broadcast(JSON.stringify(error),'ERROR', 'GadgetronControl');
                 res.json({status: false});
             }
             else{
-                app.broadcast('deleted ' +  fileName, 'SUCCESS');
+                app.broadcast('deleted ' +  fileName, 'SUCCESS', 'GadgetronControl');
                 res.json({status: true});
             }
         });
@@ -41,11 +41,11 @@ module.exports = function(app, config){
         var restoreFileName = fileName.replace(config.trash_dir + '/','');
         mv(fileName, restoreFileName, {mkdirp: true}, function(error){
             if(error){
-                app.broadcast(JSON.stringify(error), 'ERROR');
+                app.broadcast(JSON.stringify(error), 'ERROR', 'GadgetronControl');
                 res.json({status: false});
             }
             else{
-                app.broadcast('moved ' + fileName + ' back', 'SUCCESS');
+                app.broadcast('moved ' + fileName + ' back', 'SUCCESS', 'GadgetronControl');
                 res.json({status: true});
             }
         });

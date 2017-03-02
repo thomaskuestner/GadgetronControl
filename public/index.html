@@ -404,6 +404,24 @@
         </div>
     </script>
 
+    <script id="unsaved-template" type="text/template">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="solve-modal-label">Unsaved Changes</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Do you want to discard changes?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon glyphicon-ok" aria-hidden="true"></i> No</button>
+                    <button class="btn btn-danger" type="button" id="yes-button"><i class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></i> Yes</button>
+                </div>
+            </div>
+        </div>
+    </script>
+
     <script id="gadget-row" type="text/template">
         <td><%= name %></td>
         <td><a class="btn" id="select-gadget"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></td>

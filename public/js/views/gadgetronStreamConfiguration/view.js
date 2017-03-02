@@ -22,8 +22,10 @@ var GadgetronStreamConfigurationView = Backbone.View.extend({
         gadgetGroup = attributes.gadgetGroup;
         readerGroup = attributes.readerGroup;
         writerGroup = attributes.writerGroup;
+        this.changed = attributes.changed;
         this.playButtonClickEvent = attributes.playButtonClickEvent;
         this.clone = this.model;
+        this.unsavedChanges = false;
     },
     render: function(){
         self = this;
@@ -40,6 +42,7 @@ var GadgetronStreamConfigurationView = Backbone.View.extend({
         return this;
     },
     changedEvent: function(){
+        self.unsavedChanges = true;
         $('#save-dropdown').addClass('red');
     },
     // handels reader selection event
@@ -86,6 +89,7 @@ var GadgetronStreamConfigurationView = Backbone.View.extend({
                 break;
             // triggers save configuration
             case 'save-button':
+                self.unsavedChanges = false;
                 $('#save-dropdown').removeClass('red');
                 self.clone.saveModel();
                 break;
@@ -110,6 +114,7 @@ var GadgetronStreamConfigurationView = Backbone.View.extend({
     saveEvent: function(event, value){
         if(value){
             if(this.clone.saveModel(value)){
+                self.unsavedChanges = false;
                 $('#save-dropdown').removeClass('red');
                 $('#modal').modal('hide');
             }

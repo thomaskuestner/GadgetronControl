@@ -25,6 +25,7 @@ import FolderView from './../views/folderView';
 import GadgetView from './../views/gadgetView';
 import IoView from './../views/ioView';
 import SaveDialog from './../views/saveDialog';
+import UnsavedChangesDialog from './../views/gadgetronStreamConfiguration/unsavedChangesDialog';
 
 // Extra
 import RegionManager from './../regionManager';
@@ -38,6 +39,22 @@ var readers;
 var writers;
 var ioView;
 var self;
+
+var originalFn = Backbone.history.loadUrl;
+
+// Prevent Routing if there are unsaved Changes
+Backbone.history.loadUrl = function() {
+    if(typeof self.gadgetronStreamConfigurationView !== 'undefined' && self.gadgetronStreamConfigurationView.unsavedChanges){
+        var direction = window.location.hash;
+        var previousFragment = Backbone.history.fragment;
+        window.location.hash = '#' + previousFragment;
+        var unsavedChangesDialog = new UnsavedChangesDialog({redirectEvent: self.redirectEvent, direction, gadgetronStreamConfigurationView: self.gadgetronStreamConfigurationView});
+        unsavedChangesDialog.show();
+    }
+    else {
+        return originalFn.apply(this, arguments);
+    }
+};
 
 // Router
 var Router = Backbone.Router.extend({
@@ -275,6 +292,7 @@ var Router = Backbone.Router.extend({
     // route for specific configuration
     // name: filename of specific configuration
     gadgetronStreamConfiguration: function(name){
+        this.changed = false;
         // search for configuration in collection
         self.gadgetronStreamConfiguration = gadgetronStreamConfigurationGroup.where({name})[0];
         // only render view once

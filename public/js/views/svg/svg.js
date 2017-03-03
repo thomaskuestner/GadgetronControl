@@ -22,7 +22,7 @@ class GadgetronStreamConfigurationSvg {
         this.svgHeight = (window.innerHeight - 2 * $('nav').outerHeight() - 4) / this.svgScalingFactor;
         this.draggabel = false;
         this.margin = true;
-        
+
         // for new files this has to be done
         if(!this.model.get('configuration').gadgetronStreamConfiguration){
             this.model.get('configuration').gadgetronStreamConfiguration = {};
@@ -80,8 +80,8 @@ class GadgetronStreamConfigurationSvg {
 
         svg.on("contextmenu", function(){
             var contextMenu = [
-                {"title": "Add Reader", "icon": "import", "id": "add-reader-button"}, 
-                {"title": "Add Gadget", "icon": "cog", "id": "add-gadget-button"}, 
+                {"title": "Add Reader", "icon": "import", "id": "add-reader-button"},
+                {"title": "Add Gadget", "icon": "cog", "id": "add-gadget-button"},
                 {"title": "Add Writer", "icon": "export", "id": "add-writer-button"}];
 
             d3.event.preventDefault();
@@ -110,12 +110,8 @@ class GadgetronStreamConfigurationSvg {
             svg.call(d3.zoom()
                 .scaleExtent([this.minZoom, this.maxZoom])
                 .on("zoom", self.ZoomAndMove));
-            
-            svg.call(d3.zoom()
-                .scaleExtent([this.minZoom, this.maxZoom])
-                .on("zoom", self.ZoomAndMove));
         }
-        
+
         if(this.readerLength){
             this.readers = new SvgGroupReader(this.model.get('configuration').gadgetronStreamConfiguration.reader, this.gadgetLength, this.id, this.svgScalingFactor, this.changedEvent, this.container, this.containerSelectAll, this.RerenderCallback);
             this.readers.Draw();

@@ -14,7 +14,6 @@ import FileCollection from './../collections/fileCollection';
 // Views
 import Dashboard from './../views/dashboard/dashboard';
 import SettingsView from './../views/settings/settingsView';
-import Configurations from './../views/dashboard/configurations';
 import Ios from './../views/dashboard/ios';
 import Gadgets from './../views/dashboard/gadgets';
 import LogFilesView from './../views/dashboard/logFilesView';

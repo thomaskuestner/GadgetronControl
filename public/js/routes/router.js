@@ -13,6 +13,7 @@ import FileCollection from './../collections/fileCollection';
 
 // Views
 import Dashboard from './../views/dashboard/dashboard';
+import SettingsView from './../views/settings/settingsView';
 import Configurations from './../views/dashboard/configurations';
 import Ios from './../views/dashboard/ios';
 import Gadgets from './../views/dashboard/gadgets';
@@ -74,7 +75,8 @@ var Router = Backbone.Router.extend({
         "admin": "admin",
         "gadgetronStreamConfiguration/*name": "gadgetronStreamConfiguration",
         "trash": "trash",
-        "logfile": "logfile"
+        "logfile": "logfile",
+        "settings": "settings"
     },
     // index/dashboard page
     index: function(){
@@ -310,11 +312,6 @@ var Router = Backbone.Router.extend({
     },
     // route for trash view
     trash: function(){
-        // clear view
-        $('#svg-region').addClass('hide');
-        $('svg#svg-config').empty();
-        $('svg#svg-preview').empty();
-        $('#tool-bar').hide();
         var height = window.innerHeight - 2 * $('nav').outerHeight() - 2;
         if(typeof this.trashView != 'undefined'){
             this.trashView.remove();
@@ -329,15 +326,10 @@ var Router = Backbone.Router.extend({
             buttons: ['trash'],
             trash: true
         });
-        $('#main-region').html(this.trashView.render().el);
+        RegionManager.show(this.trashView);
     },
     // route for log-file view
     logfile: function(){
-        // clear view
-        $('#svg-region').addClass('hide');
-        $('svg#svg-config').empty();
-        $('svg#svg-preview').empty();
-        $('#tool-bar').hide();
         var height = window.innerHeight - 2 * $('nav').outerHeight() - 2;
         // Render Log-File Views
         if(typeof this.logFilesView === 'undefined'){
@@ -357,11 +349,16 @@ var Router = Backbone.Router.extend({
                 content: this.logFilesView.content
             });
         }
-        $('#main-region').html(this.logFilesView.render().el);   
+        RegionManager.show(this.logFilesView); 
         var logDiv = document.getElementById("log");
         if(logDiv){
             logDiv.parentNode.scrollTop = logDiv.parentNode.scrollHeight;
         }
+    },
+    settings: function(){
+        // Render settingsView
+        this.settingsView = new SettingsView();
+        RegionManager.show(this.settingsView);
     }
 });
 

@@ -50,6 +50,12 @@ require('./api/uploadApi')(app, config);
 // load gadgetronIsmrmrdClient API
 require('./api/gadgetronIsmrmrdClientApi')(app, config);
 
+// load Configuration API
+require('./api/configurationApi')(app);
+
+// load GadgetronControl API
+require('./api/gadgetronControlApi')(app);
+
 // start hdfview on server
 app.get('/api/startHdfView', function(req, res) {
     var filePath = req.query.filePath;

@@ -26,6 +26,7 @@
                     <li><a class="btn" href="#"><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> Dashboard</a></li>
                     <li><a class="btn" href="#logfile"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Log-File</a></li>
                     <li><a class="btn" href="#trash"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Trash</a></li>
+                    <li><a class="btn" href="#settings"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Settings</a></li>
                 </ul>
                 <ul id="navbar-right" class="nav navbar-nav navbar-right"></ul>
             </div>
@@ -112,6 +113,7 @@
     <script id="admin-area" type="text/template">
     </script>
 
+    <!-- DASHBOARD -->
     <script id="dashboard" type="text/template">
         <div class="row">
             <div class="col-lg-6">
@@ -144,6 +146,47 @@
             </div>
         </div>
     </script>
+    <!-- DASHBOARD -->
+
+    <!-- SETTINGS -->
+    <script id="settings" type="text/template">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Configuration
+                    </div>
+                    <div class="panel-body">
+                        <div id="configuration-view"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+    <!-- SETTINGS -->
+
+    <!-- CONFIGURATION -->
+    <script id="configuration-template" type="text/template">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <hr />        
+        <button class="btn btn-warning pull-right" type="button" id="save-configuration-json"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i> Save & Restart Server</button>
+    </script>
+
+        <!-- CONFIGURATION-ROW -->
+        <script id="configuration-json-row" type="text/template">            
+            <td><%= key %></td>
+            <td contenteditable=true><%= value %></td>
+        </script>        
+        <!-- CONFIGURATION-ROW -->
+    <!-- CONFIGURATION -->
 
     <script id="dashboard-template" type="text/template">
         <div class="panel panel-default">

@@ -28,6 +28,10 @@ var RegionManager = (function (Backbone, $){
 
     // show view
     region.show = function(view){
+        $('#tool-bar').hide();
+        $('#svg-region').addClass('hide');
+        $('svg#svg-config').empty();
+        $('svg#svg-preview').empty();
         closeView(currentView);
         currentView = view;
         openView(currentView);

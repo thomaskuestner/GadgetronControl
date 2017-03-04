@@ -61,7 +61,7 @@ var LogFilesView = Backbone.View.extend({
             this.content = $('#log')[0].innerHTML;
         }
         else{
-            this.content = [`<p style="color:${color};" data-sender="${data.sender}"><span style="color:gray">${new Date().toISOString()}</span> ${data.data}</p>`, this.content].join('');
+            this.content = [this.content, `<p style="color:${color};" data-sender="${data.sender}"><span style="color:gray">${new Date().toISOString()}</span> ${data.data}</p>`].join('');
         }
     },
     // handels download button click event

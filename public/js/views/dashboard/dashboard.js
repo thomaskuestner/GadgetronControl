@@ -3,7 +3,6 @@ import $ from 'jquery';
 import _ from 'underscore';
 
 // Views
-import Configurations from './configurations';
 import SaveDialog from './../saveDialog';
 import FolderView from './../folderView';
 import PlayView from './../playView';

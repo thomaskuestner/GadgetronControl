@@ -354,9 +354,9 @@ var Router = Backbone.Router.extend({
             logDiv.parentNode.scrollTop = logDiv.parentNode.scrollHeight;
         }
     },
-    settings: function(){
+    settings: function(){        
         // Render settingsView
-        this.settingsView = new SettingsView();
+        this.settingsView = new SettingsView({gadgetGroup: this.gadgetGroup, readerGroup: this.readerGroup, writerGroup: this.writerGroup});
         RegionManager.show(this.settingsView);
     }
 });

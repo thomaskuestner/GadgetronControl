@@ -18,15 +18,19 @@ module.exports = function(app, config){
         var type = req.body.type;
         var content = req.body.content;
         var database;
+        var name;
         switch (type) {
             case 'gadget':      
                 database = gadgetsDb;
+                name = req.body.content.name;
                 break;
             case 'reader':
                 database = readersDb;
+                name = req.body.content.classname;
                 break;  
             case 'writer':
                 database = writersDb;
+                name = req.body.content.classname;
                 break;  
             default:
                 res.json({status: false});
@@ -39,7 +43,7 @@ module.exports = function(app, config){
                 res.json({status: false});
             }
             else{
-                app.broadcast('write ' + type + ' in Database','SUCCESS', 'GadgetronControl');
+                app.broadcast('write ' + type + ': ' + name + ' in Database','SUCCESS', 'GadgetronControl');
                 res.json({status: true, _id: type._id});
             }
             });

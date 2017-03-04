@@ -45698,8 +45698,6 @@ function findIo(collection, ios, index, callback) {
 },{"./../models/ioModel":218,"backbone":2,"jquery":28}],213:[function(require,module,exports){
 'use strict';
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
 var _backbone = require('backbone');
 
 var _backbone2 = _interopRequireDefault(_backbone);
@@ -45712,29 +45710,9 @@ var _underscore = require('underscore');
 
 var _underscore2 = _interopRequireDefault(_underscore);
 
-var _gadgetronStreamConfigurationModel = require('./models/gadgetronStreamConfigurationModel');
-
-var _gadgetronStreamConfigurationModel2 = _interopRequireDefault(_gadgetronStreamConfigurationModel);
-
-var _gadgetModel = require('./models/gadgetModel');
-
-var _gadgetModel2 = _interopRequireDefault(_gadgetModel);
-
-var _ioModel = require('./models/ioModel');
-
-var _ioModel2 = _interopRequireDefault(_ioModel);
-
 var _gadgetronStreamConfigurationCollection = require('./collections/gadgetronStreamConfigurationCollection');
 
 var _gadgetronStreamConfigurationCollection2 = _interopRequireDefault(_gadgetronStreamConfigurationCollection);
-
-var _gadgetCollection = require('./collections/gadgetCollection');
-
-var _gadgetCollection2 = _interopRequireDefault(_gadgetCollection);
-
-var _ioCollection = require('./collections/ioCollection');
-
-var _ioCollection2 = _interopRequireDefault(_ioCollection);
 
 var _collectionView = require('./views/gadgetronStreamConfiguration/collectionView');
 
@@ -45760,25 +45738,21 @@ var _regionManager = require('./regionManager');
 
 var _regionManager2 = _interopRequireDefault(_regionManager);
 
+var _readGadgetronFiles = require('./readGadgetronFiles');
+
+var _readGadgetronFiles2 = _interopRequireDefault(_readGadgetronFiles);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var parseString = require('xml2js').parseString;
-
-// Models
-
-
 // Collections
+_backbone2.default.$ = _jquery2.default;
+
+// Extra
 
 
 // Views
 
 
-// Extra
-
-
-_backbone2.default.$ = _jquery2.default;
-
-var gadgetronStreamConfigurationGroup = new _gadgetronStreamConfigurationCollection2.default();
 var combindedReaders;
 var combindedWriters;
 
@@ -45786,12 +45760,12 @@ var combindedWriters;
 _backbone2.default.ajax({
     url: "/api/gadgetronStreamConfiguration",
     success: function success(data) {
-        parseGadgetronStreamConfigurationXml(data, 0, function (group) {
-            extractIos(group, 'writer', function (writers) {
+        _readGadgetronFiles2.default.parseGadgetronStreamConfigurationXml(data, 0, function (group) {
+            _readGadgetronFiles2.default.extractIos(group, 'writer', function (writers) {
                 combindedWriters = writers;
-                extractIos(group, 'reader', function (readers) {
+                _readGadgetronFiles2.default.extractIos(group, 'reader', function (readers) {
                     combindedReaders = readers;
-                    extractGadgets(group, function (gadgets) {
+                    _readGadgetronFiles2.default.extractGadgets(group, function (gadgets) {
                         init(group, gadgets, combindedReaders, combindedWriters);
                     });
                 });
@@ -45833,149 +45807,7 @@ function init(group, gadgets, readers, writers) {
     _backbone2.default.history.start();
 }
 
-// extract gadgets from gadgetronStreamConfigurationCollection
-function extractGadgets(group, callback) {
-    _backbone2.default.ajax({
-        url: "api/readFromDb",
-        data: {
-            type: 'gadget'
-        },
-        success: function success(gadgets) {
-            if (gadgets.length === 0) {
-                // database empty try to read from files and write to db
-                var gadgetGroup = new _gadgetCollection2.default();
-                gadgetGroup.readFromFile(group, function (gadgets) {
-                    var gadgetGroupedByName = gadgets.groupBy('name');
-                    combineGadgets(gadgetGroupedByName, function (combindedGadgets) {
-                        callback(combindedGadgets);
-                        combindedGadgets.each(function (model, index) {
-                            model.writeToDb();
-                        });
-                    });
-                });
-            } else {
-                // load collection from database
-                var gadgetGroup = new _gadgetCollection2.default();
-                _jquery2.default.each(gadgets, function (key, value) {
-                    var gadget = new _gadgetModel2.default(value);
-                    gadgetGroup.add(gadget);
-                });
-                callback(gadgetGroup);
-            }
-        }
-    });
-}
-
-// extract ios from gadgetronStreamConfigurationCollection
-function extractIos(group, type, callback) {
-    var ioGroup;
-    _backbone2.default.ajax({
-        url: "api/readFromDb",
-        data: {
-            type: type
-        },
-        success: function success(ios) {
-            if (ios.length === 0) {
-                // database empty try to read from files nad write to db
-                ioGroup = new _ioCollection2.default();
-                ioGroup.readFromFile(group, function (ios) {
-                    var iosGroupedByClassName = ios.groupBy('classname');
-                    combineIos(iosGroupedByClassName, function (combindedIos) {
-                        callback(combindedIos);
-                        combindedIos.each(function (model, index) {
-                            model.writeToDb(type);
-                        });
-                    });
-                }, type);
-            } else {
-                // load collection from database
-                ioGroup = new _ioCollection2.default();
-                _jquery2.default.each(ios, function (key, value) {
-                    var io = new _ioModel2.default(value);
-                    ioGroup.add(io);
-                });
-                callback(ioGroup);
-            }
-        }
-    });
-    return ioGroup;
-}
-
-// combine multiple gadgets
-function combineGadgets(gadgets, callback) {
-    var combindedGadgets = new _gadgetCollection2.default();
-    _underscore2.default.each(gadgets, function (value) {
-        if (value.length === 1) {
-            combindedGadgets.add(value[0]);
-        } else {
-            var propertiesMap = new Map();
-            _underscore2.default.each(value, function (gadget) {
-                var properties = gadget.get('properties');
-                if (properties) {
-                    _underscore2.default.each(properties, function (property) {
-                        propertiesMap.set(property.name[0], property);
-                    });
-                }
-            });
-            var properties = new Array();
-            var _iteratorNormalCompletion = true;
-            var _didIteratorError = false;
-            var _iteratorError = undefined;
-
-            try {
-                for (var _iterator = propertiesMap[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                    var _step$value = _slicedToArray(_step.value, 2),
-                        key = _step$value[0],
-                        property = _step$value[1];
-
-                    properties.push(property);
-                }
-            } catch (err) {
-                _didIteratorError = true;
-                _iteratorError = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion && _iterator.return) {
-                        _iterator.return();
-                    }
-                } finally {
-                    if (_didIteratorError) {
-                        throw _iteratorError;
-                    }
-                }
-            }
-
-            value[0].set('properties', properties);
-            combindedGadgets.add(value[0]);
-        }
-    });
-    callback(combindedGadgets);
-}
-
-// combine multiple ios
-function combineIos(ios, callback) {
-    var combindedIos = new _ioCollection2.default();
-    _underscore2.default.each(ios, function (value) {
-        combindedIos.add(value[0]);
-    });
-    callback(combindedIos);
-}
-
-// parses gadgetron StreamConfiguration-Files into collection
-function parseGadgetronStreamConfigurationXml(data, index, callback) {
-    if (index < data.length) {
-        parseString(data[index].content, function (error, result) {
-            var gadgetronStreamConfiguration = new _gadgetronStreamConfigurationModel2.default({ name: data[index].configurationName, configuration: result });
-            gadgetronStreamConfigurationGroup.add(gadgetronStreamConfiguration);
-        });
-        index++;
-        parseGadgetronStreamConfigurationXml(data, index, callback);
-    } else {
-        callback(gadgetronStreamConfigurationGroup);
-    }
-}
-
-},{"./collections/gadgetCollection":210,"./collections/gadgetronStreamConfigurationCollection":211,"./collections/ioCollection":212,"./models/gadgetModel":216,"./models/gadgetronStreamConfigurationModel":217,"./models/ioModel":218,"./regionManager":219,"./routes/router.js":220,"./views/dashboard/logFilesView":226,"./views/gadgetronStreamConfiguration/collectionView":230,"./views/login":238,"./views/loginDialog":239,"backbone":2,"jquery":28,"underscore":45,"xml2js":49}],214:[function(require,module,exports){
+},{"./collections/gadgetronStreamConfigurationCollection":211,"./readGadgetronFiles":219,"./regionManager":220,"./routes/router.js":221,"./views/dashboard/logFilesView":227,"./views/gadgetronStreamConfiguration/collectionView":231,"./views/login":239,"./views/loginDialog":240,"backbone":2,"jquery":28,"underscore":45}],214:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -46369,6 +46201,265 @@ module.exports = IoModel;
 },{"backbone":2,"jquery":28,"xml2js":49}],219:[function(require,module,exports){
 'use strict';
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _backbone = require('backbone');
+
+var _backbone2 = _interopRequireDefault(_backbone);
+
+var _jquery = require('jquery');
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+var _underscore = require('underscore');
+
+var _underscore2 = _interopRequireDefault(_underscore);
+
+var _gadgetronStreamConfigurationModel = require('./models/gadgetronStreamConfigurationModel');
+
+var _gadgetronStreamConfigurationModel2 = _interopRequireDefault(_gadgetronStreamConfigurationModel);
+
+var _gadgetModel = require('./models/gadgetModel');
+
+var _gadgetModel2 = _interopRequireDefault(_gadgetModel);
+
+var _ioModel = require('./models/ioModel');
+
+var _ioModel2 = _interopRequireDefault(_ioModel);
+
+var _gadgetronStreamConfigurationCollection = require('./collections/gadgetronStreamConfigurationCollection');
+
+var _gadgetronStreamConfigurationCollection2 = _interopRequireDefault(_gadgetronStreamConfigurationCollection);
+
+var _gadgetCollection = require('./collections/gadgetCollection');
+
+var _gadgetCollection2 = _interopRequireDefault(_gadgetCollection);
+
+var _ioCollection = require('./collections/ioCollection');
+
+var _ioCollection2 = _interopRequireDefault(_ioCollection);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var parseString = require('xml2js').parseString;
+
+// Models
+
+
+// Collections
+
+
+var gadgetronStreamConfigurationGroup = new _gadgetronStreamConfigurationCollection2.default();
+
+var gadgetron = {
+    // extract gadgets from gadgetronStreamConfigurationCollection
+    extractGadgets: function extractGadgets(group, callback) {
+        _backbone2.default.ajax({
+            url: "api/readFromDb",
+            data: {
+                type: 'gadget'
+            },
+            success: function success(gadgets) {
+                if (gadgets.length === 0) {
+                    // database empty try to read from files and write to db
+                    var gadgetGroup = new _gadgetCollection2.default();
+                    gadgetGroup.readFromFile(group, function (gadgets) {
+                        var gadgetGroupedByName = gadgets.groupBy('name');
+                        gadgetron.combineGadgets(gadgetGroupedByName, function (combindedGadgets) {
+                            callback(combindedGadgets);
+                            combindedGadgets.each(function (model, index) {
+                                model.writeToDb();
+                            });
+                        });
+                    });
+                } else {
+                    // load collection from database
+                    var gadgetGroup = new _gadgetCollection2.default();
+                    _jquery2.default.each(gadgets, function (key, value) {
+                        var gadget = new _gadgetModel2.default(value);
+                        gadgetGroup.add(gadget);
+                    });
+                    callback(gadgetGroup);
+                }
+            }
+        });
+    },
+
+    // upgrade gadgets from gadgetronStreamConfigurationCollection
+    upgradeGadgets: function upgradeGadgets(group, gadgetGroup) {
+        _backbone2.default.ajax({
+            url: "api/readFromDb",
+            data: {
+                type: 'gadget'
+            },
+            success: function success(gadgetsDatabase) {
+                var gadgetNewGroup = new _gadgetCollection2.default();
+                gadgetNewGroup.readFromFile(group, function (gadgetFile) {
+                    var gadgetGroupedByName = gadgetFile.groupBy('name');
+                    gadgetron.combineIos(gadgetGroupedByName, function (fileGadgets) {
+                        fileGadgets.forEach(function (gadget) {
+                            var found = false;
+                            for (var index in gadgetsDatabase) {
+                                if (gadgetsDatabase[index]['classname'] === gadget.get('classname')) {
+                                    found = true;
+                                }
+                            }
+                            if (!found) {
+                                gadgetGroup.add(gadget);
+                                gadget.writeToDb();
+                            }
+                        });
+                    });
+                });
+            }
+        });
+    },
+
+    // extract ios from gadgetronStreamConfigurationCollection
+    extractIos: function extractIos(group, type, callback) {
+        var ioGroup;
+        _backbone2.default.ajax({
+            url: "api/readFromDb",
+            data: {
+                type: type
+            },
+            success: function success(ios) {
+                if (ios.length === 0) {
+                    // database empty try to read from files and write to db
+                    ioGroup = new _ioCollection2.default();
+                    ioGroup.readFromFile(group, function (ios) {
+                        var iosGroupedByClassName = ios.groupBy('classname');
+                        gadgetron.combineIos(iosGroupedByClassName, function (combindedIos) {
+                            callback(combindedIos);
+                            combindedIos.each(function (model, index) {
+                                model.writeToDb(type);
+                            });
+                        });
+                    }, type);
+                } else {
+                    // load collection from database
+                    ioGroup = new _ioCollection2.default();
+                    _jquery2.default.each(ios, function (key, value) {
+                        var io = new _ioModel2.default(value);
+                        ioGroup.add(io);
+                    });
+                    callback(ioGroup);
+                }
+            }
+        });
+        return ioGroup;
+    },
+
+    // upgrade ios from gadgetronStreamConfigurationCollection
+    upgradeIos: function upgradeIos(group, ioGroup, type) {
+        _backbone2.default.ajax({
+            url: "api/readFromDb",
+            data: {
+                type: type
+            },
+            success: function success(iosDatabase) {
+                var ioNewGroup = new _ioCollection2.default();
+                ioNewGroup.readFromFile(group, function (iosFile) {
+                    var iosGroupedByClassName = iosFile.groupBy('classname');
+                    gadgetron.combineIos(iosGroupedByClassName, function (fileIos) {
+                        fileIos.forEach(function (io) {
+                            var found = false;
+                            for (var index in iosDatabase) {
+                                if (iosDatabase[index]['classname'] === io.get('classname')) {
+                                    found = true;
+                                }
+                            }
+                            if (!found) {
+                                ioGroup.add(io);
+                                io.writeToDb(type);
+                            }
+                        });
+                    });
+                }, type);
+            }
+        });
+    },
+
+    // combine multiple gadgets
+    combineGadgets: function combineGadgets(gadgets, callback) {
+        var combindedGadgets = new _gadgetCollection2.default();
+        _underscore2.default.each(gadgets, function (value) {
+            if (value.length === 1) {
+                combindedGadgets.add(value[0]);
+            } else {
+                var propertiesMap = new Map();
+                _underscore2.default.each(value, function (gadget) {
+                    var properties = gadget.get('properties');
+                    if (properties) {
+                        _underscore2.default.each(properties, function (property) {
+                            propertiesMap.set(property.name[0], property);
+                        });
+                    }
+                });
+                var properties = new Array();
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
+
+                try {
+                    for (var _iterator = propertiesMap[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var _step$value = _slicedToArray(_step.value, 2),
+                            key = _step$value[0],
+                            property = _step$value[1];
+
+                        properties.push(property);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return) {
+                            _iterator.return();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+
+                value[0].set('properties', properties);
+                combindedGadgets.add(value[0]);
+            }
+        });
+        callback(combindedGadgets);
+    },
+
+    // combine multiple ios
+    combineIos: function combineIos(ios, callback) {
+        var combindedIos = new _ioCollection2.default();
+        _underscore2.default.each(ios, function (value) {
+            combindedIos.add(value[0]);
+        });
+        callback(combindedIos);
+    },
+
+    // parses gadgetron StreamConfiguration-Files into collection
+    parseGadgetronStreamConfigurationXml: function parseGadgetronStreamConfigurationXml(data, index, callback) {
+        if (index < data.length) {
+            parseString(data[index].content, function (error, result) {
+                var gadgetronStreamConfiguration = new _gadgetronStreamConfigurationModel2.default({ name: data[index].configurationName, configuration: result });
+                gadgetronStreamConfigurationGroup.add(gadgetronStreamConfiguration);
+            });
+            index++;
+            gadgetron.parseGadgetronStreamConfigurationXml(data, index, callback);
+        } else {
+            callback(gadgetronStreamConfigurationGroup);
+        }
+    }
+};
+
+module.exports = gadgetron;
+
+},{"./collections/gadgetCollection":210,"./collections/gadgetronStreamConfigurationCollection":211,"./collections/ioCollection":212,"./models/gadgetModel":216,"./models/gadgetronStreamConfigurationModel":217,"./models/ioModel":218,"backbone":2,"jquery":28,"underscore":45,"xml2js":49}],220:[function(require,module,exports){
+'use strict';
+
 var _backbone = require('backbone');
 
 var _backbone2 = _interopRequireDefault(_backbone);
@@ -46423,7 +46514,7 @@ var RegionManager = function (Backbone, $) {
 
 module.exports = RegionManager;
 
-},{"backbone":2,"jquery":28}],220:[function(require,module,exports){
+},{"backbone":2,"jquery":28}],221:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -46852,14 +46943,14 @@ var Router = _backbone2.default.Router.extend({
     },
     settings: function settings() {
         // Render settingsView
-        this.settingsView = new _settingsView2.default();
+        this.settingsView = new _settingsView2.default({ gadgetGroup: this.gadgetGroup, readerGroup: this.readerGroup, writerGroup: this.writerGroup });
         _regionManager2.default.show(this.settingsView);
     }
 });
 
 module.exports = Router;
 
-},{"./../../../config.json":1,"./../collections/fileCollection":209,"./../collections/gadgetronStreamConfigurationCollection":211,"./../models/fileModel":215,"./../models/gadgetModel":216,"./../models/gadgetronStreamConfigurationModel":217,"./../models/ioModel":218,"./../regionManager":219,"./../views/dashboard/dashboard":221,"./../views/dashboard/gadgets":223,"./../views/dashboard/ios":225,"./../views/dashboard/logFilesView":226,"./../views/folderView":227,"./../views/gadgetView":229,"./../views/gadgetronStreamConfiguration/collectionView":230,"./../views/gadgetronStreamConfiguration/unsavedChangesDialog":232,"./../views/gadgetronStreamConfiguration/view":233,"./../views/ioView":236,"./../views/playView":240,"./../views/saveDialog":242,"./../views/settings/settingsView":246,"./../views/statusView":247,"backbone":2,"jquery":28}],221:[function(require,module,exports){
+},{"./../../../config.json":1,"./../collections/fileCollection":209,"./../collections/gadgetronStreamConfigurationCollection":211,"./../models/fileModel":215,"./../models/gadgetModel":216,"./../models/gadgetronStreamConfigurationModel":217,"./../models/ioModel":218,"./../regionManager":220,"./../views/dashboard/dashboard":222,"./../views/dashboard/gadgets":224,"./../views/dashboard/ios":226,"./../views/dashboard/logFilesView":227,"./../views/folderView":228,"./../views/gadgetView":230,"./../views/gadgetronStreamConfiguration/collectionView":231,"./../views/gadgetronStreamConfiguration/unsavedChangesDialog":233,"./../views/gadgetronStreamConfiguration/view":234,"./../views/ioView":237,"./../views/playView":241,"./../views/saveDialog":243,"./../views/settings/settingsView":247,"./../views/statusView":248,"backbone":2,"jquery":28}],222:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -47083,7 +47174,7 @@ var Dashboard = _backbone2.default.View.extend({
 
 module.exports = Dashboard;
 
-},{"./../../../../config.json":1,"./../../collections/fileCollection":209,"./../../models/fileModel":215,"./../../models/gadgetronStreamConfigurationModel":217,"./../folderView":227,"./../playView":240,"./../saveDialog":242,"./../uploadDialog":254,"./ios":225,"backbone":2,"jquery":28,"underscore":45}],222:[function(require,module,exports){
+},{"./../../../../config.json":1,"./../../collections/fileCollection":209,"./../../models/fileModel":215,"./../../models/gadgetronStreamConfigurationModel":217,"./../folderView":228,"./../playView":241,"./../saveDialog":243,"./../uploadDialog":255,"./ios":226,"backbone":2,"jquery":28,"underscore":45}],223:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -47118,7 +47209,7 @@ var GadgetRow = _backbone2.default.View.extend({
 
 module.exports = GadgetRow;
 
-},{"backbone":2,"jquery":28,"underscore":45}],223:[function(require,module,exports){
+},{"backbone":2,"jquery":28,"underscore":45}],224:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -47182,7 +47273,7 @@ var Gadgets = _backbone2.default.View.extend({
 
 module.exports = Gadgets;
 
-},{"./../gadgetronStreamConfiguration/collectionView":230,"./gadgetRow":222,"backbone":2,"jquery":28,"underscore":45}],224:[function(require,module,exports){
+},{"./../gadgetronStreamConfiguration/collectionView":231,"./gadgetRow":223,"backbone":2,"jquery":28,"underscore":45}],225:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -47240,7 +47331,7 @@ var IoRow = _backbone2.default.View.extend({
 
 module.exports = IoRow;
 
-},{"./../ioView":236,"backbone":2,"jquery":28,"underscore":45}],225:[function(require,module,exports){
+},{"./../ioView":237,"backbone":2,"jquery":28,"underscore":45}],226:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -47305,7 +47396,7 @@ var Ios = _backbone2.default.View.extend({
 
 module.exports = Ios;
 
-},{"./../gadgetronStreamConfiguration/collectionView":230,"./ioRow":224,"backbone":2,"jquery":28,"underscore":45}],226:[function(require,module,exports){
+},{"./../gadgetronStreamConfiguration/collectionView":231,"./ioRow":225,"backbone":2,"jquery":28,"underscore":45}],227:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -47458,7 +47549,7 @@ var LogFilesView = _backbone2.default.View.extend({
 
 module.exports = LogFilesView;
 
-},{"./../../../../config.json":1,"backbone":2,"jquery":28,"underscore":45}],227:[function(require,module,exports){
+},{"./../../../../config.json":1,"backbone":2,"jquery":28,"underscore":45}],228:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -47611,7 +47702,7 @@ var FolderView = _backbone2.default.View.extend({
 
 module.exports = FolderView;
 
-},{"./../collections/fileCollection":209,"./../models/fileModel":215,"./row":241,"backbone":2,"jquery":28,"underscore":45}],228:[function(require,module,exports){
+},{"./../collections/fileCollection":209,"./../models/fileModel":215,"./row":242,"backbone":2,"jquery":28,"underscore":45}],229:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -47652,7 +47743,7 @@ var GadgetRow = _backbone2.default.View.extend({
 
 module.exports = GadgetRow;
 
-},{"backbone":2,"jquery":28,"underscore":45}],229:[function(require,module,exports){
+},{"backbone":2,"jquery":28,"underscore":45}],230:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -47816,7 +47907,7 @@ var GadgetView = _backbone2.default.View.extend({
 
 module.exports = GadgetView;
 
-},{"backbone":2,"jquery":28,"underscore":45}],230:[function(require,module,exports){
+},{"backbone":2,"jquery":28,"underscore":45}],231:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -47858,7 +47949,7 @@ var GadgetronStreamCollectionView = _backbone2.default.View.extend({
 
 module.exports = GadgetronStreamCollectionView;
 
-},{"./row":231,"backbone":2,"jquery":28}],231:[function(require,module,exports){
+},{"./row":232,"backbone":2,"jquery":28}],232:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -47891,7 +47982,7 @@ var GadgetronStreamRow = _backbone2.default.View.extend({
 
 module.exports = GadgetronStreamRow;
 
-},{"backbone":2,"jquery":28,"underscore":45}],232:[function(require,module,exports){
+},{"backbone":2,"jquery":28,"underscore":45}],233:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -47947,7 +48038,7 @@ var UnsavedChangesDialog = _backbone2.default.View.extend({
 
 module.exports = UnsavedChangesDialog;
 
-},{"backbone":2,"jquery":28,"underscore":45}],233:[function(require,module,exports){
+},{"backbone":2,"jquery":28,"underscore":45}],234:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -48126,7 +48217,7 @@ var GadgetronStreamConfigurationView = _backbone2.default.View.extend({
 
 module.exports = GadgetronStreamConfigurationView;
 
-},{"./../gadgets":234,"./../ios":237,"./../saveDialog":242,"./../svg/svg":252,"./../toolBarView":253,"backbone":2,"jquery":28,"underscore":45}],234:[function(require,module,exports){
+},{"./../gadgets":235,"./../ios":238,"./../saveDialog":243,"./../svg/svg":253,"./../toolBarView":254,"backbone":2,"jquery":28,"underscore":45}],235:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -48179,7 +48270,7 @@ var Gadgets = _backbone2.default.View.extend({
 
 module.exports = Gadgets;
 
-},{"./gadgetRow":228,"backbone":2,"bootstrap":5,"jquery":28,"underscore":45}],235:[function(require,module,exports){
+},{"./gadgetRow":229,"backbone":2,"bootstrap":5,"jquery":28,"underscore":45}],236:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -48221,7 +48312,7 @@ var IoRow = _backbone2.default.View.extend({
 
 module.exports = IoRow;
 
-},{"backbone":2,"jquery":28,"underscore":45}],236:[function(require,module,exports){
+},{"backbone":2,"jquery":28,"underscore":45}],237:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -48298,7 +48389,7 @@ var IoView = _backbone2.default.View.extend({
 
 module.exports = IoView;
 
-},{"backbone":2,"jquery":28,"underscore":45}],237:[function(require,module,exports){
+},{"backbone":2,"jquery":28,"underscore":45}],238:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -48353,7 +48444,7 @@ var Ios = _backbone2.default.View.extend({
 
 module.exports = Ios;
 
-},{"./ioRow":235,"backbone":2,"bootstrap":5,"jquery":28,"underscore":45}],238:[function(require,module,exports){
+},{"./ioRow":236,"backbone":2,"bootstrap":5,"jquery":28,"underscore":45}],239:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -48420,7 +48511,7 @@ var Login = _backbone2.default.View.extend({
 
 module.exports = Login;
 
-},{"backbone":2,"jquery":28,"underscore":45}],239:[function(require,module,exports){
+},{"backbone":2,"jquery":28,"underscore":45}],240:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -48489,7 +48580,7 @@ var LoginDialog = _backbone2.default.View.extend({
 
 module.exports = LoginDialog;
 
-},{"backbone":2,"jquery":28,"underscore":45}],240:[function(require,module,exports){
+},{"backbone":2,"jquery":28,"underscore":45}],241:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -48692,7 +48783,7 @@ var PlayView = _backbone2.default.View.extend({
 
 module.exports = PlayView;
 
-},{"./../models/fileModel":215,"backbone":2,"bootstrap":5,"jquery":28,"underscore":45}],241:[function(require,module,exports){
+},{"./../models/fileModel":215,"backbone":2,"bootstrap":5,"jquery":28,"underscore":45}],242:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -48738,7 +48829,7 @@ var Row = _backbone2.default.View.extend({
 
 module.exports = Row;
 
-},{"backbone":2,"jquery":28,"underscore":45}],242:[function(require,module,exports){
+},{"backbone":2,"jquery":28,"underscore":45}],243:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -48796,7 +48887,7 @@ var SaveDialog = _backbone2.default.View.extend({
 
 module.exports = SaveDialog;
 
-},{"./ioRow":235,"backbone":2,"jquery":28,"underscore":45}],243:[function(require,module,exports){
+},{"./ioRow":236,"backbone":2,"jquery":28,"underscore":45}],244:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -48837,7 +48928,7 @@ var GadgetRow = _backbone2.default.View.extend({
 
 module.exports = GadgetRow;
 
-},{"backbone":2,"jquery":28,"underscore":45}],244:[function(require,module,exports){
+},{"backbone":2,"jquery":28,"underscore":45}],245:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -48922,7 +49013,7 @@ var ConfigurationView = _backbone2.default.View.extend({
 
 module.exports = ConfigurationView;
 
-},{"./../../../../config.json":1,"./../../collections/configurationCollection":208,"./../../models/configurationModel":214,"./configurationRow":243,"backbone":2,"jquery":28,"underscore":45}],245:[function(require,module,exports){
+},{"./../../../../config.json":1,"./../../collections/configurationCollection":208,"./../../models/configurationModel":214,"./configurationRow":244,"backbone":2,"jquery":28,"underscore":45}],246:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -48937,13 +49028,24 @@ var _underscore = require('underscore');
 
 var _underscore2 = _interopRequireDefault(_underscore);
 
+var _readGadgetronFiles = require('./../../readGadgetronFiles');
+
+var _readGadgetronFiles2 = _interopRequireDefault(_readGadgetronFiles);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _backbone2.default.$ = _jquery2.default;
 
+// Extras
+
+
 // Configuration view
 var DatabaseView = _backbone2.default.View.extend({
-    initialize: function initialize(attributes, options) {},
+    initialize: function initialize(attributes, options) {
+        this.gadgetGroup = attributes.gadgetGroup;
+        this.readerGroup = attributes.readerGroup;
+        this.writerGroup = attributes.writerGroup;
+    },
     events: {
         'click #refresh-database': 'refreshDatabase'
     },
@@ -48955,13 +49057,23 @@ var DatabaseView = _backbone2.default.View.extend({
         return this;
     },
     refreshDatabase: function refreshDatabase(event) {
-        console.log(event);
+        var self = this;
+        _backbone2.default.ajax({
+            url: "/api/gadgetronStreamConfiguration",
+            success: function success(data) {
+                _readGadgetronFiles2.default.parseGadgetronStreamConfigurationXml(data, 0, function (group) {
+                    _readGadgetronFiles2.default.upgradeIos(group, self.writerGroup, 'writer');
+                    _readGadgetronFiles2.default.upgradeIos(group, self.readerGroup, 'reader');
+                    _readGadgetronFiles2.default.upgradeGadgets(group, self.gadgetGroup);
+                });
+            }
+        });
     }
 });
 
 module.exports = DatabaseView;
 
-},{"backbone":2,"jquery":28,"underscore":45}],246:[function(require,module,exports){
+},{"./../../readGadgetronFiles":219,"backbone":2,"jquery":28,"underscore":45}],247:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -48991,7 +49103,11 @@ _backbone2.default.$ = _jquery2.default;
 
 // Settings view
 var SettingsView = _backbone2.default.View.extend({
-    initialize: function initialize(attributes, options) {},
+    initialize: function initialize(attributes, options) {
+        this.gadgetGroup = attributes.gadgetGroup;
+        this.readerGroup = attributes.readerGroup;
+        this.writerGroup = attributes.writerGroup;
+    },
     template: _underscore2.default.template((0, _jquery2.default)("#settings").html()),
     render: function render() {
         var settingsTemplate = this.template();
@@ -49006,7 +49122,7 @@ var SettingsView = _backbone2.default.View.extend({
     onShow: function onShow() {
         this.configurationView = new _configurationView2.default();
         (0, _jquery2.default)('#configuration-view').html(this.configurationView.render().el);
-        this.databaseView = new _databaseView2.default();
+        this.databaseView = new _databaseView2.default({ gadgetGroup: this.gadgetGroup, readerGroup: this.readerGroup, writerGroup: this.writerGroup });
         (0, _jquery2.default)('#database-view').html(this.databaseView.render().el);
         (0, _jquery2.default)(this.el).show();
     }
@@ -49014,7 +49130,7 @@ var SettingsView = _backbone2.default.View.extend({
 
 module.exports = SettingsView;
 
-},{"./configurationView":244,"./databaseView":245,"backbone":2,"jquery":28,"underscore":45}],247:[function(require,module,exports){
+},{"./configurationView":245,"./databaseView":246,"backbone":2,"jquery":28,"underscore":45}],248:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -49070,7 +49186,7 @@ var StatusView = _backbone2.default.View.extend({
 
 module.exports = StatusView;
 
-},{"./../../../config.json":1,"backbone":2,"jquery":28,"underscore":45}],248:[function(require,module,exports){
+},{"./../../../config.json":1,"backbone":2,"jquery":28,"underscore":45}],249:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -49223,7 +49339,7 @@ var SvgGroup = function () {
 
 module.exports = SvgGroup;
 
-},{"backbone":2,"d3":22,"jquery":28}],249:[function(require,module,exports){
+},{"backbone":2,"d3":22,"jquery":28}],250:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -49467,7 +49583,7 @@ var SvgGroupGadget = function (_SvgGroup) {
 
 module.exports = SvgGroupGadget;
 
-},{"./../../../models/gadgetModel":216,"./../../../views/gadgetView":229,"./svgGroup":248,"backbone":2,"d3":22,"jquery":28}],250:[function(require,module,exports){
+},{"./../../../models/gadgetModel":216,"./../../../views/gadgetView":230,"./svgGroup":249,"backbone":2,"d3":22,"jquery":28}],251:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -49617,7 +49733,7 @@ var SvgGroupReader = function (_SvgGroup) {
 
 module.exports = SvgGroupReader;
 
-},{"./../../../models/ioModel":218,"./../../ioView":236,"./svgGroup":248,"backbone":2,"d3":22,"jquery":28}],251:[function(require,module,exports){
+},{"./../../../models/ioModel":218,"./../../ioView":237,"./svgGroup":249,"backbone":2,"d3":22,"jquery":28}],252:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -49767,7 +49883,7 @@ var SvgGroupWriter = function (_SvgGroup) {
 
 module.exports = SvgGroupWriter;
 
-},{"./../../../models/ioModel":218,"./../../ioView":236,"./svgGroup":248,"backbone":2,"d3":22,"jquery":28}],252:[function(require,module,exports){
+},{"./../../../models/ioModel":218,"./../../ioView":237,"./svgGroup":249,"backbone":2,"d3":22,"jquery":28}],253:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -50015,7 +50131,7 @@ var GadgetronStreamConfigurationSvg = function () {
 
 module.exports = GadgetronStreamConfigurationSvg;
 
-},{"./group/svgGroupGadget":249,"./group/svgGroupReader":250,"./group/svgGroupWriter":251,"backbone":2,"d3":22,"jquery":28}],253:[function(require,module,exports){
+},{"./group/svgGroupGadget":250,"./group/svgGroupReader":251,"./group/svgGroupWriter":252,"backbone":2,"d3":22,"jquery":28}],254:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -50056,7 +50172,7 @@ var ToolBarView = _backbone2.default.View.extend({
 
 module.exports = ToolBarView;
 
-},{"backbone":2,"jquery":28,"underscore":45}],254:[function(require,module,exports){
+},{"backbone":2,"jquery":28,"underscore":45}],255:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');

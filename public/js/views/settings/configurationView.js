@@ -51,7 +51,6 @@ var ConfigurationView = Backbone.View.extend({
     saveAndRestart: function(events){
         // save config.json & restart server
         this.collection.saveConfiguration();
-        // refresh site
     }
 });
 

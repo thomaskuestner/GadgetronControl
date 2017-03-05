@@ -26,7 +26,11 @@ var StatusView = Backbone.View.extend({
                 data.processArgument = 'no arguments';
             }
             if(data.state === 'on'){
-                this.$el.html(`<img src="img/Gadgetron_Success.png" title="Started with ${data.processArgument.join(' ')}" height="22px"/>`);
+                var processArgument = '';
+                if(Array.isArray(data.processArgument)){
+                    processArgument = data.processArgument.join(' ');
+                }
+                this.$el.html(`<img src="img/Gadgetron_Success.png" title="Started with ${processArgument}" height="22px"/>`);
             }
             else{
                 this.$el.html(`<img src="img/Gadgetron_Error.png" title="You have to start gadgetron on the server" height="22px"/>`);

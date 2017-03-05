@@ -3,7 +3,7 @@ var spawn = require('child_process').spawn;
 var path = require('path');
 
 // API for gadgetronIsmrmrdClient
-module.exports = function(app, config){
+module.exports = function(app, config, autoconfig){
     // route for starting gadgetronIsmrmrdClient
     // needs at minimum filename
     app.get('/api/gadgetronIsmrmrdClient/start', function(req, res) {
@@ -36,14 +36,63 @@ module.exports = function(app, config){
                 app.broadcast(data.toString(),null, 'siemens_to_ismrmrd');
             });
             siemensToIsmrmd.on('close', function(code){
-                app.broadcast('converted ' + fileName + ' to h5-format', 'SUCCESS', 'siemens_to_ismrmrd');
-                dataPath = destinationH5Path;
-                var gadgetronIsmrmrdClient = spawn('gadgetron_ismrmrd_client',['-f', dataPath, '-c', configurationPath, '-o', resultPath, '-p', config.gadgetron_port]);
+                if(typeof app.autoconfig.gadgetron_port !== 'undefined'){
+                    app.broadcast('converted ' + fileName + ' to h5-format', 'SUCCESS', 'siemens_to_ismrmrd');
+                    dataPath = destinationH5Path;
+                    var gadgetronIsmrmrdClient = spawn('gadgetron_ismrmrd_client',['-f', dataPath, '-c', configurationPath, '-o', resultPath, '-p', app.autoconfig.gadgetron_port]);
+                    gadgetronIsmrmrdClient.stdout.on('data', function(data){
+                        app.broadcast(data.toString(), null, 'gadgetron_ismrmrd_client');
+                    });
+                    gadgetronIsmrmrdClient.on('close', function(code){
+                        if(errorFlag){
+                            app.broadcast('data ' + dataPath + ' was proceeded with ' + configurationPath + ' to ' + resultPath, 'SUCCESS', 'gadgetron_ismrmrd_client');
+                            if(!res.headersSent){
+                                res.json({
+                                    data:{
+                                            extension: 'h5', 
+                                            filename: resultFileName,
+                                            path: resultPath
+                                        },
+                                    status: 'SUCCESS'
+                                });
+                            }
+                        }
+                    }, this);
+                    gadgetronIsmrmrdClient.stderr.on('data', function(data){
+                        errorFlag = true;
+                        app.broadcast(data.toString(),'ERROR', 'gadgetron_ismrmrd_client');
+                        if(!res.headersSent){
+                            res.json({status: 'false'});
+                        }
+                    }, this);
+                }
+                else{
+                    app.broadcast('Gadgetron-Port is not set', 'ERROR', 'GadgetronControl');
+                    if(!res.headersSent){
+                        res.json({
+                            status: 'ERROR'
+                        });
+                    }
+                }
+            });
+            siemensToIsmrmd.stderr.on('data', function(data){
+                app.broadcast(data.toString(),'ERROR', 'gadgetron_ismrmrd_client');
+            });
+        }
+        else{
+            if(typeof app.autoconfig.gadgetron_port !== 'undefined'){
+                var gadgetronIsmrmrdClient = spawn('gadgetron_ismrmrd_client',['-f', dataPath, '-c', configurationPath, '-o', resultPath, '-p', app.autoconfig.gadgetron_port]);
                 gadgetronIsmrmrdClient.stdout.on('data', function(data){
                     app.broadcast(data.toString(), null, 'gadgetron_ismrmrd_client');
+                    if(data.toString().toLowerCase().indexOf('error') === -1){
+                        errorFlag = true;
+                        if(!res.headersSent){
+                            res.json({status: 'false'});
+                        }
+                    }
                 });
                 gadgetronIsmrmrdClient.on('close', function(code){
-                    if(errorFlag){
+                    if(!errorFlag){
                         app.broadcast('data ' + dataPath + ' was proceeded with ' + configurationPath + ' to ' + resultPath, 'SUCCESS', 'gadgetron_ismrmrd_client');
                         if(!res.headersSent){
                             res.json({
@@ -64,44 +113,15 @@ module.exports = function(app, config){
                         res.json({status: 'false'});
                     }
                 }, this);
-            });
-            siemensToIsmrmd.stderr.on('data', function(data){
-                app.broadcast(data.toString(),'ERROR', 'gadgetron_ismrmrd_client');
-            });
-        }
-        else{
-            var gadgetronIsmrmrdClient = spawn('gadgetron_ismrmrd_client',['-f', dataPath, '-c', configurationPath, '-o', resultPath, '-p', config.gadgetron_port]);
-            gadgetronIsmrmrdClient.stdout.on('data', function(data){
-                app.broadcast(data.toString(), null, 'gadgetron_ismrmrd_client');
-                if(data.toString().toLowerCase().indexOf('error') === -1){
-                    errorFlag = true;
-                    if(!res.headersSent){
-                        res.json({status: 'false'});
-                    }
-                }
-            });
-            gadgetronIsmrmrdClient.on('close', function(code){
-                if(!errorFlag){
-                    app.broadcast('data ' + dataPath + ' was proceeded with ' + configurationPath + ' to ' + resultPath, 'SUCCESS', 'gadgetron_ismrmrd_client');
-                    if(!res.headersSent){
-                        res.json({
-                            data:{
-                                    extension: 'h5', 
-                                    filename: resultFileName,
-                                    path: resultPath
-                                },
-                            status: 'SUCCESS'
-                        });
-                    }
-                }
-            }, this);
-            gadgetronIsmrmrdClient.stderr.on('data', function(data){
-                errorFlag = true;
-                app.broadcast(data.toString(),'ERROR', 'gadgetron_ismrmrd_client');
+            }        
+            else{
+                app.broadcast('Gadgetron-Port is not set', 'ERROR', 'GadgetronControl');
                 if(!res.headersSent){
-                    res.json({status: 'false'});
+                    res.json({
+                        status: 'ERROR'
+                    });
                 }
-            }, this);
+            }
         }
     });
 }

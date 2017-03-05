@@ -11,6 +11,7 @@ app.server = http.createServer(app);
 
 // load parameter
 var config = require('./config.json');
+app.autoconfig = {};
 
 // load error handling
 require('./errorHandling')(config);

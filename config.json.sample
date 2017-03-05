@@ -1,6 +1,5 @@
 {
     "port" : 3000,
-    "gadgetron_port": 9000,
     "hostname" : "localhost",
     "config_dir" : "/usr/local/share/gadgetron/config/",
     "upload_dir" : "uploads",

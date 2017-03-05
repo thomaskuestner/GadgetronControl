@@ -3,7 +3,7 @@ var tail = require('tail').Tail;
 var fs = require('fs');
 
 // handels all gadgetron stuff
-module.exports = function(app, config){
+module.exports = function(app, config, autoconfig){
     var iFrequency = 500; // expressed in miliseconds
     var myInterval = 0;
 
@@ -20,11 +20,15 @@ module.exports = function(app, config){
                     throw new Error( err );
                 }
                 resultList.forEach(function( process ){
-                    if( process ){  
+                    if( process ){
+                        var portIndex = process.arguments.indexOf('-p')
+                        if(portIndex === -1){
+                            app.autoconfig.gadgetron_port = 9002;
+                        }
+                        else{
+                            app.autoconfig.gadgetron_port = process.arguments[portIndex + 1];
+                        }
                         app.broadcastGadgetronStatus({processId: process.pid, processCommand: process.command, processArgument: process.arguments, state: 'on' });
-                    }
-                    else{
-
                     }
                 });
                 if(resultList.length === 0){

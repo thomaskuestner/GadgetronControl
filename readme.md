@@ -25,17 +25,17 @@ For installation and startup you can use the following script.
 gadgetron > /var/log/gadgetron.log 2>&1 &
 git clone https://github.com/thomaskuestner/GadgetronControl
 cd GadgetronControl
-# copy default settings
-cp config.json.sample config.json
-# start GadgetronControl
+# install GadgetronControl dependencies
 npm install
 ```
-The UI is then started as a standalone GUI (locale = true):
+The GadgetronControl can be configured in the "Settings"-Tab or directly in the "./config.json" file (requires GadgetronControl restart).
+
+The UI is then started as a standalone GUI:
 ```bash
 # start electron GUI
 npm start
 ```
-or from within the webbrowser under http://localhost:3000 (locale = false):
+or via webbrowser under http://localhost:3000:
 ```bash
 # start remote webserver
 npm run remote

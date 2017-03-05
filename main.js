@@ -81,25 +81,6 @@ function createWindow (process) {
   // Open the DevTools.
   //win.webContents.openDevTools()
 
-  // and load the index.html of the app.
-  win.loadURL(url.format({
-    //pathname: path.join(__dirname, '/public/index.html'),
-    pathname: path.join(__dirname, '/public/load.html'),
-    protocol: 'file:',
-    slashes: true
-  }))
-
-  /*timeout(10000, httpGet('http://localhost',3000))
-  .then(function () {
-      win.loadURL('http://localhost:3000/');
-  })
-  .catch(function (reason) {
-      console.error('', reason);
-      process.kill();
-      win = null;
-  });*/
-  //
-
   delay(1000).then(function () { // nasty workaround -> promise request throws timeout
       win.loadURL('http://localhost:3000/');
   });

@@ -6,6 +6,12 @@
     <link rel="stylesheet" href="css/base.css" />
     <title>GadgetronControl</title>
     <meta charset="utf-8" />
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript">
+    $(window).load(function() {
+	     $(".loader").fadeOut("slow");
+     })
+     </script>
 </head>
 
 <body>
@@ -37,6 +43,7 @@
         <div id="main-region">
         </div>
     </div>
+    <div class="loader"></div>
 
     <div id="svg-region" class="hide">
         <svg id="svg-config"></svg>
@@ -185,15 +192,15 @@
             <tbody>
             </tbody>
         </table>
-        <hr />        
+        <hr />
         <button class="btn btn-warning pull-right" type="button" id="save-configuration-json"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i> Save & Restart Server</button>
     </script>
 
         <!-- CONFIGURATION-ROW -->
-        <script id="configuration-json-row" type="text/template">            
+        <script id="configuration-json-row" type="text/template">
             <td><%= key %></td>
             <td contenteditable=true><%= value %></td>
-        </script>        
+        </script>
         <!-- CONFIGURATION-ROW -->
     <!-- CONFIGURATION -->
 

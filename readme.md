@@ -22,7 +22,7 @@ For installation and startup you can use the following script.
 
 ```bash
 # start gadgetron in background and write pipeline
-gadgetron > /var/log/gadgetron.log 2>&1 &
+gadgetron > /tmp/gadgetron.log 2>&1 &
 git clone https://github.com/thomaskuestner/GadgetronControl
 cd GadgetronControl
 # install GadgetronControl dependencies

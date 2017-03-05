@@ -6,7 +6,7 @@ module.exports = function(app){
     var wss = new WebSocketServer({ server: app.server , path: '/logbroadcast'});
         app.broadcast = function broadcast(data, loglevel, sender) {
         // parse message for loglevel case insensative (-i) when loglevel isn't set
-        if(typeof loglevel === 'undefined'){
+        if(typeof loglevel === 'undefined' || loglevel === null){
             var debug = new RegExp('DEBUG', 'i');
             var error = new RegExp('ERROR', 'i');
             if(data.match(debug)){

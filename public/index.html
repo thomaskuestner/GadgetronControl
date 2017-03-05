@@ -257,7 +257,7 @@
                 </div>
                 <div class="modal-body">
                     <form id="login-form">
-                        <% if(!config.UI_local){ %>
+                        <% if(config.UI_local == 'false'){ %>
                             <div class="form-group">
                                 <label for="upload-file-button">Upload <%= typeTitle %></label>
                                 <div class="progress">

@@ -193,7 +193,7 @@
             </tbody>
         </table>
         <hr />
-        <button class="btn btn-warning pull-right" type="button" id="save-configuration-json"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i> Save & Restart Server</button>
+        <button class="btn btn-warning pull-right" type="button" id="save-configuration-json"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i> Save & Restart Gadgetron server</button>
     </script>
 
         <!-- CONFIGURATION-ROW -->
@@ -274,12 +274,18 @@
                                 <input id="upload-file-input" type="file" name="uploads[]" class="hide" accept="<%= fileextension %>">
                             </div>
                         <hr />
-                        <% } %>
                         <div class="form-group">
-                            <label for="symbolic-link">Data on Server</label>
+                            <label for="symbolic-link">Locate data on Server</label>
                             <input type="text" class="form-control" placeholder="Absolute Path on Server" id="filename"><br />
                             <button class="btn btn-default" type="button" id="create-symbolic-link"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i> Locate <%= typeTitle %></button>
                         </div>
+                        <% } %>
+                        <% if(config.UI_local == 'true'){ %>
+                        <div class="form-group">
+                            <label for="symbolic-link">Locate data</label>
+                            <button class="btn btn-default" type="button" id="get-path-server"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i> Locate <%= typeTitle %></button>
+                        </div>
+                        <% } %>
                     </form>
                 </div>
                 <div class="modal-footer">

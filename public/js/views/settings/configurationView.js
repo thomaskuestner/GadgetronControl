@@ -12,7 +12,8 @@ import ConfigurationCollection from './../../collections/configurationCollection
 import ConfigurationRow from './configurationRow';
 
 // Extra
-import config from './../../../../config.json';
+//import config from './../../../../config.json';
+import config from __dirname__ + '/config.json';
 
 Backbone.$ = $;
 
@@ -24,7 +25,7 @@ var ConfigurationView = Backbone.View.extend({
         this.listenTo(this.configurationGroup,'add', this.render);
         var values = Object.values(config);
         var keys = Object.keys(config);
-        keys.forEach(function(data, index){            
+        keys.forEach(function(data, index){
             var configuration = new Configuration();
             configuration.set('key', keys[index]);
             configuration.set('value', values[index]);

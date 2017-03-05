@@ -10,11 +10,12 @@ import config from './../../../config.json';
 
 var UploadDialog = Backbone.View.extend({
     id: 'upload-modal',
-    className: 'modal fade',    
+    className: 'modal fade',
     template: _.template($("#upload-template").html()),
     events:{
         'click #upload-file-button': 'clickedUploadFile',
         'click #create-symbolic-link': 'clickCreateSymbolicLink',
+        'click #get-path-server': 'clickGetPathServer',
         'change #upload-file-input': 'changedUploadFileEvent',
     },
     clickedUploadFile: function(event){
@@ -47,6 +48,38 @@ var UploadDialog = Backbone.View.extend({
         }, this));
         return this;
     },
+    fLocateData: function(value){
+      Backbone.ajax({
+          url: '/api/createSymbolicLink',
+          type: 'POST',
+          data: {value},
+          success: function(res){
+              if(res.status === 'SUCCESS'){
+                  if(res.data.h5){
+                      var file = new File(res.data.h5);
+                      self.collection.add(file);
+                  }
+                  if(res.data.dat){
+                      var file = new File(res.data.dat);
+                      self.collection.add(file);
+                  }
+                  if(res.data.xml){
+                      var file = new File(res.data.xml);
+                      self.collection.add(file);
+                  }
+                  if(res.data.xsl){
+                      var file = new File(res.data.xsl);
+                      self.collection.add(file);
+                  }
+                  self.$el.modal('hide');
+              }
+          },
+          xhr: function() {
+              var xhr = new XMLHttpRequest();
+              return xhr;
+          }
+      });
+    },
     clickCreateSymbolicLink: function(event){
         var self = this;
         var value = $('#filename').val();
@@ -54,37 +87,16 @@ var UploadDialog = Backbone.View.extend({
             $('#filename-group').addClass('has-error');
         }
         else{
-            Backbone.ajax({
-                url: '/api/createSymbolicLink',
-                type: 'POST',
-                data: {value},
-                success: function(res){
-                    if(res.status === 'SUCCESS'){
-                        if(res.data.h5){
-                            var file = new File(res.data.h5);
-                            self.collection.add(file);
-                        }                        
-                        if(res.data.dat){
-                            var file = new File(res.data.dat);
-                            self.collection.add(file);
-                        }                        
-                        if(res.data.xml){
-                            var file = new File(res.data.xml);
-                            self.collection.add(file);
-                        }                        
-                        if(res.data.xsl){
-                            var file = new File(res.data.xsl);
-                            self.collection.add(file);
-                        }
-                        self.$el.modal('hide');
-                    }
-                },
-                xhr: function() {
-                    var xhr = new XMLHttpRequest();
-                    return xhr;
-                }
-            });
+            this.fLocateData(value);
         }
+    },
+    clickGetPathServer: function(event){
+        var self = this;
+        dialog.showOpenDialog(function (fileNames) {
+          if (fileNames === undefined) return;
+          var fileName = fileNames[0];
+          this.fLocateData(fileName);
+        });
     },
     changedUploadFileEvent: function(event){
         var files = $(event.currentTarget).get(0).files;
@@ -106,15 +118,15 @@ var UploadDialog = Backbone.View.extend({
                         if(res.data.h5){
                             var file = new File(res.data.h5);
                             self.collection.add(file);
-                        }                        
+                        }
                         if(res.data.dat){
                             var file = new File(res.data.dat);
                             self.collection.add(file);
-                        }                        
+                        }
                         if(res.data.xml){
                             var file = new File(res.data.xml);
                             self.collection.add(file);
-                        }                        
+                        }
                         if(res.data.xsl){
                             var file = new File(res.data.xsl);
                             self.collection.add(file);

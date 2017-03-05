@@ -1,25 +1,38 @@
 import Backbone from 'backbone';
 import $ from 'jquery';
 import _ from 'underscore';
-import FileModel from './../models/fileModel';
 
-Backbone.$ = $;
-var jQuery = $;
-window.$ = window.jQuery = jQuery;
+// Model
+import File from './../models/fileModel';
 
-require('bootstrap');
-
-jQuery.noConflict(true);
+// Extra
+import config from './../../../config.json';
 
 var PlayView = Backbone.View.extend({
-    model: 'FileModel',
-    el: '#modal-region',
+    id: 'play-modal',
+    className: 'modal fade',    
     template: _.template($("#play-template").html()),
-    initialize: function(attributes, options){
-        this.datFolderCollection = attributes.datFolderCollection;
-        this.xslFolderCollection = attributes.xslFolderCollection;
-        this.resultFolderCollection = attributes.resultFolderCollection;
-        this.redirectEvent = attributes.redirectEvent;
+    initialize: function(options) {
+        this.datFolderCollection = options.datFolderCollection;
+        this.xslFolderCollection = options.xslFolderCollection;
+        this.resultFolderCollection = options.resultFolderCollection;
+        this.redirectEvent = options.redirectEvent;
+        _.bindAll(this, 'show', 'render');
+        this.render();
+    },
+    render: function() {
+        this.$el.html(this.template({
+            xslFolderCollection: this.xslFolderCollection,
+            datFolderCollection: this.datFolderCollection
+        }));
+        this.$el.modal({show:true}); // dont show modal on instantiation
+        this.$el.on('hidden.bs.modal', _.bind(function() {
+            this.hide();
+        }, this));
+        return this;
+    },
+    show: function() {
+        this.$el.modal('show');
     },
     events:{
         'click #upload-dat-button': 'clickedUploadData',
@@ -54,22 +67,17 @@ var PlayView = Backbone.View.extend({
                 processData: false,
                 contentType: false,
                 success: function(res){
-                    if(res.extension === 'dat' || res.extension === 'h5'){
-                        if(res.status === 'SUCCESS'){
-                            if(res.data.dat){
-                                var datFile = new FileModel(res.data.dat);
-                                self.datFolderCollection.add(datFile);
-                            }
-                            if(res.data.h5){
-                                var datFile = new FileModel(res.data.h5);
-                                self.datFolderCollection.add(datFile);
-                            }
-                            $('#modal-template-body').html(self.template({
-                                xslFolderCollection: self.xslFolderCollection,
-                                datFolderCollection: self.datFolderCollection
-                            }));
+                    if(res.status === 'SUCCESS'){ 
+                        if(res.data.h5){
+                            var file = new File(res.data.h5);
+                            self.datFolderCollection.add(file);
+                        }                        
+                        if(res.data.dat){
+                            var file = new File(res.data.dat);
+                            self.datFolderCollection.add(file);
                         }
-                    }
+                        self.render();
+                    } 
                 },
                 xhr: function() {
                     var xhr = new XMLHttpRequest();
@@ -105,19 +113,13 @@ var PlayView = Backbone.View.extend({
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function(data){                    
-                    if(data.extension === 'xsl'){
-                        if(data.status){
-                            var datFile = new FileModel({
-                                name: data.filename,
-                                path: data.path
-                            });
-                            self.xslFolderCollection.add(datFile);
-                            $('#modal-template-body').html(self.template({
-                                xslFolderCollection: self.xslFolderCollection,
-                                datFolderCollection: self.datFolderCollection
-                            }));
+                success: function(res){
+                    if(res.status === 'SUCCESS'){                                                
+                        if(res.data.xsl){
+                            var file = new File(res.data.xsl);
+                            self.xslFolderCollection.add(file);
                         }
+                        self.render();
                     }
                 },
                 xhr: function() {
@@ -145,7 +147,7 @@ var PlayView = Backbone.View.extend({
         var dataPath = $('#dat-selection').find(':selected').data('path');
         var xslPath = $('#xsl-selection').find(':selected').data('path');
         var resultFileName = $('#result-name').val();
-        $('#modal').modal('hide');
+        this.$el.modal('hide');
         if(this.redirectEvent){
             this.redirectEvent('#');
         }
@@ -169,16 +171,9 @@ var PlayView = Backbone.View.extend({
             }
         });
     },
-    render: function() {;
-        var modalTemplate = _.template($("#modal-template").html());
-        modalTemplate = modalTemplate({title: 'Play Configuration'});
-        $('#modal-region').html(modalTemplate);
-        $('#modal-template-body').html(this.template({
-            xslFolderCollection: this.xslFolderCollection,
-            datFolderCollection: this.datFolderCollection
-        }));
-        $('#modal').modal('show');
-        return this;
+    hide: function() {
+        this.$el.data('modal', null);
+        this.remove();
     }
 });
 

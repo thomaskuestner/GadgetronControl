@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-module.exports={"port":"3000","gadgetron_port":"9000","hostname":"localhost","config_dir":"/usr/local/share/gadgetron/config/","upload_dir":"uploads","result_dir":"public/results","trash_dir":"trash","gadgetron_log":"/var/log/gadgetron.log","readers_db":"db/readers.db","gadgets_db":"db/gadgets.db","writers_db":"db/writers.db","admin_user":"admin","password":"admin","UI_local":"false"}
+module.exports={"port":"3000","hostname":"localhost","config_dir":"/usr/local/share/gadgetron/config/","upload_dir":"uploads","result_dir":"public/results","trash_dir":"trash","gadgetron_log":"/var/log/gadgetron.log","readers_db":"db/readers.db","gadgets_db":"db/gadgets.db","writers_db":"db/writers.db","admin_user":"admin","password":"admin","UI_local":"false"}
 },{}],2:[function(require,module,exports){
 (function (global){
 //     Backbone.js 1.3.3
@@ -42087,7 +42087,7 @@ var Dashboard = _backbone2.default.View.extend({
                 resultFolderCollection: self.resultFolderView.collection
             });
         }
-        this.playView.render();
+        this.playView.show();
     },
     close: function close() {
         this.remove();
@@ -43526,25 +43526,38 @@ var _fileModel = require('./../models/fileModel');
 
 var _fileModel2 = _interopRequireDefault(_fileModel);
 
+var _config = require('./../../../config.json');
+
+var _config2 = _interopRequireDefault(_config);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_backbone2.default.$ = _jquery2.default;
-var jQuery = _jquery2.default;
-window.$ = window.jQuery = jQuery;
-
-require('bootstrap');
-
-jQuery.noConflict(true);
-
+// Model
 var PlayView = _backbone2.default.View.extend({
-    model: 'FileModel',
-    el: '#modal-region',
+    id: 'play-modal',
+    className: 'modal fade',
     template: _underscore2.default.template((0, _jquery2.default)("#play-template").html()),
-    initialize: function initialize(attributes, options) {
-        this.datFolderCollection = attributes.datFolderCollection;
-        this.xslFolderCollection = attributes.xslFolderCollection;
-        this.resultFolderCollection = attributes.resultFolderCollection;
-        this.redirectEvent = attributes.redirectEvent;
+    initialize: function initialize(options) {
+        this.datFolderCollection = options.datFolderCollection;
+        this.xslFolderCollection = options.xslFolderCollection;
+        this.resultFolderCollection = options.resultFolderCollection;
+        this.redirectEvent = options.redirectEvent;
+        _underscore2.default.bindAll(this, 'show', 'render');
+        this.render();
+    },
+    render: function render() {
+        this.$el.html(this.template({
+            xslFolderCollection: this.xslFolderCollection,
+            datFolderCollection: this.datFolderCollection
+        }));
+        this.$el.modal({ show: true }); // dont show modal on instantiation
+        this.$el.on('hidden.bs.modal', _underscore2.default.bind(function () {
+            this.hide();
+        }, this));
+        return this;
+    },
+    show: function show() {
+        this.$el.modal('show');
     },
     events: {
         'click #upload-dat-button': 'clickedUploadData',
@@ -43579,21 +43592,16 @@ var PlayView = _backbone2.default.View.extend({
                 processData: false,
                 contentType: false,
                 success: function success(res) {
-                    if (res.extension === 'dat' || res.extension === 'h5') {
-                        if (res.status === 'SUCCESS') {
-                            if (res.data.dat) {
-                                var datFile = new _fileModel2.default(res.data.dat);
-                                self.datFolderCollection.add(datFile);
-                            }
-                            if (res.data.h5) {
-                                var datFile = new _fileModel2.default(res.data.h5);
-                                self.datFolderCollection.add(datFile);
-                            }
-                            (0, _jquery2.default)('#modal-template-body').html(self.template({
-                                xslFolderCollection: self.xslFolderCollection,
-                                datFolderCollection: self.datFolderCollection
-                            }));
+                    if (res.status === 'SUCCESS') {
+                        if (res.data.h5) {
+                            var file = new _fileModel2.default(res.data.h5);
+                            self.datFolderCollection.add(file);
                         }
+                        if (res.data.dat) {
+                            var file = new _fileModel2.default(res.data.dat);
+                            self.datFolderCollection.add(file);
+                        }
+                        self.render();
                     }
                 },
                 xhr: function xhr() {
@@ -43630,19 +43638,13 @@ var PlayView = _backbone2.default.View.extend({
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function success(data) {
-                    if (data.extension === 'xsl') {
-                        if (data.status) {
-                            var datFile = new _fileModel2.default({
-                                name: data.filename,
-                                path: data.path
-                            });
-                            self.xslFolderCollection.add(datFile);
-                            (0, _jquery2.default)('#modal-template-body').html(self.template({
-                                xslFolderCollection: self.xslFolderCollection,
-                                datFolderCollection: self.datFolderCollection
-                            }));
+                success: function success(res) {
+                    if (res.status === 'SUCCESS') {
+                        if (res.data.xsl) {
+                            var file = new _fileModel2.default(res.data.xsl);
+                            self.xslFolderCollection.add(file);
                         }
+                        self.render();
                     }
                 },
                 xhr: function xhr() {
@@ -43670,7 +43672,7 @@ var PlayView = _backbone2.default.View.extend({
         var dataPath = (0, _jquery2.default)('#dat-selection').find(':selected').data('path');
         var xslPath = (0, _jquery2.default)('#xsl-selection').find(':selected').data('path');
         var resultFileName = (0, _jquery2.default)('#result-name').val();
-        (0, _jquery2.default)('#modal').modal('hide');
+        this.$el.modal('hide');
         if (this.redirectEvent) {
             this.redirectEvent('#');
         }
@@ -43685,7 +43687,7 @@ var PlayView = _backbone2.default.View.extend({
             },
             success: function success(res) {
                 if (res.status === 'SUCCESS') {
-                    var datFile = new _fileModel2.default({
+                    var datFile = new FileModel({
                         name: res.data.filename,
                         path: res.data.path
                     });
@@ -43694,23 +43696,18 @@ var PlayView = _backbone2.default.View.extend({
             }
         });
     },
-    render: function render() {
-        ;
-        var modalTemplate = _underscore2.default.template((0, _jquery2.default)("#modal-template").html());
-        modalTemplate = modalTemplate({ title: 'Play Configuration' });
-        (0, _jquery2.default)('#modal-region').html(modalTemplate);
-        (0, _jquery2.default)('#modal-template-body').html(this.template({
-            xslFolderCollection: this.xslFolderCollection,
-            datFolderCollection: this.datFolderCollection
-        }));
-        (0, _jquery2.default)('#modal').modal('show');
-        return this;
+    hide: function hide() {
+        this.$el.data('modal', null);
+        this.remove();
     }
 });
 
+// Extra
+
+
 module.exports = PlayView;
 
-},{"./../models/fileModel":188,"backbone":2,"bootstrap":4,"jquery":18,"underscore":19}],215:[function(require,module,exports){
+},{"./../../../config.json":1,"./../models/fileModel":188,"backbone":2,"jquery":18,"underscore":19}],215:[function(require,module,exports){
 'use strict';
 
 var _backbone = require('backbone');
@@ -44098,7 +44095,11 @@ var StatusView = _backbone2.default.View.extend({
                 data.processArgument = 'no arguments';
             }
             if (data.state === 'on') {
-                this.$el.html('<img src="img/Gadgetron_Success.png" title="Started with ' + data.processArgument.join(' ') + '" height="22px"/>');
+                var processArgument = '';
+                if (Array.isArray(data.processArgument)) {
+                    processArgument = data.processArgument.join(' ');
+                }
+                this.$el.html('<img src="img/Gadgetron_Success.png" title="Started with ' + processArgument + '" height="22px"/>');
             } else {
                 this.$el.html('<img src="img/Gadgetron_Error.png" title="You have to start gadgetron on the server" height="22px"/>');
             }

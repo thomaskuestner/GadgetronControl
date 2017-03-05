@@ -170,7 +170,7 @@ var Dashboard = Backbone.View.extend({
                 resultFolderCollection: self.resultFolderView.collection
             });
         }
-        this.playView.render();
+        this.playView.show();
     },
     close: function(){
         this.remove();

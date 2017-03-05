@@ -318,41 +318,57 @@
     </script>
 
     <script id="play-template" type="text/template">
-        <div class="form-group">
-            <label for="upload-dat-button">DAT/H5-Data</label>
-            <select id="dat-selection" class="form-control">
-                <option></option>
-                <% datFolderCollection.each(function(model, index){ %>
-                    <option data-path='<%= model.get('path') %>'><%= model.get('name') %></option>
-                <% }) %>
-            </select>
-            <br />
-            <div class="progress">
-                <div id="progress-dat-bar" class="progress-bar" role="progressbar"></div>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="solve-modal-label">Start Pipeline</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="play-form">
+                        <div class="form-group">
+                            <label for="upload-dat-button">DAT/H5-Data</label>
+                            <select id="dat-selection" class="form-control">
+                                <div id="dat-options"></div>
+                                <option></option>
+                                <% datFolderCollection.each(function(model, index){ %>
+                                    <option data-path='<%= model.get('path') %>'><%= model.get('name') %></option>
+                                <% }) %>
+                            </select>
+                            <br />
+                            <div class="progress">
+                                <div id="progress-dat-bar" class="progress-bar" role="progressbar"></div>
+                            </div>
+                            <button class="btn btn-default" type="button" id="upload-dat-button"><i class="glyphicon glyphicon-upload" aria-hidden="true"></i> Upload Data</button>
+                            <input id="upload-dat-input" type="file" name="uploads[]" class="hide" accept=".dat,.h5">
+                        </div>
+                        <div class="form-group">
+                            <label for="upload-xsl-button">XSL-Stylesheet-Data (optional)</label>
+                            <select id="xsl-selection" class="form-control">
+                                <option></option>
+                                <% xslFolderCollection.each(function(model, index){ %>
+                                    <option data-path='<%= model.get('path') %>'><%= model.get('name') %></option>
+                                <% }) %>
+                            </select>
+                            <br />
+                            <div class="progress">
+                                <div id="progress-xsl-bar" class="progress-bar" role="progressbar"></div>
+                            </div>
+                            <button class="btn btn-default" type="button" id="upload-xsl-button"><i class="glyphicon glyphicon-upload" aria-hidden="true"></i> Upload Data</button><br />
+                            <input id="upload-xsl-input" type="file" name="uploads[]" class="hide" accept=".xsl">
+                        </div>
+                        <div class="form-group">
+                            <label for="result-name">Result file name (default: TIMESTAMP_dat/h5-filename.h5)</label>
+                            <input type="text" class="form-control" id="result-name" name="result-name" placeholder="filename for the result">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button class="btn btn-default" type="button" id="start-button"><i class="glyphicon glyphicon-play" aria-hidden="true"></i> Start Configuration</button>
+                </div>
             </div>
-            <button class="btn btn-default" type="button" id="upload-dat-button"><i class="glyphicon glyphicon-upload" aria-hidden="true"></i> Upload Data</button>
-            <input id="upload-dat-input" type="file" name="uploads[]" class="hide" accept=".dat,.h5">
         </div>
-        <div class="form-group">
-            <label for="upload-xsl-button">XSL-Stylesheet-Data (optional)</label>
-            <select id="xsl-selection" class="form-control">
-                <option></option>
-                <% xslFolderCollection.each(function(model, index){ %>
-                    <option data-path='<%= model.get('path') %>'><%= model.get('name') %></option>
-                <% }) %>
-            </select>
-            <br />
-            <div class="progress">
-                <div id="progress-xsl-bar" class="progress-bar" role="progressbar"></div>
-            </div>
-            <button class="btn btn-default" type="button" id="upload-xsl-button"><i class="glyphicon glyphicon-upload" aria-hidden="true"></i> Upload Data</button><br />
-            <input id="upload-xsl-input" type="file" name="uploads[]" class="hide" accept=".xsl">
-        </div>
-        <div class="form-group">
-            <label for="result-name">Result file name (default: TIMESTAMP_dat/h5-filename.h5)</label>
-            <input type="text" class="form-control" id="result-name" name="result-name" placeholder="filename for the result">
-        </div>
-        <button class="btn btn-default" type="button" id="start-button"><i class="glyphicon glyphicon-play" aria-hidden="true"></i> Start Configuration</button>
     </script>
 
     <script id="gadget-template" type="text/template">

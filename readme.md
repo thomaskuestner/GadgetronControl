@@ -12,7 +12,7 @@ Prerequesits are the following tools.
 
 Please set the PATH variables so that the GadgetronControl can find them and install the required packages:
 ```bash
-apt-get install npm
+apt-get install npm nodejs-legacy
 export GADGETRON_HOME=/usr/local
 export ISMRMRD_HOME=/usr/local
 export PATH=$PATH:$GADGETRON_HOME/bin:$ISMRMRD_HOME/bin

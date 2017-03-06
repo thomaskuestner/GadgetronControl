@@ -22,6 +22,7 @@
     "browserify-middleware": "~7.1.0",
     "cookie-parser": "~1.4.3",
     "d3": "^4.3.0",
+    "electron": "^1.4.15",
     "express": "~4.14.0",
     "express-babelify-middleware": "~0.2.1",
     "express-session": "~1.15.0",
@@ -41,7 +42,6 @@
     "xml2js": "~0.4.17"
   },
   "devDependencies": {
-    "electron": "^1.4.15",
     "grunt": "^1.0.1",
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-copy": "^1.0.0"

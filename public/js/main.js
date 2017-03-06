@@ -21,6 +21,11 @@ Backbone.$ = $;
 var combindedReaders;
 var combindedWriters;
 
+// show load symbol at startup
+window.onload = function(){
+    $(".loader").fadeOut("slow");
+};
+
 // get StreamConfiguration-Files from server
 Backbone.ajax({
     url: "/api/gadgetronStreamConfiguration",

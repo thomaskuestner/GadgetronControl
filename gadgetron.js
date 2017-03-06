@@ -19,16 +19,16 @@ module.exports = function(app, config, autoconfig){
                 if (err) {
                     throw new Error( err );
                 }
-                resultList.forEach(function( process ){
-                    if( process ){
-                        var portIndex = process.arguments.indexOf('-p')
+                resultList.forEach(function( gadgetronProcess ){
+                    if( gadgetronProcess ){
+                        var portIndex = gadgetronProcess.arguments.indexOf('-p')
                         if(portIndex === -1){
                             app.autoconfig.gadgetron_port = 9002;
                         }
                         else{
-                            app.autoconfig.gadgetron_port = process.arguments[portIndex + 1];
+                            app.autoconfig.gadgetron_port = gadgetronProcess.arguments[portIndex + 1];
                         }
-                        app.broadcastGadgetronStatus({processId: process.pid, processCommand: process.command, processArgument: process.arguments, state: 'on' });
+                        app.broadcastGadgetronStatus({processId: gadgetronProcess.pid, processCommand: gadgetronProcess.command, processArgument: gadgetronProcess.arguments, state: 'on' });
                     }
                 });
                 if(resultList.length === 0){

@@ -13,8 +13,7 @@ module.exports = function(app){
         process.argv.shift();
         var parameters = process.argv;
         spawn(node, parameters, {
-                detached: true,
-                stdio: ['ignore', 'ignore', 'ignore']
+                detached: true
             });
 
         process.exit(0);

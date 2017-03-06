@@ -176,6 +176,7 @@
 
     <!-- CONFIGURATION -->
     <script id="configuration-template" type="text/template">
+        <p>Changes need to be done in the config.json, followed by a <i>npm run build</i>.</p>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -186,14 +187,12 @@
             <tbody>
             </tbody>
         </table>
-        <hr />
-        <button class="btn btn-warning pull-right" type="button" id="save-configuration-json"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i> Save & Restart Gadgetron server</button>
     </script>
 
         <!-- CONFIGURATION-ROW -->
         <script id="configuration-json-row" type="text/template">
             <td><%= key %></td>
-            <td contenteditable=true><%= value %></td>
+            <td><%= value %></td>
         </script>
         <!-- CONFIGURATION-ROW -->
     <!-- CONFIGURATION -->

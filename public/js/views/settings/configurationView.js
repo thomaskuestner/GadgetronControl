@@ -12,8 +12,7 @@ import ConfigurationCollection from './../../collections/configurationCollection
 import ConfigurationRow from './configurationRow';
 
 // Extra
-//import config from './../../../../config.json';
-import config from __dirname__ + '/config.json';
+import config from './../../../../config.json';
 
 Backbone.$ = $;
 

@@ -44,7 +44,7 @@ var Dashboard = Backbone.View.extend({
         this.configurationFolderView = new FolderView({ 
             title: 'Configuration-Data',  
             className: 'configuration-file',
-            dirs: ['/usr/local/share/gadgetron/config/'],
+            dirs: [ config.config_dir ],
             height: height/3, 
             row: '#configuration-row', 
             playButtonClickEvent: this.playButtonClickEvent,

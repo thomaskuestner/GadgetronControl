@@ -66,8 +66,15 @@ module.exports = function(app, config){
         });
     }
 
-    // check for changes in config_dir
-    fs.watch(config.config_dir, function(event, filename){
-        app.configurationList = new Array;
+    fs.exists(config.config_dir, function(exists){
+        if(exists){
+            // check for changes in config_dir
+            fs.watch(config.config_dir, function(event, filename){
+                app.configurationList = new Array;
+            });
+        }
+        else{
+            console.error("Gadgetron config_dir doesn't exists. Please check your config.json");
+        }
     });
 }

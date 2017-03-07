@@ -23,7 +23,7 @@ module.exports = function(app, config, autoconfig){
                     if( gadgetronProcess ){
                         var portIndex = gadgetronProcess.arguments.indexOf('-p')
                         if(portIndex === -1){
-                            app.autoconfig.gadgetron_port = 9002;
+                            app.autoconfig.gadgetron_port = 9002; // replace by config.gadgetron_port?
                         }
                         else{
                             app.autoconfig.gadgetron_port = gadgetronProcess.arguments[portIndex + 1];
@@ -34,7 +34,7 @@ module.exports = function(app, config, autoconfig){
                 if(resultList.length === 0){
                         app.broadcastGadgetronStatus({processId: 0, processCommand: '', processArgument: '' , state: 'off' });
                 }
-            });  
+            });
         }, iFrequency );  // run
     }
     sendGadgertonState();

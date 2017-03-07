@@ -1,8 +1,21 @@
 const {app,BrowserWindow} = require('electron')
 const url = require('url')
 const path = require('path')
+//const remote = require('electron').remote
+const dialog = require('electron').dialog
 //var http = require('http');
 var childProcess = require('child_process');
+
+let win
+
+const openFile = function() {
+  console.log('open file function')
+  var files = dialog.showOpenDialog(win, {properties: ['openFile']});
+  if(!files) { return; }
+  var file = files[0];
+  console.log(file);
+}
+exports.openFile = openFile;
 
 function httpGet(url, portIn) {
     return new Promise(
@@ -52,8 +65,6 @@ function delay(ms) {
         setTimeout(resolve, ms);
     });
 }
-
-let win
 
 function fGenerateApp() {
   // invoke child process (remote application)

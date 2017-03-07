@@ -96,17 +96,21 @@ var UploadDialog = Backbone.View.extend({
         }
     },
     clickGetPathServer: function(event){
-        var self = this;
+        //var self = this;
         //var remote = require('remote');
         //var dialog = remote.require('dialog');
-        //var rempte = require('electron').remote;
-        //var dialog = remote.require('dialog');
-        const {dialog} = require('electron').remote;
-        dialog.showOpenDialog(function (fileNames) {
+        //var remote = require('electron').remote;
+        // tell babelify where to locate electron
+        const remote = require('electron').remote;
+        const mainProcess = remote.require('./main');
+        var file = mainProcess.openFile();
+        this.fLocateData(file);
+        //const dialog = require('electron').dialog;
+        /*dialog.showOpenDialog({properties: ['openFile']}, function (fileNames) {
+          console.log('Inside callback');
           if (fileNames === undefined) return;
-          var fileName = fileNames[0];
-          this.fLocateData(fileName);
-        });
+          this.fLocateData(fileNames[0]);
+        });*/
     },
     changedUploadFileEvent: function(event){
         var files = $(event.currentTarget).get(0).files;

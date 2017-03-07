@@ -73,7 +73,7 @@ function fGenerateApp() {
 function createWindow (process) {
 
   // Create the browser window.
-  win = new BrowserWindow({width: 1024, height: 768, title: "GadgetronControl"})
+  win = new BrowserWindow({width: 1024, height: 768, title: "GadgetronControl", icon:'public/img/icon.png'})
   win.maximize();
   // Disable menu bar
   win.setMenu(null)

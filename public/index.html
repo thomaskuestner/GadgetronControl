@@ -170,13 +170,22 @@
                     </div>
                 </div>
             </div>
+            <div class="col-lg-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Gadgetron Server
+                    </div>
+                    <div class="panel-body">
+                        <div id="gadgetronServer-view"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </script>
     <!-- SETTINGS -->
 
     <!-- CONFIGURATION -->
     <script id="configuration-template" type="text/template">
-        <p>Changes need to be done in the config.json, followed by a <i>npm run build</i>.</p>
+        <p>Attention: Changes require a rebuilt by <i>npm run build</i> followed by a manual restart of the GadgetronControl application.</p>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -199,9 +208,15 @@
 
     <!-- DATABASE -->
     <script id="database-template" type="text/template">
-        <button class="btn btn-warning pull-right" type="button" id="refresh-database"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i> Refresh Database</button>
+        <button class="btn btn-warning pull-right" type="button" id="refresh-database"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i>Refresh Database</button>
     </script>
     <!-- DATABASE -->
+
+    <!-- GADGETRONSERVER -->
+    <script id="gadgetronServer-template" type="text/template">
+        <button class="btn btn-warning pull-right" type="button" id="start-gadgetron"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i>Start/restart Gadgetron server</button>
+    </script>
+    <!-- GADGETRONSERVER -->
 
     <script id="dashboard-template" type="text/template">
         <div class="panel panel-default">

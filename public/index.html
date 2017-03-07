@@ -271,8 +271,7 @@
                     <h4 class="modal-title" id="solve-modal-label"><%= title %></h4>
                 </div>
                 <div class="modal-body">
-                    <form id="login-form">
-                        <% if(uiLocal === false){ %>
+                    <form id="login-form">                        
                             <div class="form-group">
                                 <label for="upload-file-button">Upload <%= typeTitle %></label>
                                 <div class="progress">
@@ -282,15 +281,16 @@
                                 <input id="upload-file-input" type="file" name="uploads[]" class="hide" accept="<%= fileextension %>">
                             </div>
                         <hr />
+                        <% if(uiLocal === false){ %>
                         <div class="form-group">
-                            <label for="symbolic-link">Locate data on Server</label>
+                            <label for="symbolic-link">Locate <%= typeTitle %> on Server</label>
                             <input type="text" class="form-control" placeholder="Absolute Path on Server" id="filename"><br />
                             <button class="btn btn-default" type="button" id="create-symbolic-link"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i> Locate <%= typeTitle %></button>
                         </div>
                         <% } %>
                         <% if(uiLocal === true){ %>
                         <div class="form-group">
-                            <label for="symbolic-link">Locate data</label><br/>
+                            <label for="symbolic-link">Locate <%= typeTitle %></label><br/>
                             <button class="btn btn-default" type="button" id="get-path-server"><i class="glyphicon glyphicon-open" aria-hidden="true"></i> Locate <%= typeTitle %></button>
                         </div>
                         <% } %>

@@ -97,6 +97,11 @@ var UploadDialog = Backbone.View.extend({
     },
     clickGetPathServer: function(event){
         var self = this;
+        //var remote = require('remote');
+        //var dialog = remote.require('dialog');
+        //var rempte = require('electron').remote;
+        //var dialog = remote.require('dialog');
+        const {dialog} = require('electron').remote;
         dialog.showOpenDialog(function (fileNames) {
           if (fileNames === undefined) return;
           var fileName = fileNames[0];

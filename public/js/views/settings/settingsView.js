@@ -5,6 +5,7 @@ import _ from 'underscore';
 // Views
 import ConfigurationView from './configurationView';
 import DatabaseView from './databaseView';
+import GadgetronServerView from './gadgetronServerView';
 
 Backbone.$ = $;
 
@@ -30,7 +31,9 @@ var SettingsView = Backbone.View.extend({
         this.configurationView = new ConfigurationView();
         $('#configuration-view').html(this.configurationView.render().el);    
         this.databaseView = new DatabaseView({gadgetGroup: this.gadgetGroup, readerGroup: this.readerGroup, writerGroup: this.writerGroup});
-        $('#database-view').html(this.databaseView.render().el);   
+        $('#database-view').html(this.databaseView.render().el);
+        this.gadgetronServerView = new GadgetronServerView();
+        $('#gadgetronServer-view').html(this.gadgetronServerView.render().el);    
         $(this.el).show();
     }
 });

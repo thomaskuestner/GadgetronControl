@@ -14,7 +14,7 @@ module.exports = function(app, config, autoconfig){
         }  // stop
         myInterval = setInterval( function(){
             ps.lookup({
-                command: 'gadgetron',
+                command: '\^gadgetron\$',
                 }, function(err, resultList ) {
                 if (err) {
                     throw new Error( err );

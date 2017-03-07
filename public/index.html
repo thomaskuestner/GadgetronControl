@@ -257,7 +257,7 @@
                 </div>
                 <div class="modal-body">
                     <form id="login-form">
-                        <% if(config.UI_local == 'false'){ %>
+                        <% if(uiLocal === false){ %>
                             <div class="form-group">
                                 <label for="upload-file-button">Upload <%= typeTitle %></label>
                                 <div class="progress">
@@ -273,7 +273,7 @@
                             <button class="btn btn-default" type="button" id="create-symbolic-link"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i> Locate <%= typeTitle %></button>
                         </div>
                         <% } %>
-                        <% if(config.UI_local == 'true'){ %>
+                        <% if(uiLocal === true){ %>
                         <div class="form-group">
                             <label for="symbolic-link">Locate data</label>
                             <button class="btn btn-default" type="button" id="get-path-server"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i> Locate <%= typeTitle %></button>

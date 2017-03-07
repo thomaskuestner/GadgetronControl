@@ -41,7 +41,12 @@ var UploadDialog = Backbone.View.extend({
         this.remove();
     },
     render: function() {
-        this.$el.html(this.template({fileextension: this.fileextension, config, title: this.title, typeTitle: this.typeTitle}));
+        // checks if electron or browser is started
+        var uiLocal = false;
+        if(window && window.process && window.process.type){
+            uiLocal = true;
+        }
+        this.$el.html(this.template({fileextension: this.fileextension, uiLocal, title: this.title, typeTitle: this.typeTitle}));
         this.$el.modal({show:true}); // dont show modal on instantiation
         this.$el.on('hidden.bs.modal', _.bind(function() {
             this.hide();

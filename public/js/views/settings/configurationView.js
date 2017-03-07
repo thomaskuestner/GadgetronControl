@@ -32,7 +32,7 @@ var ConfigurationView = Backbone.View.extend({
         });
     },
     events:{
-        'click #save-configuration-json': 'saveAndRestart'
+        'click #save-configuration-json': 'save'
     },
     template: _.template($("#configuration-template").html()),
     render: function() {
@@ -48,7 +48,7 @@ var ConfigurationView = Backbone.View.extend({
         var configurationRow = new ConfigurationRow({model: configuration});
         this.$el.find('tbody').append(configurationRow.render().el);
     },
-    saveAndRestart: function(events){
+    save: function(events){
         // save config.json & restart server
         this.collection.saveConfiguration();
     }

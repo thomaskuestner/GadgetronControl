@@ -18,21 +18,6 @@ var ConfigurationCollection = Backbone.Collection.extend({
             data: newConfig,
             success: function(res){
                 if(res.status === 'SUCCESS'){
-                    Backbone.ajax({
-                        type: 'POST',
-                        url: "/api/gadgetronControl/restart",
-                        success: function(res){
-                            if(res.status === 'SUCCESS'){
-
-                            }
-                            else{
-
-                            }
-                        }
-                    });
-                }
-                else{
-
                 }
             }
         });

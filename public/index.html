@@ -196,12 +196,14 @@
             <tbody>
             </tbody>
         </table>
+        <hr />
+        <button class="btn btn-warning pull-right" type="button" id="save-configuration-json"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i> Save</button>
     </script>
 
         <!-- CONFIGURATION-ROW -->
         <script id="configuration-json-row" type="text/template">
             <td><%= key %></td>
-            <td><%= value %></td>
+            <td contenteditable=true><%= value %></td>
         </script>
         <!-- CONFIGURATION-ROW -->
     <!-- CONFIGURATION -->

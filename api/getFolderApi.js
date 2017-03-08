@@ -25,7 +25,9 @@ module.exports = function(app){
                             })
                         }
                     }
-                    res.json(files);
+                    if(!res.headersSent){
+                        res.json(files);
+                    }
                 });
             }
         })

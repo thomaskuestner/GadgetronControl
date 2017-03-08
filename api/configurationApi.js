@@ -15,9 +15,11 @@ module.exports = function(app){
             }
 
             app.broadcast("Saved config.json", 'INFO', 'GadgetronControl');
-            res.json({
-                status: 'SUCCESS'
-            })
+            if(!res.headersSent){
+                res.json({
+                    status: 'SUCCESS'
+                })
+            }
         });
     });
 }

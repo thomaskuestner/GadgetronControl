@@ -39,21 +39,23 @@ module.exports = function(app, config){
                     siemensToIsmrmd.on('close', function(code){
                         app.broadcast('converted ' + fileName + ' to h5-format', 'SUCCESS', 'siemens_to_ismrmrd');
                         app.broadcast('uploaded ' + fileName, 'SUCCESS', 'siemens_to_ismrmrd');
-                        res.json({
-                            status: 'SUCCESS',
-                            data: {
-                                h5 :{
-                                    extension: extension, 
-                                    name: fileName + '.h5',
-                                    path: destinationH5Path
-                                },
-                                dat:{
-                                    extension: extension, 
-                                    name: fileName + '.' + extension,
-                                    path: destinationPath
+                        if(!res.headersSent){
+                            res.json({
+                                status: 'SUCCESS',
+                                data: {
+                                    h5 :{
+                                        extension: extension, 
+                                        name: fileName + '.h5',
+                                        path: destinationH5Path
+                                    },
+                                    dat:{
+                                        extension: extension, 
+                                        name: fileName + '.' + extension,
+                                        path: destinationPath
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     });
                     siemensToIsmrmd.stderr.on('data', function(data){
                         app.broadcast(data.toString(), null, 'siemens_to_ismrmrd');
@@ -123,10 +125,12 @@ module.exports = function(app, config){
                         break;
                 }
                 app.broadcast('uploaded ' + fileName, 'SUCCESS', 'GadgetronControl');
-                res.json({
-                    status: 'SUCCESS',
-                    data: data
-                });
+                if(!res.headersSent){
+                    res.json({
+                        status: 'SUCCESS',
+                        data: data
+                    });
+                }
             }
         });
         // parse the incoming request containing the form data

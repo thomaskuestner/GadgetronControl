@@ -26,14 +26,20 @@ module.exports = function(app, config){
                     app.broadcast('killed gadgetron process with pid ' +  gadgetronProcess.pid, 'SUCCESS', 'gadgetron');
                 }
             });
-            var gadgetronServer = spawn('gadgetron',['-p', config.gadgetron_port, '-r', config.gadgetron_relay_host, '-l', config.gadgetron_relay_port]);
-            var logstream = fs.createWriteStream(config.gadgetron_log, {flags: 'a'});
-            gadgetronServer.stdout.pipe(logstream);
-            gadgetronServer.stderr.pipe(logstream);
-            app.broadcast('started gadgetron', 'SUCCESS', 'gadgetron');
-
-            gadgetronServer.on('uncaughtException', function(err){
-                app.broadcast((err && err.stack) ? err.stack : err,'ERROR','gadgetron');
+            var commandExists = require('command-exists');
+            commandExists('gadgetron', function(err, commandExists) {
+              if(commandExists) {
+                var gadgetronServer = spawn('gadgetron',['-p', config.gadgetron_port, '-r', config.gadgetron_relay_host, '-l', config.gadgetron_relay_port]);
+                var logstream = fs.createWriteStream(config.gadgetron_log, {flags: 'a'});
+                gadgetronServer.stdout.pipe(logstream);
+                gadgetronServer.stderr.pipe(logstream);
+                app.broadcast('started gadgetron', 'SUCCESS', 'gadgetron');
+                gadgetronServer.on('uncaughtException', function(err){
+                    app.broadcast((err && err.stack) ? err.stack : err,'ERROR','gadgetron');
+                });
+              } else {
+                app.broadcast('gadgetron not installed', 'ERROR', 'gadgetron');
+              }
             });
         });
     }

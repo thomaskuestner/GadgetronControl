@@ -66,6 +66,14 @@ module.exports = function(app, config){
                     destinationPath = path.join(form.uploadDir + '/' + extension, file.name);
                     fs.rename(file.path, destinationPath);
                     break;
+                case 'sh':
+                case 'py':
+                    destinationPath = path.join(path.dirname(require.main.filename) + '/' + config.upload_dir + '/' + extension, file.name);
+                    fs.rename(file.path, destinationPath);
+                    spawn('ln', ['-s', destinationPath, path.join(config.config_dir + file.name)]);
+                    // make script executable
+                    fs.chmodSync(destinationPath, 0700);
+                    break;
                 case 'xml':
                     destinationPath = path.join(path.dirname(require.main.filename) + '/' + config.upload_dir + '/' + extension, file.name);
                     fs.rename(file.path, destinationPath);
@@ -103,6 +111,8 @@ module.exports = function(app, config){
                             }
                         };
                         break;
+                    case 'sh':
+                    case 'py':
                     case 'xml':
                         data = 
                         {
@@ -172,6 +182,8 @@ module.exports = function(app, config){
                                     }
                                 };
                                 break;
+                            case 'sh':
+                            case 'py':
                             case 'xml':
                                 // Symbolic Link into config dir
                                 destinationPath = path.join(path.dirname(require.main.filename) + '/' + config.upload_dir + '/' + extension, fileName);

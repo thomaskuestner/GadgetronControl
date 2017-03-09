@@ -45227,7 +45227,7 @@ var UploadDialog = _backbone2.default.View.extend({
     },
     render: function render() {
         // checks if electron or browser is started
-        var uiLocal = true;
+        var uiLocal = false;
         if (window && window.process && window.process.type) {
             uiLocal = true;
         }

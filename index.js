@@ -57,6 +57,9 @@ require('./api/configurationApi')(app);
 // load GadgetronControl API
 require('./api/gadgetronControlApi')(app);
 
+// load Electron API
+require('./api/electronApi')(app);
+
 // start hdfview on server
 app.get('/api/startHdfView', function(req, res) {
     var filePath = req.query.filePath;

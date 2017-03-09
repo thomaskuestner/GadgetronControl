@@ -42,7 +42,7 @@ var UploadDialog = Backbone.View.extend({
     },
     render: function() {
         // checks if electron or browser is started
-        var uiLocal = false;
+        var uiLocal = true;
         if(window && window.process && window.process.type){
             uiLocal = true;
         }
@@ -96,21 +96,16 @@ var UploadDialog = Backbone.View.extend({
         }
     },
     clickGetPathServer: function(event){
-        //var self = this;
-        //var remote = require('remote');
-        //var dialog = remote.require('dialog');
-        //var remote = require('electron').remote;
-        // tell babelify where to locate electron
-        const remote = require('electron').remote;
-        const mainProcess = remote.require('./main');
-        var file = mainProcess.openFile();
-        this.fLocateData(file);
-        //const dialog = require('electron').dialog;
-        /*dialog.showOpenDialog({properties: ['openFile']}, function (fileNames) {
-          console.log('Inside callback');
-          if (fileNames === undefined) return;
-          this.fLocateData(fileNames[0]);
-        });*/
+      Backbone.ajax({
+          url: '/api/getFilePath',
+          success: function(res){
+              if(res.status === 'SUCCESS'){
+                  if(res.filePath){
+                      this.fLocateData(res.filePath);
+                  }
+              }
+          }
+      });
     },
     changedUploadFileEvent: function(event){
         var files = $(event.currentTarget).get(0).files;

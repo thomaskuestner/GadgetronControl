@@ -55,7 +55,7 @@ require('./api/gadgetronIsmrmrdClientApi')(app, config);
 require('./api/configurationApi')(app);
 
 // load GadgetronControl API
-require('./api/gadgetronControlApi')(app);
+require('./api/gadgetronControlApi')(app, config);
 
 // load Electron API
 require('./api/electronApi')(app);
@@ -87,10 +87,13 @@ app.get('/api/startHdfView', function(req, res) {
     });
     hdfViewer.on('error', function(error){
         app.broadcast('probabply hdfview is not installed', 'ERROR', 'hdfview');
-    })
+    });
 });
 
 app.server.listen(config.port);
+
+// start gadgetron
+app.restartGadgetron();
 
 // methods
 // create folder

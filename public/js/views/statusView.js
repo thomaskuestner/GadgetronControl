@@ -30,7 +30,7 @@ var StatusView = Backbone.View.extend({
                 if(Array.isArray(data.processArgument)){
                     processArgument = data.processArgument.join(' ');
                 }
-                this.$el.html(`<img src="img/Gadgetron_Success.png" title="Started with ${processArgument}" height="22px"/>`);
+                this.$el.html(`<img src="img/Gadgetron_Success.png" title="Started with ${processArgument}. PID: ${data.processId}" height="22px"/>`);
             }
             else{
                 this.$el.html(`<img src="img/Gadgetron_Error.png" title="You have to start gadgetron on the server" height="22px"/>`);

@@ -22,6 +22,7 @@ var GadgetronServerView = Backbone.View.extend({
         var self = this;
         Backbone.ajax({
             url: "/api/gadgetron/restart",
+            type: 'POST',
             success: function(data){
             }
         });

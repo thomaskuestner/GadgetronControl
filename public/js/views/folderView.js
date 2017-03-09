@@ -111,10 +111,10 @@ var FolderView = Backbone.View.extend({
                         file.delete();
                     });
                     break;
-                case 'open-hdfview-button':
+                case 'open-view-button':
                     if(model){
                         Backbone.ajax({
-                            url: "/api/startHdfView",
+                            url: "/api/startViewer",
                             data: {
                                 filePath: model.get('path')
                             }

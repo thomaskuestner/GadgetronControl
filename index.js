@@ -60,33 +60,34 @@ require('./api/gadgetronControlApi')(app, config);
 // load Electron API
 require('./api/electronApi')(app);
 
-// start hdfview on server
-app.get('/api/startHdfView', function(req, res) {
+// start viewer on server
+app.get('/api/startViewer', function(req, res) {
     var filePath = req.query.filePath;
     var success = true;
-    var hdfViewer = spawn('hdfview',[filePath]);
-    hdfViewer.stdout.on('data', function(data){
+    var viewer = spawn(config.viewer,[filePath]);
+    viewer.stdout.on('data', function(data){
         if(data){
-            app.broadcast(data.toString(), null, 'hdfview');
+            app.broadcast(data.toString(), null, config.viewer);
         }
     });
-    hdfViewer.on('close', function(code){
+    viewer.on('close', function(code){
         if(success){
-            app.broadcast('hdfview opened ' + filePath, 'SUCCESS', 'hdfview');
+            app.broadcast(config.viewer + ' opened ' + filePath, 'SUCCESS', config.viewer);
         }
         if(!res.headersSent){
             res.json({status: 'true'});
         }
     });
-    hdfViewer.stderr.on('data', function(data){
+    viewer.stderr.on('data', function(data){
         success = false;
-        app.broadcast(data.toString(),'ERROR', 'hdfview');
+        app.broadcast(data.toString(),'ERROR', config.viewer);
         if(!res.headersSent){
             res.json({status: 'false'});
         }
     });
-    hdfViewer.on('error', function(error){
-        app.broadcast('probabply hdfview is not installed', 'ERROR', 'hdfview');
+    viewer.on('error', function(error){
+        success = false;
+        app.broadcast('probabply ' + config.viewer + ' is not installed', 'ERROR', config.viewer);
     });
 });
 

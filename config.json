@@ -15,5 +15,5 @@
     "writers_db": "db/writers.db",
     "admin_user": "admin",
     "password": "admin",
-    "viewer": "hdf"
+    "viewer": "hdfview"
 }

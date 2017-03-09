@@ -550,7 +550,7 @@
         <td><%= name %></td>
         <td>
             <% var h5 = new RegExp('h5', 'i'); if(name.match(h5) && window.location.hostname === 'localhost'){ %>
-                <a id="open-hdfview-button" class="btn"><span class="glyphicon glyphicon-eye-open" aria-hidden="true" title="open file in hdfview"></span>
+                <a id="open-view-button" class="btn"><span class="glyphicon glyphicon-eye-open" aria-hidden="true" title="open file in viewer"></span>
             <% } %>
             <a id="file-trash-button" class="btn"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
         </td>
@@ -581,7 +581,7 @@
         <td><%= name %></td>
         <td>
             <% if(window.location.hostname === 'localhost'){ %>
-                <a id="open-hdfview-button" class="btn"><span class="glyphicon glyphicon-eye-open" aria-hidden="true" title="open file in hdfview"></span>
+                <a id="open-view-button" class="btn"><span class="glyphicon glyphicon-eye-open" aria-hidden="true" title="open file in viewer"></span>
             <% } %>
             <a href="/results/<%= name %>" title="Download File" download>
                 <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
@@ -613,9 +613,6 @@
         </div>
         <div class="checkbox">
             <label><input type="checkbox" value="" class="log-control-check" id="gadgetron_ismrmrd_client" autocomplete="off" checked>gadgetron_ismrmrd_client</label>
-        </div>
-        <div class="checkbox">
-            <label><input type="checkbox" value="" class="log-control-check" id="hdfview" autocomplete="off" checked>hdfview</label>
         </div>
     </ul>
     <!-- FITER MENU -->

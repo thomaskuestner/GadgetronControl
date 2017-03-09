@@ -15,6 +15,7 @@ var LogFilesView = Backbone.View.extend({
         this.title = attributes.title;
         this.height = attributes.height;
         this.content = attributes.content;
+        this.senderList = new Array();
         // listen on websocket
         this.socket = new WebSocket('ws://' + window.location.hostname + ':' + config.port + '/logbroadcast');
         this.socket.onmessage = function(msg){
@@ -26,9 +27,42 @@ var LogFilesView = Backbone.View.extend({
         'click': 'clickEvent',
         'contextmenu': 'contextmenuEvent'
     },
+    renderSenderFilterContext: function(data){
+        var senderFound = false;
+        // check if there is new sender and add this to contextmenu
+        for (var sender in this.senderList) {
+            if(this.senderList[sender] === data.sender){
+                senderFound = true;
+            }
+        }
+        if(!senderFound){
+            $('#filter-menu').append(`<div class="checkbox">
+                <label><input type="checkbox" value="" class="log-control-check" id="${data.sender}" autocomplete="off" checked>${data.sender}</label>
+            </div>`);
+            $(`#${data.sender}`).change(function(event){
+                console.log('click');
+                var checked = $(event.currentTarget).is(":checked");
+                var id = event.currentTarget.id;
+                $('*').filter(function() {
+                    if($(this).data('sender') === id){
+                        if(checked){
+                            $(this).show();
+                        }
+                        else{
+                            $(this).hide();
+                        }
+                    }
+                });
+            });
+            this.senderList.push(data.sender);
+        }
+    },
     // handels on message event
     onMessageEvent: function(msg){
         var data = JSON.parse(msg.data);
+
+        this.renderSenderFilterContext(data)
+
         var color;
         // set different log levels
         switch (data.loglevel) {
@@ -120,20 +154,6 @@ var LogFilesView = Backbone.View.extend({
         }     
         this.dashboardConfigurationTemplate = this.template({title: this.title, buttons: [], content, className: 'log-file', height: [this.height,'px'].join(''), buttons: ['download']});
         this.$el.html(this.dashboardConfigurationTemplate);
-        $('.log-control-check').change(function(event){
-            var checked = $(event.currentTarget).is(":checked");
-            var id = event.currentTarget.id;
-            $('*').filter(function() {
-                if($(this).data('sender') === id){
-                    if(checked){
-                        $(this).show();
-                    }
-                    else{
-                        $(this).hide();
-                    }
-                }
-            });
-        });
         return this;
     }
 });

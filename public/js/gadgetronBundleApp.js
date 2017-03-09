@@ -16,7 +16,7 @@ module.exports={
     "writers_db": "db/writers.db",
     "admin_user": "admin",
     "password": "admin",
-    "viewer": "hdf"
+    "viewer": "hdfview"
 }
 
 },{}],2:[function(require,module,exports){
@@ -42371,6 +42371,7 @@ var LogFilesView = _backbone2.default.View.extend({
         this.title = attributes.title;
         this.height = attributes.height;
         this.content = attributes.content;
+        this.senderList = new Array();
         // listen on websocket
         this.socket = new WebSocket('ws://' + window.location.hostname + ':' + config.port + '/logbroadcast');
         this.socket.onmessage = function (msg) {
@@ -42382,9 +42383,39 @@ var LogFilesView = _backbone2.default.View.extend({
         'click': 'clickEvent',
         'contextmenu': 'contextmenuEvent'
     },
+    renderSenderFilterContext: function renderSenderFilterContext(data) {
+        var senderFound = false;
+        // check if there is new sender and add this to contextmenu
+        for (var sender in this.senderList) {
+            if (this.senderList[sender] === data.sender) {
+                senderFound = true;
+            }
+        }
+        if (!senderFound) {
+            (0, _jquery2.default)('#filter-menu').append('<div class="checkbox">\n                <label><input type="checkbox" value="" class="log-control-check" id="' + data.sender + '" autocomplete="off" checked>' + data.sender + '</label>\n            </div>');
+            (0, _jquery2.default)('#' + data.sender).change(function (event) {
+                console.log('click');
+                var checked = (0, _jquery2.default)(event.currentTarget).is(":checked");
+                var id = event.currentTarget.id;
+                (0, _jquery2.default)('*').filter(function () {
+                    if ((0, _jquery2.default)(this).data('sender') === id) {
+                        if (checked) {
+                            (0, _jquery2.default)(this).show();
+                        } else {
+                            (0, _jquery2.default)(this).hide();
+                        }
+                    }
+                });
+            });
+            this.senderList.push(data.sender);
+        }
+    },
     // handels on message event
     onMessageEvent: function onMessageEvent(msg) {
         var data = JSON.parse(msg.data);
+
+        this.renderSenderFilterContext(data);
+
         var color;
         // set different log levels
         switch (data.loglevel) {
@@ -42473,19 +42504,6 @@ var LogFilesView = _backbone2.default.View.extend({
         }
         this.dashboardConfigurationTemplate = this.template(_defineProperty({ title: this.title, buttons: [], content: content, className: 'log-file', height: [this.height, 'px'].join('') }, 'buttons', ['download']));
         this.$el.html(this.dashboardConfigurationTemplate);
-        (0, _jquery2.default)('.log-control-check').change(function (event) {
-            var checked = (0, _jquery2.default)(event.currentTarget).is(":checked");
-            var id = event.currentTarget.id;
-            (0, _jquery2.default)('*').filter(function () {
-                if ((0, _jquery2.default)(this).data('sender') === id) {
-                    if (checked) {
-                        (0, _jquery2.default)(this).show();
-                    } else {
-                        (0, _jquery2.default)(this).hide();
-                    }
-                }
-            });
-        });
         return this;
     }
 });
@@ -42626,10 +42644,10 @@ var FolderView = _backbone2.default.View.extend({
                         file.delete();
                     });
                     break;
-                case 'open-hdfview-button':
+                case 'open-view-button':
                     if (model) {
                         _backbone2.default.ajax({
-                            url: "/api/startHdfView",
+                            url: "/api/startViewer",
                             data: {
                                 filePath: model.get('path')
                             }

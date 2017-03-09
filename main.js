@@ -9,11 +9,12 @@ var childProcess = require('child_process');
 let win
 
 const openFile = function() {
-  console.log('open file function')
+  //console.log('open file function')
   var files = dialog.showOpenDialog(win, {properties: ['openFile']});
   if(!files) { return; }
   var file = files[0];
-  console.log(file);
+  return file;
+  //console.log(file);
 }
 exports.openFile = openFile;
 

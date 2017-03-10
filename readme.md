@@ -1,35 +1,65 @@
 A user interface for interacting with the <a href="https://github.com/gadgetron/gadgetron">Gadgetron Framework</a>. We hope it assissts you in your daily work and you are welcome to further enhance the system.
 
 It is implemented with Node.js on the server-side and a Backbone on the client-side.
+# Quick start
+Assuming you are running it inside the gadgetron docker image or having gadgetron set up properly.
+```bash
+sudo apt-get install npm nodejs-legacy
+git clone https://github.com/thomaskuestner/GadgetronControl
+cd GadgetronControl
+npm install
+npm start
+```
 
-Prerequesits are the following tools. 
-
-1. [siemens_to_ismrmrd](https://github.com/ismrmrd/siemens_to_ismrmrd)
-2. [gadgetron](https://github.com/gadgetron/gadgetron)
-3. [nodejs](https://nodejs.org/en/)
-4. [npm](https://www.npmjs.com/)
-5. [hdfview](https://support.hdfgroup.org/products/java/hdfview/) (allows you a local preview of the images)
+# Installation
+## Prerequesits 
+Prerequisites are the following tools:<br/>
+1. [siemens_to_ismrmrd](https://github.com/ismrmrd/siemens_to_ismrmrd)<br/>
+2. [gadgetron](https://github.com/gadgetron/gadgetron)<br/>
+3. [nodejs](https://nodejs.org/en/)<br/>
+4. [npm](https://www.npmjs.com/)<br/>
+5. (optional) [hdfview](https://support.hdfgroup.org/products/java/hdfview/)<br/>
+6. (optional) [imagej](https://imagej.nih.gov/ij/download.html)<br/>
 
 Please set the PATH variables so that the GadgetronControl can find them and install the required packages:
 ```bash
-apt-get install npm nodejs-legacy
+sudo apt-get install npm nodejs-legacy
 export GADGETRON_HOME=/usr/local
 export ISMRMRD_HOME=/usr/local
 export PATH=$PATH:$GADGETRON_HOME/bin:$ISMRMRD_HOME/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GADGETRON_HOME/lib:$ISMRMRD_HOME/lib
 ```
+## Installation script
 For installation and startup you can use the following script. 
-
 ```bash
-# start gadgetron in background and write pipeline
-gadgetron > /tmp/gadgetron.log 2>&1 &
 git clone https://github.com/thomaskuestner/GadgetronControl
 cd GadgetronControl
 # install GadgetronControl dependencies
 npm install
 ```
-The GadgetronControl can be configured in the "Settings"-Tab or directly in the "./config.json" file (requires GadgetronControl restart).
+## Configuration
+The GadgetronControl can be configured in the "Settings"-Tab or directly in the "./config.json" file (requires GadgetronControl restart):
+```
+    "port": "3000",                                       // client-server communication port
+    "hostname": "localhost",                              // server IP
+    "config_dir": "/usr/local/share/gadgetron/config/",   // Gadgetron configuration dir (path with *.xml files)
+    "upload_dir": "uploads",                              // data upload directory (relative to GadgetronControl root)
+    "result_dir": "public/results",                       // results directory (relative to GadgetronControl root)
+    "trash_dir": "trash",                                 // trash directory (relative to GadgetronControl root)
+    "gadgetron_port": "9002",                             // Gadgetron port
+    "gadgetron_relay_host": "localhost",                  // Gadgetron relay host
+    "gadgetron_relay_port": "8002",                       // Gadgetron relay port
+    "gadgetron_rest_port": "9080",                        // Gadgetron rest port
+    "gadgetron_log": "/tmp/gadgetron.log",                // Gadgetron log file
+    "readers_db": "db/readers.db",                        // database for reader gadgets (relative to GadgetronControl root)
+    "gadgets_db": "db/gadgets.db",                        // database for Gadgetron gadgets (relative to GadgetronControl root)
+    "writers_db": "db/writers.db",                        // database for writer gadgets (relative to GadgetronControl root)
+    "admin_user": "admin",                                // admin user name
+    "password": "admin",                                  // admin password
+    "viewer": "hdfview"                                   // optional viewers: hdfview | imagej
+```
 
+# Usage
 The UI is then started as a standalone GUI:
 ```bash
 # start electron GUI
@@ -43,6 +73,7 @@ npm run remote
 
 We implemented a small (but insecure) authentification to ensure a user message notification if anything is deleted. Username and password are both _admin_ by default but you are free to change them in the config.json.
 
+# Structure
 The project is ordered in the following folders:
 ```
 db (place for the databases)

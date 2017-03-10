@@ -167,17 +167,13 @@ var PlayView = Backbone.View.extend({
                         path: res.data.path
                     });
                     self.resultFolderCollection.add(datFile);
-                }             
-                this.$el.data('modal', null);
-                this.remove();
-            },
-            error: function(){                
-                this.$el.data('modal', null);
-                this.remove();
+                }
             }
         });
     },
     hide: function() {
+        this.$el.data('modal', null);
+        this.remove();
     }
 });
 

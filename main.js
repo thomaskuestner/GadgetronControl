@@ -16,7 +16,6 @@ const openFile = function() {
   return file;
   //console.log(file);
 }
-exports.openFile = openFile;
 
 function httpGet(url, portIn) {
     return new Promise(
@@ -70,13 +69,19 @@ function delay(ms) {
 function fGenerateApp() {
   // invoke child process (remote application)
   var invoked = false;
-  var process = childProcess.fork('./index.js');
+  var options = { stdio: [null, null, null, 'ipc'] };
+  var args = [ /* ... */ ];
+  var process = childProcess.fork('./index.js', args, options);
 
   // listen for errors as they may prevent the exit event from firing
   process.on('error', function (err) {
       if (invoked) return;
       invoked = true;
       if(err) throw err;
+  });
+  process.on('message', function() {
+    var file = openFile();
+    return file;
   });
 
   createWindow(process);

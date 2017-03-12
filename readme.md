@@ -121,6 +121,8 @@ index.js (node.js server)
 package.json (npm packages)
 readme.md (this file ;))
 ```
+# Change log
+- v0.1.0: initial release
 
 --------------------------------------------------------
 Please read LICENSE file for licensing details.

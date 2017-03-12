@@ -1,6 +1,9 @@
 A user interface for interacting with the <a href="https://github.com/gadgetron/gadgetron">Gadgetron Framework</a>. We hope it assissts you in your daily work and you are welcome to further enhance the system.
 
-It is implemented with Node.js on the server-side and a Backbone on the client-side.
+It is implemented with Node.js on the server-side and a backbone on the client-side. There are two operation modes available:
+- local: start a local GUI (wrapper around remote option)
+- remote: run a server and connect to the server via webbrowser
+
 # Quick start
 Assuming you are running it inside the gadgetron docker image or having gadgetron set up properly.
 ```bash
@@ -73,6 +76,14 @@ npm run remote
 
 We implemented a small (but insecure) authentification to ensure a user message notification if anything is deleted. Username and password are both _admin_ by default but you are free to change them in the config.json.
 
+# Features
+- run Gadgetron configurations (*.xml), bash scripts (*.sh) and python scripts (*.py)
+- upload or locate data on server
+- configure Gadgetron pipeline: visualize, add, delete, rearrange and parametrize gadgets
+- upload/download and locate data on server
+- display log output
+- view results via hdfview or imagej
+
 # Structure
 The project is ordered in the following folders:
 ```
@@ -92,7 +103,8 @@ public (backbone stuff)
 |  +--models (all backbone models)
 |  +--routes (all routes)
 |  +--views (all views)
-|  main.js (jump in from backbone)
+|  backboneMain.js (jump in from backbone)
+|  gadgetronBundleApp.js (babelified server code)
 |  regionManager.js (handels multiple views)
 +--results (results of gadgetron for direct download)
 +--index.html (main page)
@@ -104,6 +116,7 @@ uploads (storage for your data)
 +--xsl
 config.json (configuration variables)
 Gruntfile.js (grunt script)
+main.js (electron GUI)
 index.js (node.js server)
 package.json (npm packages)
 readme.md (this file ;))

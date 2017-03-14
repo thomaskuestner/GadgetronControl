@@ -54,6 +54,7 @@ var UploadDialog = Backbone.View.extend({
         return this;
     },
     fLocateData: function(value){
+      var self = this;
       Backbone.ajax({
           url: '/api/createSymbolicLink',
           type: 'POST',
@@ -96,12 +97,13 @@ var UploadDialog = Backbone.View.extend({
         }
     },
     clickGetPathServer: function(event){
+      var self = this;
       Backbone.ajax({
           url: '/api/getFilePath',
           success: function(res){
               if(res.status === 'SUCCESS'){
                   if(res.filePath){
-                      this.fLocateData(res.filePath);
+                      self.fLocateData(res.filePath);
                   }
               }
           }

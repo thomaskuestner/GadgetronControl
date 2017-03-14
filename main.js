@@ -71,20 +71,26 @@ function fGenerateApp() {
   var invoked = false;
   var options = { stdio: [null, null, null, 'ipc'] };
   var args = [ /* ... */ ];
-  var process = childProcess.fork('./index.js', args, options);
+  var nodeJsProcess = childProcess.fork('./index.js', args, options);
 
   // listen for errors as they may prevent the exit event from firing
-  process.on('error', function (err) {
+  nodeJsProcess.on('error', function (err) {
       if (invoked) return;
       invoked = true;
       if(err) throw err;
   });
-  process.on('message', function() {
-    var file = openFile();
-    return file;
+  nodeJsProcess.on('message', function(data, server) {
+    if(data === 'openDialog'){
+        var file = openFile();
+        nodeJsProcess.send(file);
+    }
   });
 
-  createWindow(process);
+    nodeJsProcess.stdout.on('data',function(data){
+        console.log(data.toString());
+    });
+
+  createWindow(nodeJsProcess);
 }
 
 function createWindow (process) {
